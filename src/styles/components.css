@@ -537,3 +537,544 @@
 .log-msg {
   color: var(--text-main);
 }
+
+/* ==========================================================================
+   Chapter 1 & 2 Interactive Lesson Styles
+   ========================================================================== */
+
+.chapter-lesson-wrapper {
+  margin-bottom: 24px;
+}
+
+.lesson-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lesson-nav-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 8px;
+}
+
+.lesson-tab-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.lesson-tab-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-bright);
+  border-color: var(--accent-cyan);
+}
+
+.lesson-tab-btn.active {
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+.lesson-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.lesson-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.lesson-title {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+}
+
+.lesson-text {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--text-main);
+  margin-bottom: 14px;
+}
+
+.callout-box {
+  background: rgba(0, 112, 243, 0.12);
+  border-left: 3px solid var(--accent-blue);
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  border-radius: 0 4px 4px 0;
+  margin: 14px 0;
+}
+
+.formula-box-large {
+  background: #040813;
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--accent-cyan);
+  border-radius: 4px;
+  margin: 10px 0 16px 0;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+
+/* Interactive Panels inside Lessons */
+.interactive-panel {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  color: var(--text-bright);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.panel-tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--accent-sky);
+}
+
+/* Spectrum Grid (Ch. 1) */
+.spectrum-interactive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.milestone-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.milestone-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-cyan);
+}
+
+.milestone-btn.active {
+  background: rgba(0, 229, 255, 0.12);
+  border-color: var(--accent-cyan);
+}
+
+.m-year {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.m-tech {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.m-freq {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.spectrum-detail-card {
+  background: #03060c;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  border-radius: 4px;
+  padding: 12px 16px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.detail-title {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.detail-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  background: rgba(0, 229, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: var(--accent-sky);
+}
+
+.detail-desc {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--text-main);
+  margin: 0;
+}
+
+/* Growth SVG & Stats */
+.growth-chart-container {
+  width: 100%;
+  height: 220px;
+  background: #03060c;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.growth-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card.highlight {
+  border-color: #ff0055;
+  background: rgba(255, 0, 85, 0.08);
+}
+
+.stat-val {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+
+.stat-lbl {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Impairments Grid (Ch. 1.6) */
+.impairment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.impairment-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.imp-icon {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.imp-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--text-bright);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.imp-desc {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.imp-solution {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 6px;
+}
+
+/* Chapter 2 Scope & Controls */
+.ch2-oscilloscope-box {
+  width: 100%;
+  height: 220px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #040812;
+  border: 1px solid rgba(0, 229, 255, 0.2);
+  margin-bottom: 12px;
+}
+
+.ch2-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ch2-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.ch2-ctrl {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 8px 12px;
+}
+
+.ch2-lbl {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+/* Comparison Cards (Ch. 2.3) */
+.comparison-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 12px 0;
+}
+
+.comp-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.comp-header {
+  padding: 10px 14px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+}
+
+.nyquist-header {
+  background: rgba(0, 112, 243, 0.2);
+  border-bottom: 1px solid var(--accent-blue);
+  color: var(--accent-sky);
+}
+
+.shannon-header {
+  background: rgba(0, 229, 255, 0.2);
+  border-bottom: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.comp-body {
+  padding: 14px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-main);
+}
+
+.comp-formula {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  margin-bottom: 10px;
+  background: #03060c;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.calc-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.res-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.res-card.highlight {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.res-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.res-val {
+  font-family: var(--font-mono);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  margin-bottom: 4px;
+}
+
+.res-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Taxonomy Table (Ch. 2.2) */
+.taxonomy-table-container {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.taxonomy-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.taxonomy-table th, .taxonomy-table td {
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+.taxonomy-table th {
+  background: var(--bg-tertiary);
+  font-family: var(--font-heading);
+  color: var(--text-bright);
+  font-size: 0.88rem;
+}
+
+.taxonomy-table td {
+  background: var(--bg-secondary);
+  color: var(--text-main);
+  line-height: 1.4;
+}
+
+/* Quiz Containers */
+.quiz-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.quiz-question-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.q-number {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-sky);
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.q-text {
+  font-size: 0.88rem;
+  color: var(--text-bright);
+  margin-bottom: 12px;
+  line-height: 1.4;
+}
+
+.q-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.q-opt {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-main);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.q-opt:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-cyan);
+}
+
+.q-opt.correct {
+  background: rgba(0, 255, 157, 0.15);
+  border-color: var(--status-ready);
+  color: var(--status-ready);
+}
+
+.q-opt.wrong {
+  background: rgba(255, 0, 85, 0.15);
+  border-color: var(--status-danger);
+  color: var(--status-danger);
+}
+
+.q-feedback {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}

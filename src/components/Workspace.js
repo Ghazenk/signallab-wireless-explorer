@@ -8,6 +8,8 @@ import { simEngine } from '../simulations/engine.js';
 import { generateWaveformPoints, pointsToSvgPath, createSvgGrid } from '../utils/svgUtils.js';
 import { calculateNyquistCapacity, calculateShannonCapacity, calculateFreeSpaceLoss } from '../utils/mathUtils.js';
 import { formatFrequency, formatBitrate, formatDb } from '../utils/formatters.js';
+import { renderChapter1 } from './Chapter1Lesson.js';
+import { renderChapter2 } from './Chapter2Lesson.js';
 
 export class Workspace {
   constructor(containerEl) {
@@ -54,23 +56,8 @@ export class Workspace {
         </div>
       </div>
 
-      <!-- Foundation & Progressive Development Staging Banner -->
-      <div class="staging-banner">
-        <div class="staging-icon">⚡</div>
-        <div class="staging-content">
-          <h3>PHASE 1: APPLICATION FOUNDATION & TEXTBOOK VERIFICATION COMPLETE</h3>
-          <p>
-            SignalLab's architecture and textbook reference map are verified from William Stallings' 
-            <em>Wireless Communications and Networks (2nd Edition)</em>. 
-            Detailed lesson modules for Chapter 1 and Chapter 2 are staged for progressive implementation in the next phase.
-          </p>
-          <div class="staging-tags">
-            <span class="badge badge-ready">569 PAGES VERIFIED</span>
-            <span class="badge badge-staged">CH 1-15 STAGED</span>
-            <span class="badge badge-staged">ENGINE READY</span>
-          </div>
-        </div>
-      </div>
+      <!-- Chapter Interactive Learning Modules & Pedagogical Workspace -->
+      <div id="chapter-lesson-mount" class="chapter-lesson-wrapper"></div>
 
       <!-- Real-Time Interactive SVG Signal Oscilloscope -->
       <div class="instrument-container">
@@ -195,6 +182,36 @@ export class Workspace {
 
     this.attachControlListeners();
     this.updateMetrics();
+    this.renderActiveChapterModule();
+  }
+
+  renderActiveChapterModule() {
+    const lessonMount = this.container.querySelector('#chapter-lesson-mount');
+    if (!lessonMount) return;
+
+    const state = progressManager.getState();
+    if (state.activeChapterId === 'ch-01') {
+      renderChapter1(lessonMount, state, progressManager);
+    } else if (state.activeChapterId === 'ch-02') {
+      renderChapter2(lessonMount, state, progressManager);
+    } else {
+      const { chapter } = this.getActiveChapter();
+      lessonMount.innerHTML = `
+        <div class="staging-banner">
+          <div class="staging-icon">📡</div>
+          <div class="staging-content">
+            <h3>CHAPTER ${chapter.chapterNumber}: ${chapter.title.toUpperCase()}</h3>
+            <p>
+              ${chapter.description} Reference textbook print pages: pp. ${chapter.bookPage}–${chapter.bookPage + 30}.
+            </p>
+            <div class="staging-tags">
+              <span class="badge badge-staged">STALLINGS 2E CURRICULUM READY</span>
+              <span class="badge badge-ready">CORE SIMULATOR ACTIVE BELOW</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
   }
 
   updateHeaderAndInfo() {
