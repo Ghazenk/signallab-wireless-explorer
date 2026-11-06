@@ -26,6 +26,28 @@ export class ConceptPanel {
     return { chapter: CURRICULUM[0].chapters[0], part: CURRICULUM[0] };
   }
 
+  getChapterEndPage(chapter) {
+    const allChapters = [];
+    for (const part of CURRICULUM) {
+      if (part.chapters) {
+        allChapters.push(...part.chapters);
+      }
+    }
+    const idx = allChapters.findIndex(c => c.id === chapter.id);
+    if (idx !== -1 && idx < allChapters.length - 1) {
+      const nextCh = allChapters[idx + 1];
+      return {
+        book: nextCh.bookPage - 1,
+        pdf: nextCh.pdfPage - 1
+      };
+    }
+    // For the last chapter (Ch. 15), book ends before Appendix A (p. 511)
+    return {
+      book: 510,
+      pdf: 520
+    };
+  }
+
   render() {
     const { chapter, part } = this.getActiveChapter();
     const state = progressManager.getState();
@@ -47,10 +69,10 @@ export class ConceptPanel {
             ${part.partTitle}
           </div>
           <div class="book-ref-tag">
-            <span>📖 Book Print: pp. ${chapter.bookPage}–${chapter.bookPage + 30}</span>
+            <span>📖 Book Print: pp. ${chapter.bookPage}–${this.getChapterEndPage(chapter).book}</span>
           </div>
           <div class="book-ref-tag">
-            <span>📑 PDF Target: pp. ${chapter.pdfPage}–${chapter.pdfPage + 30}</span>
+            <span>📑 PDF Target: pp. ${chapter.pdfPage}–${this.getChapterEndPage(chapter).pdf}</span>
           </div>
         </div>
 

@@ -82,7 +82,7 @@ export class Workspace {
             <span>RF SIGNAL ANALYZER & OSCILLOSCOPE (SVG VECTOR RENDERER)</span>
           </div>
           <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);" id="scope-status">
-            SAMPLING: 2.4 GHz | TIME-DOMAIN ACTIVE
+            CARRIER: ${formatFrequency(state.simParams.carrierFreqHz)} | TIME-DOMAIN ACTIVE
           </div>
         </div>
 
@@ -140,10 +140,15 @@ export class Workspace {
 
           <div class="control-item">
             <div class="control-label">
-              <span>LINK DISTANCE (LOS)</span>
-              <span id="ctrl-dist-val">${state.simParams.distanceMeters} m</span>
+              <span>MODULATION SCHEME (M-ARY)</span>
+              <span id="ctrl-mod-val">${state.simParams.modulationScheme}</span>
             </div>
-            <input type="range" class="control-slider" id="ctrl-dist" min="5" max="500" step="5" value="${state.simParams.distanceMeters}"/>
+            <select class="control-select" id="ctrl-mod" style="width: 100%; background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-subtle); padding: 5px 8px; font-family: var(--font-mono); font-size: 0.75rem; border-radius: 4px; outline: none; margin-top: 4px;">
+              <option value="BPSK" ${state.simParams.modulationScheme === 'BPSK' ? 'selected' : ''}>BPSK (M=2, 1 bit/sym)</option>
+              <option value="QPSK" ${state.simParams.modulationScheme === 'QPSK' ? 'selected' : ''}>QPSK (M=4, 2 bits/sym)</option>
+              <option value="16-QAM" ${state.simParams.modulationScheme === '16-QAM' ? 'selected' : ''}>16-QAM (M=16, 4 bits/sym)</option>
+              <option value="64-QAM" ${state.simParams.modulationScheme === '64-QAM' ? 'selected' : ''}>64-QAM (M=64, 6 bits/sym)</option>
+            </select>
           </div>
         </div>
       </div>
@@ -165,7 +170,7 @@ export class Workspace {
             <span>EQ. 2.12</span>
           </div>
           <div class="metric-card-val" id="metric-nyquist">--</div>
-          <div class="metric-card-sub">C = 2B · log₂(M) (M=2)</div>
+          <div class="metric-card-sub" id="metric-nyquist-sub">C = 2B · log₂(M)</div>
         </div>
 
         <div class="metric-card">
@@ -200,13 +205,15 @@ export class Workspace {
     const freqSlider = this.container.querySelector('#ctrl-freq');
     const snrSlider = this.container.querySelector('#ctrl-snr');
     const bwSlider = this.container.querySelector('#ctrl-bw');
-    const distSlider = this.container.querySelector('#ctrl-dist');
+    const modSelect = this.container.querySelector('#ctrl-mod');
 
     if (freqSlider) {
       freqSlider.addEventListener('input', (e) => {
         const val = Number(e.target.value);
         progressManager.updateSimParams({ carrierFreqHz: val });
         this.container.querySelector('#ctrl-freq-val').textContent = formatFrequency(val);
+        const statusEl = this.container.querySelector('#scope-status');
+        if (statusEl) statusEl.textContent = `CARRIER: ${formatFrequency(val)} | TIME-DOMAIN ACTIVE`;
         this.updateMetrics();
       });
     }
@@ -229,11 +236,11 @@ export class Workspace {
       });
     }
 
-    if (distSlider) {
-      distSlider.addEventListener('input', (e) => {
-        const val = Number(e.target.value);
-        progressManager.updateSimParams({ distanceMeters: val });
-        this.container.querySelector('#ctrl-dist-val').textContent = `${val} m`;
+    if (modSelect) {
+      modSelect.addEventListener('change', (e) => {
+        const val = e.target.value;
+        progressManager.updateSimParams({ modulationScheme: val });
+        this.container.querySelector('#ctrl-mod-val').textContent = val;
         this.updateMetrics();
       });
     }
@@ -241,17 +248,26 @@ export class Workspace {
 
   updateMetrics() {
     const state = progressManager.getState();
-    const { bandwidthHz, snrDb, carrierFreqHz, distanceMeters } = state.simParams;
+    const { bandwidthHz, snrDb, carrierFreqHz, distanceMeters, modulationScheme } = state.simParams;
 
     // Shannon capacity
     const shannon = calculateShannonCapacity(bandwidthHz, snrDb);
     const shannonEl = this.container.querySelector('#metric-shannon');
     if (shannonEl) shannonEl.textContent = formatBitrate(shannon);
 
-    // Nyquist capacity (binary)
-    const nyquist = calculateNyquistCapacity(bandwidthHz, 2);
+    // M-ary level lookup for Nyquist capacity
+    const mLevels = {
+      'BPSK': 2,
+      'QPSK': 4,
+      '16-QAM': 16,
+      '64-QAM': 64
+    };
+    const M = mLevels[modulationScheme] || 2;
+    const nyquist = calculateNyquistCapacity(bandwidthHz, M);
     const nyquistEl = this.container.querySelector('#metric-nyquist');
     if (nyquistEl) nyquistEl.textContent = formatBitrate(nyquist);
+    const nyquistSubEl = this.container.querySelector('#metric-nyquist-sub');
+    if (nyquistSubEl) nyquistSubEl.textContent = `C = 2B · log₂(M) (M=${M}, ${Math.log2(M)}b/s)`;
 
     // Free space path loss
     const fspl = calculateFreeSpaceLoss(distanceMeters, carrierFreqHz);
@@ -265,11 +281,17 @@ export class Workspace {
       if (!pathEl) return;
 
       const state = progressManager.getState();
+      // Map carrier frequency range [800 MHz, 5.8 GHz] to [1.2, 8.0] visual display cycles
+      const minF = 800000000;
+      const maxF = 5800000000;
+      const normF = (state.simParams.carrierFreqHz - minF) / (maxF - minF);
+      const displayFreq = 1.2 + Math.max(0, Math.min(1, normF)) * 6.8;
+
       const points = generateWaveformPoints({
         width: 800,
         height: 240,
         time,
-        freq: 3.5,
+        freq: displayFreq,
         amplitude: 65,
         harmonics: this.harmonics,
         snrDb: state.simParams.snrDb
