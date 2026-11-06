@@ -1180,25 +1180,86 @@
   overflow: hidden;
 }
 
-/* --- Maximized Simulation Viewport & Spacing Fixes --- */
+/* --- In-App Stage Sizing (Compact, Standard, Cinema Expanded, Maximized) --- */
 .canvas-viewport-container {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
   position: relative;
+  height: 520px;
+  background: #020409;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.canvas-viewport-container.size-compact {
+  height: 380px;
+}
+
+.canvas-viewport-container.size-standard {
+  height: 520px;
+}
+
+.canvas-viewport-container.size-cinema {
+  height: 700px;
 }
 
 .canvas-viewport-container.is-maximized {
-  position: fixed !important;
-  inset: 12px !important;
-  z-index: 9999 !important;
-  height: calc(100vh - 24px) !important;
-  max-height: none !important;
-  box-shadow: 0 0 60px rgba(0, 229, 255, 0.4), 0 0 0 1000px rgba(2, 6, 23, 0.85);
+  /* In-app expanded stage: full workspace view, never trapping the browser window */
+  height: 780px !important;
   border-color: var(--accent-cyan) !important;
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.3), 0 16px 48px rgba(0, 0, 0, 0.85) !important;
 }
 
-.canvas-viewport-container.is-maximized svg {
-  height: calc(100% - 100px) !important;
+.canvas-viewport-container svg {
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  display: block;
 }
+
+/* In-Simulation Frequency & Architecture Toolbar Tray */
+.sim-embedded-controls-tray {
+  background: rgba(4, 9, 24, 0.95);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-mono);
+}
+
+.sim-freq-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.72rem;
+}
+
+.sim-freq-input {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.74rem;
+  padding: 4px 6px;
+  border-radius: 4px;
+  text-align: right;
+  transition: border-color 0.15s;
+}
+
+.sim-freq-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
 
 /* Call Flow Step Cards spacing fix */
 .flow-step-card {
@@ -1413,3 +1474,166 @@
   color: var(--text-dim);
   margin-top: 2px;
 }
+
+/* ==========================================================================
+   Chapter 10: Canvas Grid Panning & Parameter Tooltip Styles
+   ========================================================================== */
+
+.param-ctrl-with-tooltip {
+  position: relative;
+}
+
+.info-tooltip-trigger {
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  color: var(--accent-cyan);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 0.68rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.info-tooltip-trigger:hover,
+.info-tooltip-trigger.active {
+  background: var(--accent-cyan);
+  color: #030712;
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.6);
+  border-color: var(--accent-cyan);
+}
+
+.info-tooltip-trigger.tip-trigger-j {
+  background: rgba(0, 255, 157, 0.12);
+  border-color: rgba(0, 255, 157, 0.35);
+  color: #00ff9d;
+}
+
+.info-tooltip-trigger.tip-trigger-j:hover,
+.info-tooltip-trigger.tip-trigger-j.active {
+  background: #00ff9d;
+  color: #030712;
+  box-shadow: 0 0 10px rgba(0, 255, 157, 0.6);
+  border-color: #00ff9d;
+}
+
+.param-interactive-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: rgba(4, 9, 22, 0.98);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 6px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 229, 255, 0.18);
+  backdrop-filter: blur(14px);
+  z-index: 999;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--text-bright);
+  animation: tipFadeIn 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes tipFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.param-interactive-tooltip.tip-j-theme {
+  border-color: #00ff9d;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.85), 0 0 20px rgba(0, 255, 157, 0.18);
+}
+
+.tip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+  margin-bottom: 8px;
+}
+
+.tip-title {
+  font-weight: 700;
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+}
+
+.tip-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.tip-close-btn:hover {
+  color: #fff;
+}
+
+.tip-body p {
+  margin: 0 0 6px 0;
+  color: var(--text-secondary);
+}
+
+.tip-body strong {
+  color: #fff;
+}
+
+.tip-body ul {
+  margin: 4px 0 0 16px;
+  padding: 0;
+  color: var(--text-dim);
+}
+
+.tip-body li {
+  margin-bottom: 4px;
+}
+
+.tip-formula-box {
+  background: rgba(3, 7, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin: 8px 0;
+}
+
+.tip-formula-row {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.tip-formula-calc {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.tip-formula-calc.calc-j {
+  color: #00ff9d;
+}
+
+.hex-canvas-element {
+  touch-action: none;
+  user-select: none;
+}
+
+.canvas-interactive-wrapper.is-panning .hex-canvas-element,
+.hex-canvas-element.is-dragging {
+  cursor: grabbing !important;
+}
+
