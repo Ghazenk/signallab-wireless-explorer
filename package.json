@@ -1,0 +1,24 @@
+{
+  "name": "signallab-wireless-explorer",
+  "version": "1.0.0",
+  "description": "SignalLab — Wireless Communications Explorer: Interactive engineering dashboard and simulation workbench based on William Stallings' Wireless Communications and Networks (2nd Edition)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "wireless-communications",
+    "signal-processing",
+    "telecommunications",
+    "interactive-simulation",
+    "educational",
+    "stallings"
+  ],
+  "author": "SignalLab Contributors",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.4.10"
+  }
+}

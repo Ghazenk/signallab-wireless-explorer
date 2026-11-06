@@ -1,0 +1,107 @@
+/* ==========================================================================
+   SignalLab Dashboard Layout Structure
+   ========================================================================== */
+
+#app-container {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Header */
+.app-header {
+  height: var(--header-height);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+/* Main 3-Column Work Area */
+.app-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Left Learning Navigator */
+.app-navigator {
+  width: var(--nav-width);
+  min-width: 260px;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width 0.2s ease;
+}
+
+/* Central Simulation & Workspace */
+.app-workspace {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Right Concept Information Panel */
+.app-concept-panel {
+  width: var(--concept-width);
+  min-width: 300px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  transition: width 0.2s ease;
+}
+
+/* Bottom Timeline & Event Telemetry */
+.app-timeline {
+  height: var(--timeline-height);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  z-index: 90;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1200px) {
+  :root {
+    --nav-width: 280px;
+    --concept-width: 320px;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-concept-panel {
+    display: none; /* Hide right panel on mobile/tablet, can be toggled */
+  }
+}
+
+@media (max-width: 650px) {
+  .app-navigator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 110;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.7);
+    transform: translateX(-100%);
+  }
+  .app-navigator.open {
+    transform: translateX(0);
+  }
+}
