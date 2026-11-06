@@ -13,8 +13,8 @@ class LearningProgressManager {
 
   getDefaultState() {
     return {
-      activeChapterId: 'ch-01',
-      activeSectionId: 'sec-1.1',
+      activeChapterId: 'ch-10',
+      activeSectionId: 'sec-10.sim',
       activeTab: 'curriculum', // 'curriculum' | 'simulation' | 'theory' | 'telemetry'
       completedChapters: [],
       completedSections: [],

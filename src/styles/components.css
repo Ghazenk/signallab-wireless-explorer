@@ -1078,3 +1078,338 @@
   font-size: 0.8rem;
   line-height: 1.4;
 }
+
+/* --- Chapter 10 Advanced Cellular Simulation Styles --- */
+.tower-capacity-box {
+  background: rgba(11, 19, 41, 0.9);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tower-capacity-meter {
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.tower-capacity-fill {
+  height: 100%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+  border-radius: 5px;
+}
+
+.channels-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.channel-chip {
+  padding: 3px 6px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.channel-chip.free {
+  background: rgba(100, 116, 139, 0.15);
+  color: #94a3b8;
+  border-color: rgba(100, 116, 139, 0.3);
+}
+
+.channel-chip.in-use {
+  background: rgba(0, 229, 255, 0.2);
+  color: #00e5ff;
+  border-color: #00e5ff;
+  box-shadow: 0 0 6px rgba(0, 229, 255, 0.3);
+}
+
+.channel-chip.blocked {
+  background: rgba(255, 0, 85, 0.2);
+  color: #ff0055;
+  border-color: #ff0055;
+  animation: pulse-block 1s infinite alternate;
+}
+
+@keyframes pulse-block {
+  from { opacity: 0.7; }
+  to { opacity: 1; filter: drop-shadow(0 0 4px #ff0055); }
+}
+
+.camera-badge-active {
+  background: rgba(0, 255, 157, 0.15);
+  color: var(--status-ready);
+  border: 1px solid rgba(0, 255, 157, 0.4);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+}
+
+.sim-speed-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-dim);
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sim-speed-btn.active, .sim-speed-btn:hover {
+  background: rgba(0, 229, 255, 0.15);
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.frequency-spectrum-canvas {
+  background: #020409;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* --- Maximized Simulation Viewport & Spacing Fixes --- */
+.canvas-viewport-container {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.canvas-viewport-container.is-maximized {
+  position: fixed !important;
+  inset: 12px !important;
+  z-index: 9999 !important;
+  height: calc(100vh - 24px) !important;
+  max-height: none !important;
+  box-shadow: 0 0 60px rgba(0, 229, 255, 0.4), 0 0 0 1000px rgba(2, 6, 23, 0.85);
+  border-color: var(--accent-cyan) !important;
+}
+
+.canvas-viewport-container.is-maximized svg {
+  height: calc(100% - 100px) !important;
+}
+
+/* Call Flow Step Cards spacing fix */
+.flow-step-card {
+  padding: 14px 16px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.flow-step-card:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+.flow-step-card .step-header-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.flow-step-card .step-title {
+  color: var(--text-bright);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.flow-step-card .step-desc {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* Multiserver Trunk Queue Styles */
+.server-trunks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.server-trunk-slot {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 6px 4px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: all 0.25s ease;
+}
+
+.server-trunk-slot.busy {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: #00e5ff;
+  color: #00e5ff;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
+
+.server-trunk-slot.idle {
+  color: var(--text-dim);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Canvas Interactive Pan/Zoom & Oscilloscope Styles */
+.canvas-interactive-wrapper {
+  position: relative;
+  width: 100%;
+  background: #020409;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+
+.canvas-interactive-wrapper.is-panning {
+  cursor: grabbing !important;
+}
+
+.canvas-floating-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: rgba(3, 7, 18, 0.88);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 4px 8px;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.canvas-tool-btn {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.canvas-tool-btn:hover {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.canvas-tool-btn.active {
+  background: rgba(0, 229, 255, 0.22);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.canvas-hint-pill {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  background: rgba(3, 7, 18, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hex-canvas-element {
+  display: block;
+  width: 100%;
+  height: 380px;
+  cursor: grab;
+}
+
+.hex-canvas-element:active {
+  cursor: grabbing;
+}
+
+/* Oscilloscope Canvas */
+.oscilloscope-container {
+  background: #01080e;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 20px rgba(0, 229, 255, 0.05);
+}
+
+.oscilloscope-canvas {
+  display: block;
+  width: 100%;
+  height: 200px;
+}
+
+/* GSM TDMA 8-Slot Frame Strip */
+.gsm-tdma-slots-strip {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.gsm-slot-card {
+  background: rgba(11, 19, 41, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 8px 4px;
+  text-align: center;
+  font-family: var(--font-mono);
+  transition: all 0.2s ease;
+}
+
+.gsm-slot-card.active-slot {
+  background: rgba(0, 255, 157, 0.2);
+  border-color: #00ff9d;
+  box-shadow: 0 0 12px rgba(0, 255, 157, 0.4);
+  transform: translateY(-2px);
+}
+
+.gsm-slot-card .slot-header {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.gsm-slot-card.active-slot .slot-header {
+  color: #00ff9d;
+}
+
+.gsm-slot-card .slot-user {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}

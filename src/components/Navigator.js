@@ -9,7 +9,7 @@ export class Navigator {
   constructor(containerEl) {
     this.container = containerEl;
     this.searchQuery = '';
-    this.expandedChapters = new Set(['ch-01', 'ch-02']);
+    this.expandedChapters = new Set(['ch-01', 'ch-02', 'ch-10']);
     this.render();
 
     progressManager.subscribe(() => {

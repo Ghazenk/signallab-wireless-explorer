@@ -234,8 +234,8 @@ export const CURRICULUM = [
         title: "Cellular Wireless Networks",
         bookPage: 264,
         pdfPage: 274,
-        status: "staged",
-        badge: "STAGED",
+        status: "interactive",
+        badge: "READY",
         description: "Cellular geometry, cluster sizing, frequency reuse factor, handoff mechanisms, cell splitting, 1G AMPS, 2G GSM & IS-95, and 3G CDMA2000/WCDMA evolution.",
         sections: [
           { id: "sec-10.1", num: "10.1", title: "Principles of Cellular Networks", bookPage: 265, pdfPage: 275, subsections: ["Cellular Network Organization", "Operation of Cellular Systems", "Mobile Radio Propagation Effects", "Power Control", "Traffic Engineering"] },
@@ -245,6 +245,12 @@ export const CURRICULUM = [
           { id: "sec-10.5", num: "10.5", title: "Third-Generation Systems", bookPage: 304, pdfPage: 314, subsections: ["3G Objective", "3G Wireless Transmission Technologies", "CDMA2000 1xEV-DO"] },
           { id: "sec-10.6", num: "10.6", title: "Recommended Readings and Web Sites", bookPage: 311, pdfPage: 321 },
           { id: "sec-10.7", num: "10.7", title: "Key Terms, Review Questions, and Problems", bookPage: 314, pdfPage: 324 }
+        ],
+        keyFormulas: [
+          { name: "Cluster Reuse Factor", formula: "N = i^2 + j^2 + i \\cdot j" },
+          { name: "Cochannel Reuse Distance", formula: "D = R \\sqrt{3N} \\quad (D/d = \\sqrt{N})" },
+          { name: "Erlang B Blocking Formula", formula: "P = \\frac{A^N / N!}{\\sum_{k=0}^N A^k / k!}" },
+          { name: "Hata Urban Path Loss", formula: "L_{dB} = 69.55 + 26.16\\log f_c - 13.82\\log h_t - A(h_r) + (44.9 - 6.55\\log h_t)\\log d" }
         ]
       },
       {

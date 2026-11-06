@@ -17,13 +17,17 @@ export class Workspace {
     this.container = containerEl;
     this.svgWidth = 800;
     this.svgHeight = 240;
-    this.harmonics = 1;
+    this.renderedChapterId = null;
 
     this.render();
     this.setupSimulationListener();
 
-    progressManager.subscribe(() => {
-      this.updateHeaderAndInfo();
+    progressManager.subscribe((state) => {
+      if (this.renderedChapterId !== state.activeChapterId) {
+        this.render();
+      } else {
+        this.updateMetrics();
+      }
     });
   }
 
@@ -41,6 +45,7 @@ export class Workspace {
   render() {
     const { chapter, part } = this.getActiveChapter();
     const state = progressManager.getState();
+    this.renderedChapterId = state.activeChapterId;
 
     this.container.innerHTML = `
       <div class="workspace-header">

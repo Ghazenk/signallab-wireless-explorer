@@ -51,10 +51,13 @@ class SimulationEngine {
 
   tick(currentTimestamp) {
     if (!this.lastTimestamp) this.lastTimestamp = currentTimestamp;
-    const dt = (currentTimestamp - this.lastTimestamp) / 1000;
+    let dt = (currentTimestamp - this.lastTimestamp) / 1000;
     this.lastTimestamp = currentTimestamp;
 
-    if (this.isRunning && dt < 0.25) { // Protect against large tab switch jumps
+    if (dt < 0) dt = 0.016;
+    if (dt > 0.1) dt = 0.1;
+
+    if (this.isRunning) {
       const scaledDt = dt * this.timeScale;
       this.simTime += scaledDt;
       this.notify(this.simTime, scaledDt);

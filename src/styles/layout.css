@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SignalLab Dashboard Layout Structure
+   SignalLab Dashboard Layout Structure & Mobile Responsive Drawers
    ========================================================================== */
 
 #app-container {
@@ -8,6 +8,7 @@
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background: var(--bg-primary);
 }
 
 /* Header */
@@ -21,6 +22,8 @@
   padding: 0 16px;
   z-index: 100;
   backdrop-filter: blur(8px);
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 /* Main 3-Column Work Area */
@@ -35,13 +38,58 @@
 /* Left Learning Navigator */
 .app-navigator {
   width: var(--nav-width);
-  min-width: 260px;
+  min-width: 240px;
+  max-width: 480px;
   background: var(--bg-secondary);
   border-right: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: width 0.2s ease;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.app-navigator.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  border-right: none;
+  visibility: hidden;
+}
+
+/* Resizable Separators / Splitters */
+.col-separator {
+  width: 7px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  cursor: col-resize;
+  position: relative;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.col-separator:hover, .col-separator.dragging {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--accent-cyan);
+}
+
+.separator-grip {
+  width: 2px;
+  height: 28px;
+  background: var(--text-dim);
+  border-radius: 1px;
+  transition: background-color 0.15s ease, height 0.15s ease;
+}
+
+.col-separator:hover .separator-grip, .col-separator.dragging .separator-grip {
+  background: var(--accent-cyan);
+  height: 40px;
+  box-shadow: 0 0 8px var(--accent-cyan);
 }
 
 /* Central Simulation & Workspace */
@@ -58,13 +106,22 @@
 /* Right Concept Information Panel */
 .app-concept-panel {
   width: var(--concept-width);
-  min-width: 300px;
+  min-width: 260px;
+  max-width: 500px;
   background: var(--bg-secondary);
   border-left: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  transition: width 0.2s ease;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.app-concept-panel.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  border-left: none;
+  visibility: hidden;
 }
 
 /* Bottom Timeline & Event Telemetry */
@@ -75,9 +132,33 @@
   display: flex;
   flex-direction: column;
   z-index: 90;
+  flex-shrink: 0;
+  transition: height 0.25s ease;
 }
 
-/* Responsive Breakpoints */
+.app-timeline.collapsed {
+  height: 38px !important;
+  overflow: hidden;
+}
+
+/* Mobile Drawer Backdrop */
+.mobile-drawer-backdrop {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 105;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.mobile-drawer-backdrop.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Responsive Breakpoints & Mobile Drawer Architecture */
 @media (max-width: 1200px) {
   :root {
     --nav-width: 280px;
@@ -86,22 +167,65 @@
 }
 
 @media (max-width: 900px) {
+  .col-separator#separator-right {
+    display: none;
+  }
+
   .app-concept-panel {
-    display: none; /* Hide right panel on mobile/tablet, can be toggled */
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 110;
+    width: 320px;
+    max-width: 85vw;
+    box-shadow: -6px 0 24px rgba(0, 0, 0, 0.8);
+    transform: translateX(100%);
+    visibility: visible;
+  }
+
+  .app-concept-panel.open-drawer {
+    transform: translateX(0);
+    visibility: visible;
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 768px) {
+  .col-separator#separator-left {
+    display: none;
+  }
+
+  .app-header {
+    height: auto;
+    padding: 8px 12px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .header-telemetry {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .app-navigator {
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     z-index: 110;
-    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.7);
+    width: 300px;
+    max-width: 85vw;
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.8);
     transform: translateX(-100%);
+    visibility: visible;
   }
-  .app-navigator.open {
+
+  .app-navigator.open-drawer {
     transform: translateX(0);
+    visibility: visible;
+  }
+
+  .app-timeline {
+    height: 120px;
   }
 }
