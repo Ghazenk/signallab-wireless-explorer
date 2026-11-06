@@ -220,49 +220,172 @@ function getSectionContent(secId, state) {
             </table>
           </div>
 
-          <!-- Interactive Repeater vs Amplifier Simulator -->
+          <!-- Real-World Engineering Transmission System Simulator -->
           <div class="interactive-panel" style="margin-top: 16px;">
             <div class="panel-header">
-              <span>ANIMATED DEMONSTRATION: NOISE PROPAGATION IN ANALOG AMPLIFIERS VS DIGITAL REPEATERS</span>
-              <span class="panel-tag">CLICK 'CASCADE STAGES' TO OBSERVE RECOVERY</span>
+              <span>REAL-WORLD HARDWARE TRANSMISSION SIMULATION: TX CHASSIS, CASCADED CHANNEL HOPS & RECOVERY</span>
+              <span class="panel-tag" id="transmission-clock-tag">MULTI-STAGE PROPAGATION ACTIVE</span>
             </div>
 
-            <div style="background: #03060c; border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px; margin-bottom: 12px;">
-              <svg viewBox="0 0 700 160" style="width: 100%; height: 160px;" id="amp-rep-svg">
-                <!-- Transmitter -->
-                <rect x="20" y="30" width="80" height="40" fill="#101932" stroke="#00e5ff" rx="4"/>
-                <text x="30" y="55" fill="#fff" font-size="10" font-family="monospace">TX SOURCE</text>
-                
-                <!-- Stage 1 Cable -->
-                <line x1="100" y1="50" x2="220" y2="50" stroke="#64748b" stroke-width="2"/>
-                <text x="125" y="42" fill="#ffb703" font-size="9" font-family="monospace">+ AWGN Noise</text>
+            <!-- Mode Selection & Channel Noise Control -->
+            <div style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
+              <button class="btn-ctrl active" id="btn-mode-amp" style="flex: 1; min-width: 260px;">
+                ⚡ ANALOG TRANSMISSION: CASCADED RF AMPLIFIERS (NOISE COMPOUNDING)
+              </button>
+              <button class="btn-ctrl" id="btn-mode-rep" style="flex: 1; min-width: 260px;">
+                🛡️ DIGITAL TRANSMISSION: REGENERATIVE REPEATERS (RE-CLOCK & RE-SHAPE)
+              </button>
+            </div>
 
-                <!-- Stage 1 Device (Amplifier / Repeater) -->
-                <polygon points="220,30 290,50 220,70" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
-                <text x="228" y="54" fill="#38bdf8" font-size="9" font-family="monospace" id="stage-device-name">ANALOG AMP</text>
+            <!-- Advanced Real-World Device Rack Architecture SVG -->
+            <div style="background: #03060c; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 14px; overflow-x: auto;">
+              <svg viewBox="0 0 920 380" style="width: 100%; min-width: 820px; height: 380px;" id="amp-rep-svg">
+                <defs>
+                  <linearGradient id="chassis-grad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#1e293b"/>
+                    <stop offset="100%" stop-color="#0f172a"/>
+                  </linearGradient>
+                  <linearGradient id="cable-grad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#00e5ff"/>
+                    <stop offset="100%" stop-color="#38bdf8"/>
+                  </linearGradient>
+                  <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                  </filter>
+                  <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur"/>
+                    <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                  </filter>
+                </defs>
 
-                <!-- Stage 2 Cable -->
-                <line x1="290" y1="50" x2="440" y2="50" stroke="#64748b" stroke-width="2"/>
-                <text x="325" y="42" fill="#ffb703" font-size="9" font-family="monospace">+ More Noise</text>
+                <!-- ================= 1. TX TRANSMITTER CHASSIS ================= -->
+                <g id="rack-tx">
+                  <!-- Chassis Box -->
+                  <rect x="15" y="20" width="160" height="95" fill="url(#chassis-grad)" stroke="#00e5ff" stroke-width="1.5" rx="6"/>
+                  <!-- Rack Screws -->
+                  <circle cx="25" cy="30" r="3" fill="#64748b"/>
+                  <circle cx="25" cy="105" r="3" fill="#64748b"/>
+                  <circle cx="165" cy="30" r="3" fill="#64748b"/>
+                  <circle cx="165" cy="105" r="3" fill="#64748b"/>
+                  <!-- Header & Status -->
+                  <text x="35" y="42" fill="#00e5ff" font-size="11" font-family="monospace" font-weight="700">TX GENERATOR</text>
+                  <circle cx="145" cy="38" r="4" fill="#00ff9d" id="tx-led-pulse"/>
+                  <!-- LCD Display Window -->
+                  <rect x="35" y="52" width="120" height="32" fill="#02040a" stroke="rgba(0,229,255,0.2)" rx="2"/>
+                  <text x="42" y="66" fill="#38bdf8" font-size="9" font-family="monospace" id="tx-display-mode">SIG: CLEAN SINE</text>
+                  <text x="42" y="78" fill="#94a3b8" font-size="8" font-family="monospace">PWR: +20 dBm 50Ω</text>
+                  <!-- Output BNC Connector Port -->
+                  <rect x="170" y="60" width="10" height="14" fill="#94a3b8" rx="1"/>
+                  <circle cx="175" cy="67" r="3" fill="#00e5ff"/>
+                  <text x="135" y="100" fill="#64748b" font-size="8" font-family="monospace">OUT 1</text>
+                </g>
 
-                <!-- Stage 2 Device -->
-                <polygon points="440,30 510,50 440,70" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
-                <text x="448" y="54" fill="#38bdf8" font-size="9" font-family="monospace">STAGE 2</text>
+                <!-- Stage 1 Transmission Line (Cable/Atmosphere with noise injection) -->
+                <line x1="180" y1="67" x2="310" y2="67" stroke="#334155" stroke-width="4"/>
+                <line x1="180" y1="67" x2="310" y2="67" stroke="#00e5ff" stroke-width="2" stroke-dasharray="6 4" id="line-flow-1"/>
+                <rect x="205" y="32" width="80" height="20" fill="#0b1122" stroke="rgba(255,183,3,0.3)" rx="3"/>
+                <text x="212" y="45" fill="#ffb703" font-size="8" font-family="monospace">⚡ AWGN HOP 1</text>
 
-                <!-- Stage 3 Output Receiver -->
-                <line x1="510" y1="50" x2="600" y2="50" stroke="#64748b" stroke-width="2"/>
-                <rect x="600" y="30" width="80" height="40" fill="#101932" stroke="#00ff9d" rx="4"/>
-                <text x="618" y="55" fill="#fff" font-size="10" font-family="monospace">RX SINK</text>
+                <!-- ================= 2. INTERMEDIATE HOP 1 (AMP or REPEATER) ================= -->
+                <g id="rack-stage-1">
+                  <rect x="310" y="20" width="165" height="95" fill="url(#chassis-grad)" stroke="#38bdf8" stroke-width="1.5" rx="6"/>
+                  <circle cx="320" cy="30" r="3" fill="#64748b"/>
+                  <circle cx="320" cy="105" r="3" fill="#64748b"/>
+                  <circle cx="465" cy="30" r="3" fill="#64748b"/>
+                  <circle cx="465" cy="105" r="3" fill="#64748b"/>
+                  <text x="330" y="42" fill="#38bdf8" font-size="11" font-family="monospace" font-weight="700" id="stage1-hw-name">ANALOG AMP #1</text>
+                  <circle cx="445" cy="38" r="4" fill="#00ff9d" id="stage1-led"/>
+                  <rect x="330" y="52" width="125" height="32" fill="#02040a" stroke="rgba(56,189,248,0.2)" rx="2"/>
+                  <text x="338" y="66" fill="#ffb703" font-size="9" font-family="monospace" id="stage1-display-line1">GAIN: +12 dB</text>
+                  <text x="338" y="78" fill="#94a3b8" font-size="8" font-family="monospace" id="stage1-display-line2">BOOSTS NOISE</text>
+                  <rect x="300" y="60" width="10" height="14" fill="#94a3b8" rx="1"/>
+                  <rect x="470" y="60" width="10" height="14" fill="#94a3b8" rx="1"/>
+                </g>
 
-                <!-- Live Waveform Preview Path -->
-                <path id="transmission-demo-wave" d="M 20 130 Q 50 100, 80 130 T 140 130 T 200 130 T 260 130 T 320 130 T 380 130 T 440 130 T 500 130 T 560 130 T 620 130 T 680 130" fill="none" stroke="#ff0055" stroke-width="2"/>
-                <text x="20" y="150" fill="#94a3b8" font-size="10" font-family="monospace" id="transmission-state-lbl">MODE: Analog Amplifiers — Compounding noise distortion across hops</text>
+                <!-- Stage 2 Transmission Line -->
+                <line x1="480" y1="67" x2="610" y2="67" stroke="#334155" stroke-width="4"/>
+                <line x1="480" y1="67" x2="610" y2="67" stroke="#00e5ff" stroke-width="2" stroke-dasharray="6 4" id="line-flow-2"/>
+                <rect x="505" y="32" width="80" height="20" fill="#0b1122" stroke="rgba(255,183,3,0.3)" rx="3"/>
+                <text x="512" y="45" fill="#ffb703" font-size="8" font-family="monospace">⚡ AWGN HOP 2</text>
+
+                <!-- ================= 3. INTERMEDIATE HOP 2 (AMP or REPEATER) ================= -->
+                <g id="rack-stage-2">
+                  <rect x="610" y="20" width="165" height="95" fill="url(#chassis-grad)" stroke="#38bdf8" stroke-width="1.5" rx="6"/>
+                  <circle cx="620" cy="30" r="3" fill="#64748b"/>
+                  <circle cx="620" cy="105" r="3" fill="#64748b"/>
+                  <circle cx="765" cy="30" r="3" fill="#64748b"/>
+                  <circle cx="765" cy="105" r="3" fill="#64748b"/>
+                  <text x="630" y="42" fill="#38bdf8" font-size="11" font-family="monospace" font-weight="700" id="stage2-hw-name">ANALOG AMP #2</text>
+                  <circle cx="745" cy="38" r="4" fill="#00ff9d" id="stage2-led"/>
+                  <rect x="630" y="52" width="125" height="32" fill="#02040a" stroke="rgba(56,189,248,0.2)" rx="2"/>
+                  <text x="638" y="66" fill="#ff0055" font-size="9" font-family="monospace" id="stage2-display-line1">COMPOUNDED NOISE</text>
+                  <text x="638" y="78" fill="#94a3b8" font-size="8" font-family="monospace" id="stage2-display-line2">SNR DROPS TO 8dB</text>
+                  <rect x="600" y="60" width="10" height="14" fill="#94a3b8" rx="1"/>
+                  <rect x="770" y="60" width="10" height="14" fill="#94a3b8" rx="1"/>
+                </g>
+
+                <!-- Line to RX -->
+                <line x1="780" y1="67" x2="840" y2="67" stroke="#334155" stroke-width="4"/>
+                <line x1="780" y1="67" x2="840" y2="67" stroke="#00e5ff" stroke-width="2" stroke-dasharray="6 4" id="line-flow-3"/>
+
+                <!-- ================= 4. RX SINK RECEIVER ================= -->
+                <g id="rack-rx">
+                  <rect x="840" y="20" width="65" height="95" fill="url(#chassis-grad)" stroke="#00ff9d" stroke-width="1.5" rx="6"/>
+                  <text x="850" y="42" fill="#00ff9d" font-size="10" font-family="monospace" font-weight="700">RX SINK</text>
+                  <rect x="846" y="52" width="52" height="32" fill="#02040a" stroke="rgba(0,255,157,0.2)" rx="2"/>
+                  <text x="850" y="67" fill="#00ff9d" font-size="9" font-family="monospace" id="rx-display-status">DEC: OK</text>
+                  <circle cx="872" cy="98" r="4" fill="#00ff9d" id="rx-decision-led"/>
+                </g>
+
+                <!-- ================= 5. LIVE REAL-TIME OSCILLOSCOPE TAP TRACES ================= -->
+                <!-- Oscilloscope Enclosure Background -->
+                <rect x="15" y="130" width="890" height="235" fill="#020408" stroke="rgba(0,229,255,0.2)" rx="6"/>
+
+                <!-- Oscilloscope Division Grid -->
+                <g opacity="0.12">
+                  <line x1="15" y1="185" x2="905" y2="185" stroke="#00e5ff" stroke-width="1"/>
+                  <line x1="15" y1="245" x2="905" y2="245" stroke="#00e5ff" stroke-width="1"/>
+                  <line x1="15" y1="305" x2="905" y2="305" stroke="#00e5ff" stroke-width="1"/>
+                  <line x1="240" y1="130" x2="240" y2="365" stroke="#00e5ff" stroke-width="1"/>
+                  <line x1="470" y1="130" x2="470" y2="365" stroke="#00e5ff" stroke-width="1"/>
+                  <line x1="700" y1="130" x2="700" y2="365" stroke="#00e5ff" stroke-width="1"/>
+                </g>
+
+                <!-- Probe 1 (At TX Output) -->
+                <g id="probe-1-view">
+                  <text x="25" y="148" fill="#00e5ff" font-size="10" font-family="monospace" font-weight="700">PROBE A: TRANSMITTER OUTPUT</text>
+                  <text x="25" y="160" fill="#64748b" font-size="8" font-family="monospace">Clean Pure Signal (No channel distortion)</text>
+                  <path id="wave-probe-a" d="" fill="none" stroke="#00e5ff" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+
+                <!-- Probe 2 (After Hop 1) -->
+                <g id="probe-2-view">
+                  <text x="250" y="148" fill="#38bdf8" font-size="10" font-family="monospace" font-weight="700">PROBE B: POST-STAGE 1</text>
+                  <text x="250" y="160" fill="#64748b" font-size="8" font-family="monospace" id="probe-b-desc">Amplified + First Noise Layer</text>
+                  <path id="wave-probe-b" d="" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+
+                <!-- Probe 3 (After Hop 2) -->
+                <g id="probe-3-view">
+                  <text x="480" y="148" fill="#ffb703" font-size="10" font-family="monospace" font-weight="700">PROBE C: POST-STAGE 2</text>
+                  <text x="480" y="160" fill="#64748b" font-size="8" font-family="monospace" id="probe-c-desc">Cascaded Compounded Noise</text>
+                  <path id="wave-probe-c" d="" fill="none" stroke="#ffb703" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+
+                <!-- Probe 4 (At Receiver Sink Decision Point) -->
+                <g id="probe-4-view">
+                  <text x="710" y="148" fill="#00ff9d" font-size="10" font-family="monospace" font-weight="700">PROBE D: RX SINK RECOVERY</text>
+                  <text x="710" y="160" fill="#64748b" font-size="8" font-family="monospace" id="probe-d-desc">Severe Distortion / Signal Degraded</text>
+                  <path id="wave-probe-d" d="" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-linecap="round"/>
+                </g>
+
+                <!-- Real-time Status Banner at bottom of Oscilloscope -->
+                <rect x="25" y="325" width="870" height="30" fill="rgba(0,0,0,0.6)" stroke="rgba(255,255,255,0.08)" rx="3"/>
+                <text x="35" y="344" fill="#e2e8f0" font-size="10" font-family="monospace" id="transmission-telemetry-banner">
+                  STATUS: Analog Mode Active — Amplifiers boost signal along with accumulated channel noise; severe cascaded SNR degradation.
+                </text>
               </svg>
-            </div>
-
-            <div style="display: flex; gap: 10px;">
-              <button class="btn-ctrl active" id="btn-mode-amp" style="flex: 1;">⚡ SIMULATE ANALOG AMPLIFIERS (NOISE ACCUMULATION)</button>
-              <button class="btn-ctrl" id="btn-mode-rep" style="flex: 1;">🛡️ SIMULATE DIGITAL REPEATERS (CLEAN RE-GENERATION)</button>
             </div>
           </div>
         </div>
@@ -734,58 +857,162 @@ function attachSubEvents(container, secId, progressManager) {
     });
   }
 
-  // --- Section 2.2 Events (Amplifier vs Repeater) ---
+  // --- Section 2.2 Events (Amplifier vs Repeater Real-World Simulator) ---
   if (secId === 'sec-2.2') {
     const btnAmp = container.querySelector('#btn-mode-amp');
     const btnRep = container.querySelector('#btn-mode-rep');
-    const stateLbl = container.querySelector('#transmission-state-lbl');
-    const deviceName = container.querySelector('#stage-device-name');
-    const wavePath = container.querySelector('#transmission-demo-wave');
+
+    const txMode = container.querySelector('#tx-display-mode');
+    const stage1Name = container.querySelector('#stage1-hw-name');
+    const stage1Line1 = container.querySelector('#stage1-display-line1');
+    const stage1Line2 = container.querySelector('#stage1-display-line2');
+
+    const stage2Name = container.querySelector('#stage2-hw-name');
+    const stage2Line1 = container.querySelector('#stage2-display-line1');
+    const stage2Line2 = container.querySelector('#stage2-display-line2');
+
+    const rxStatus = container.querySelector('#rx-display-status');
+    const rxLed = container.querySelector('#rx-decision-led');
+
+    const probeBDesc = container.querySelector('#probe-b-desc');
+    const probeCDesc = container.querySelector('#probe-c-desc');
+    const probeDDesc = container.querySelector('#probe-d-desc');
+    const banner = container.querySelector('#transmission-telemetry-banner');
 
     const updateWaveform = (mode) => {
       ch2State.transmissionMode = mode;
       if (mode === 'amp') {
         if (btnAmp) btnAmp.classList.add('active');
         if (btnRep) btnRep.classList.remove('active');
-        if (stateLbl) stateLbl.textContent = 'MODE: Analog Amplifiers — Compounding noise distortion across cascaded hops (signal degraded)';
-        if (deviceName) deviceName.textContent = 'ANALOG AMP';
-        if (wavePath) wavePath.setAttribute('stroke', '#ff0055');
+        if (txMode) txMode.textContent = 'SIG: ANALOG SINE';
+        if (stage1Name) stage1Name.textContent = 'ANALOG AMP #1';
+        if (stage1Line1) { stage1Line1.textContent = 'GAIN: +12 dB'; stage1Line1.setAttribute('fill', '#ffb703'); }
+        if (stage1Line2) stage1Line2.textContent = 'BOOSTS NOISE';
+
+        if (stage2Name) stage2Name.textContent = 'ANALOG AMP #2';
+        if (stage2Line1) { stage2Line1.textContent = 'COMPOUND NOISE'; stage2Line1.setAttribute('fill', '#ff0055'); }
+        if (stage2Line2) stage2Line2.textContent = 'SNR DROPS: 8 dB';
+
+        if (rxStatus) { rxStatus.textContent = 'DEC: ERR'; rxStatus.setAttribute('fill', '#ff0055'); }
+        if (rxLed) rxLed.setAttribute('fill', '#ff0055');
+
+        if (probeBDesc) probeBDesc.textContent = 'Amplified signal + First AWGN noise layer';
+        if (probeCDesc) probeCDesc.textContent = 'Compounded amplified noise (Severe jitter)';
+        if (probeDDesc) probeDDesc.textContent = 'Distorted waveform: decision errors occur!';
+        if (banner) banner.textContent = 'STATUS: Analog Mode Active — Amplifiers indiscriminately amplify signal + accumulated channel noise across hops.';
       } else {
         if (btnRep) btnRep.classList.add('active');
         if (btnAmp) btnAmp.classList.remove('active');
-        if (stateLbl) stateLbl.textContent = 'MODE: Digital Repeaters — Pulses sampled & regenerated cleanly at each repeater hop! (error eliminated)';
-        if (deviceName) deviceName.textContent = 'DIGITAL REP';
-        if (wavePath) wavePath.setAttribute('stroke', '#00ff9d');
+        if (txMode) txMode.textContent = 'SIG: DIGITAL PULSE';
+        if (stage1Name) stage1Name.textContent = 'DIGITAL REP #1';
+        if (stage1Line1) { stage1Line1.textContent = 'RE-CLOCK & RE-GEN'; stage1Line1.setAttribute('fill', '#00ff9d'); }
+        if (stage1Line2) stage1Line2.textContent = 'NOISE ELIMINATED';
+
+        if (stage2Name) stage2Name.textContent = 'DIGITAL REP #2';
+        if (stage2Line1) { stage2Line1.textContent = 'NEW PULSES SENT'; stage2Line1.setAttribute('fill', '#00ff9d'); }
+        if (stage2Line2) stage2Line2.textContent = 'BER: 0 (CLEAN)';
+
+        if (rxStatus) { rxStatus.textContent = 'DEC: 100%'; rxStatus.setAttribute('fill', '#00ff9d'); }
+        if (rxLed) rxLed.setAttribute('fill', '#00ff9d');
+
+        if (probeBDesc) probeBDesc.textContent = 'Sampled 1s/0s; New clean pulse stream radiated!';
+        if (probeCDesc) probeCDesc.textContent = 'Sampled & regenerated again; Zero noise buildup!';
+        if (probeDDesc) probeDDesc.textContent = 'Pristine reconstructed bitstream at RX Sink!';
+        if (banner) banner.textContent = 'STATUS: Digital Mode Active — Regenerative repeaters detect bit values, discard noise, and transmit brand-new clean pulses.';
       }
     };
 
     if (btnAmp) btnAmp.addEventListener('click', () => updateWaveform('amp'));
     if (btnRep) btnRep.addEventListener('click', () => updateWaveform('rep'));
 
+    // Real-Time Multi-Tap Oscilloscope Animation Loop
     simEngine.subscribe((time) => {
-      const path = container.querySelector('#transmission-demo-wave');
-      if (!path) return;
-      const points = [];
-      const width = 700;
-      const midY = 125;
+      const pA = container.querySelector('#wave-probe-a');
+      const pB = container.querySelector('#wave-probe-b');
+      const pC = container.querySelector('#wave-probe-c');
+      const pD = container.querySelector('#wave-probe-d');
+      if (!pA || !pB || !pC || !pD) return;
 
-      for (let i = 0; i < 140; i++) {
-        const x = (i / 139) * width;
-        const t = time * 2 + (x / width) * 4;
-        let y = 0;
-        if (ch2State.transmissionMode === 'amp') {
-          // Accumulating noise across x
-          const noiseFactor = (x / width) * 18;
-          const noise = (Math.sin(x * 15.3 + t * 45) * noiseFactor);
-          y = midY - (Math.sin(2 * Math.PI * 1.5 * t) * 20 + noise);
+      const numSamples = 60;
+      const isAnalog = ch2State.transmissionMode === 'amp';
+
+      // Probe A: Transmitter Output (Clean)
+      const pointsA = [];
+      const midA = 240;
+      for (let i = 0; i < numSamples; i++) {
+        const x = 25 + (i / (numSamples - 1)) * 200;
+        const t = time * 2 + (i / numSamples) * 2.5;
+        let yVal = 0;
+        if (isAnalog) {
+          yVal = Math.sin(2 * Math.PI * 1.5 * t) * 32;
         } else {
-          // Clean square wave regenerated
-          const raw = Math.sin(2 * Math.PI * 1.5 * t);
-          y = midY - (raw > 0 ? 18 : -18);
+          yVal = (Math.sin(2 * Math.PI * 1.5 * t) > 0 ? 30 : -30);
         }
-        points.push([x, Math.max(95, Math.min(155, y))]);
+        pointsA.push([x, midA - yVal]);
       }
-      path.setAttribute('d', pointsToSvgPath(points));
+      pA.setAttribute('d', pointsToSvgPath(pointsA));
+      pA.setAttribute('stroke', isAnalog ? '#00e5ff' : '#00ff9d');
+
+      // Probe B: Post-Stage 1 (Channel noise added, then amplified OR regenerated)
+      const pointsB = [];
+      const midB = 240;
+      for (let i = 0; i < numSamples; i++) {
+        const x = 255 + (i / (numSamples - 1)) * 200;
+        const t = (time - 0.2) * 2 + (i / numSamples) * 2.5;
+        let yVal = 0;
+        if (isAnalog) {
+          // Analog: Signal amplified + First noise layer
+          const noise = (Math.sin(i * 12.5 + time * 30) * 10);
+          yVal = Math.sin(2 * Math.PI * 1.5 * t) * 34 + noise;
+        } else {
+          // Digital: Repeater recovers 1s and 0s and outputs fresh clean pulses!
+          yVal = (Math.sin(2 * Math.PI * 1.5 * t) > 0 ? 30 : -30);
+        }
+        pointsB.push([x, midB - yVal]);
+      }
+      pB.setAttribute('d', pointsToSvgPath(pointsB));
+      pB.setAttribute('stroke', isAnalog ? '#38bdf8' : '#00ff9d');
+
+      // Probe C: Post-Stage 2 (Second noise layer compounded)
+      const pointsC = [];
+      const midC = 240;
+      for (let i = 0; i < numSamples; i++) {
+        const x = 485 + (i / (numSamples - 1)) * 200;
+        const t = (time - 0.4) * 2 + (i / numSamples) * 2.5;
+        let yVal = 0;
+        if (isAnalog) {
+          // Analog: First amplified noise boosted again + Second noise layer added!
+          const noise1 = (Math.sin(i * 12.5 + time * 30) * 16);
+          const noise2 = (Math.cos(i * 24.1 + time * 50) * 12);
+          yVal = Math.sin(2 * Math.PI * 1.5 * t) * 36 + noise1 + noise2;
+        } else {
+          // Digital: Second repeater regenerates clean pulses again!
+          yVal = (Math.sin(2 * Math.PI * 1.5 * t) > 0 ? 30 : -30);
+        }
+        pointsC.push([x, midC - yVal]);
+      }
+      pC.setAttribute('d', pointsToSvgPath(pointsC));
+      pC.setAttribute('stroke', isAnalog ? '#ffb703' : '#00ff9d');
+
+      // Probe D: At Receiver Sink
+      const pointsD = [];
+      const midD = 240;
+      for (let i = 0; i < numSamples; i++) {
+        const x = 715 + (i / (numSamples - 1)) * 180;
+        const t = (time - 0.6) * 2 + (i / numSamples) * 2.5;
+        let yVal = 0;
+        if (isAnalog) {
+          // Severe distortion on analog channel at destination
+          const heavyNoise = (Math.sin(i * 12.5 + time * 30) * 20) + (Math.cos(i * 35.2 + time * 60) * 14);
+          yVal = Math.sin(2 * Math.PI * 1.5 * t) * 32 + heavyNoise;
+        } else {
+          // Perfect clean bitstream received
+          yVal = (Math.sin(2 * Math.PI * 1.5 * t) > 0 ? 30 : -30);
+        }
+        pointsD.push([x, Math.max(170, Math.min(310, midD - yVal))]);
+      }
+      pD.setAttribute('d', pointsToSvgPath(pointsD));
+      pD.setAttribute('stroke', isAnalog ? '#ff0055' : '#00ff9d');
     });
   }
 
