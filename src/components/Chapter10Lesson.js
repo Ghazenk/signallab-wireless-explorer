@@ -198,16 +198,16 @@ function getSectionContent(secId, state) {
               <span class="panel-tag" id="iso-active-mode-tag">1G FDMA (AMPS ANALOG)</span>
             </div>
 
-            <!-- In-App Stage Sizing Toolbar & Camera Focus -->
+            <!-- In-App Stage Sizing & True Fullscreen Toolbar -->
             <div style="display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
-              <!-- In-App Stage Height Sizing (Never trapping screen!) -->
+              <!-- Stage Sizing & Fullscreen Toggle -->
               <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.72rem;">
                 <span style="color: var(--text-dim);">CANVAS STAGE:</span>
                 <button class="btn-ctrl" id="btn-size-compact" title="Compact Stage Height (380px)">📏 380px</button>
                 <button class="btn-ctrl active" id="btn-size-standard" title="Standard Spacious Stage (520px)">📐 520px</button>
-                <button class="btn-ctrl" id="btn-size-cinema" title="Cinematic Expanded Stage (700px)">⛶ 700px (CINEMA)</button>
-                <button class="btn-ctrl" id="btn-maximize-canvas" title="Expand Viewport Inside App (780px Stage)">
-                  ⛶ <span id="btn-max-text">MAXIMIZE STAGE</span>
+                <button class="btn-ctrl" id="btn-size-cinema" title="Cinematic Expanded Stage (700px)">⛶ 700px</button>
+                <button class="btn-ctrl" id="btn-true-fullscreen" style="background: linear-gradient(135deg, rgba(0,229,255,0.25), rgba(0,112,243,0.3)); border-color: var(--accent-cyan); color: #fff; font-weight: 700; box-shadow: 0 0 12px rgba(0,229,255,0.35);" title="Enter Full Screen mode with expanded coordinate system where BTS tower and mobiles are placed much further apart">
+                  ⛶ FULL SCREEN MODE (EXPAND VIEW)
                 </button>
               </div>
 
@@ -274,20 +274,40 @@ function getSectionContent(secId, state) {
                 <input type="number" id="sim-input-ch" value="1" min="1" max="1024" class="sim-freq-input" style="width: 50px;" title="Channel number"/>
               </div>
 
-              <!-- Multi-Device Subscriber Load Option -->
+              <!-- Multi-Device Subscriber Load Option with Own Distinct Frequencies -->
               <div style="display: flex; gap: 5px; align-items: center; flex-wrap: wrap;">
-                <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 700;">USERS:</span>
-                <button class="btn-ctrl active" id="btn-dev-1" title="1 Device — Deep-dive single packet trace">1 CLIENT</button>
-                <button class="btn-ctrl" id="btn-dev-4" title="4 Devices — Moderate traffic load">4 USERS</button>
-                <button class="btn-ctrl" id="btn-dev-8" title="8 Devices — Full single-carrier capacity">8 USERS</button>
-                <button class="btn-ctrl" id="btn-dev-12" title="12 Devices — Tower Overload & Erlang B Blocking!">⚠️ 12 OVERLOAD</button>
+                <span style="font-size: 0.7rem; color: var(--text-dim); font-weight: 700;">MOBILES (OWN FREQS):</span>
+                <button class="btn-ctrl active" id="btn-dev-1" title="1 Device: MS-1 Phone on f1 = 825.03 MHz">1 PHONE (f1)</button>
+                <button class="btn-ctrl" id="btn-dev-2" title="2 Mobiles: MS-1 (f1: 825.03M) + MS-2 (f2: 825.06M) on separate channels">2 PHONES (f1, f2)</button>
+                <button class="btn-ctrl" id="btn-dev-3" title="3 Devices: Phone 1 + Phone 2 + Remote Laptop in different area on f3: 825.09M">3 DEVICES (+LAPTOP f3)</button>
+                <button class="btn-ctrl" id="btn-dev-4" title="4 Devices: Phone + Phone + Laptop + Highway Car on f4: 825.12M">4 USERS (+CAR f4)</button>
+                <button class="btn-ctrl" id="btn-dev-8" title="8 Channels: Full 8-channel carrier capacity">8 FULL CARRIER</button>
               </div>
             </div>
 
             <!-- Main Interactive Cellular Viewport Container with Mouse Drag & Wheel Zoom -->
             <div class="canvas-viewport-container size-standard" id="canvas-container-box">
+              <!-- Dedicated Top Bar shown in True Full-Screen Mode -->
+              <div class="fullscreen-top-bar" id="sim-fullscreen-top-bar">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="color: var(--accent-cyan); font-weight: 700; font-size: 0.85rem;">📡 SIGNALLAB — EXPANDED CELLULAR CANVAS</span>
+                  <span id="fs-hud-status" style="color: var(--status-ready); font-size: 0.74rem;">● EXPANDED VIEW ACTIVE: BTS TOWER & MOBILES PLACED FURTHER APART (2600 × 850)</span>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <div style="display: flex; gap: 4px;" id="fs-user-quick-btns">
+                    <button class="btn-ctrl active" data-fs-count="1" style="font-size:0.7rem; padding:3px 8px;">1 MS (f1)</button>
+                    <button class="btn-ctrl" data-fs-count="2" style="font-size:0.7rem; padding:3px 8px;">2 PHONES (f1,f2)</button>
+                    <button class="btn-ctrl" data-fs-count="3" style="font-size:0.7rem; padding:3px 8px;">3 CLIENTS (+LAPTOP)</button>
+                    <button class="btn-ctrl" data-fs-count="4" style="font-size:0.7rem; padding:3px 8px;">4 USERS (+CAR)</button>
+                  </div>
+                  <button class="btn-fullscreen-exit" id="btn-exit-fullscreen-top" title="Exit Fullscreen (Esc)">
+                    ✕ EXIT FULL SCREEN (ESC)
+                  </button>
+                </div>
+              </div>
+
               <!-- Floating Pan/Zoom Navigation Toolbar -->
-              <div style="position: absolute; top: 10px; left: 12px; display: flex; gap: 6px; align-items: center; z-index: 10; flex-wrap: wrap;">
+              <div style="position: absolute; top: 12px; left: 14px; display: flex; gap: 6px; align-items: center; z-index: 10; flex-wrap: wrap;">
                 <div style="background: rgba(3, 7, 18, 0.92); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 4px 10px; font-family: var(--font-mono); font-size: 0.72rem; display: flex; align-items: center; gap: 8px;">
                   <span id="cam-lens-icon">🎥</span>
                   <span style="color: var(--text-dim);">CAMERA:</span>
@@ -302,12 +322,12 @@ function getSectionContent(secId, state) {
               </div>
 
               <!-- Persistent In-Canvas Minimize Button (Shown when stage is enlarged/maximized) -->
-              <button class="canvas-tool-btn" id="btn-floating-minimize" style="display: none; position: absolute; top: 10px; right: 340px; z-index: 15; background: rgba(255, 0, 85, 0.25); border: 1px solid #ff0055; color: #fff; font-weight: 700; font-family: var(--font-mono); font-size: 0.75rem; padding: 5px 12px; box-shadow: 0 0 15px rgba(255,0,85,0.4);" title="Restore stage to standard height (or press Esc)">
-                🗗 MINIMIZE STAGE (ESC)
+              <button class="canvas-tool-btn btn-fullscreen-exit" id="btn-floating-minimize" style="display: none; position: absolute; top: 12px; right: 340px; z-index: 15;" title="Exit full screen or restore standard height (Esc)">
+                ✕ EXIT FULL SCREEN (ESC)
               </button>
 
               <!-- Live Tower Load & Capacity HUD Overlay -->
-              <div style="position: absolute; top: 10px; right: 12px; max-width: 310px; background: rgba(3, 7, 18, 0.94); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; font-family: var(--font-mono); font-size: 0.72rem; z-index: 10;" id="tower-capacity-hud">
+              <div style="position: absolute; top: 12px; right: 14px; max-width: 310px; background: rgba(3, 7, 18, 0.94); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; font-family: var(--font-mono); font-size: 0.72rem; z-index: 10;" id="tower-capacity-hud">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                   <span style="color: #fff; font-weight: 700;">🗼 BS TOWER CAPACITY</span>
                   <span id="tower-util-text" style="color: var(--accent-cyan); font-weight: 700;">1 / 8 CHANNELS (12.5%)</span>
@@ -331,15 +351,15 @@ function getSectionContent(secId, state) {
               <div id="sim-tdma-clock-overlay" style="position: absolute; bottom: 8px; left: 12px; right: 12px; background: rgba(3, 7, 18, 0.94); border: 1px solid #00ff9d; border-radius: 6px; padding: 6px 10px; z-index: 8; display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-family: var(--font-mono); font-size: 0.7rem;">
                   <span style="color: #00ff9d; font-weight: 700;">⏱️ REAL-TIME GSM TDMA 8-SLOT FRAME (4.615 ms Frame | 577 µs Burst Synchronization)</span>
-                  <span id="sim-tdma-active-slot-txt" style="color: var(--accent-cyan);">Active Slot: TS 3 (MS-1 Normal Burst Transmitting)</span>
+                  <span id="sim-tdma-active-slot-txt" style="color: var(--accent-cyan);">Active Slot: TS 1 (MS-1 Normal Burst Transmitting)</span>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 4px;" id="sim-tdma-slots-hud-grid">
                   <!-- Generated dynamically: Slot 0..7 -->
                 </div>
               </div>
 
-              <!-- Widescreen SVG Viewport (1600 x 480) with Full Pan & Zoom Support -->
-              <svg viewBox="0 0 1600 480" preserveAspectRatio="xMidYMid meet" id="iso-cellular-svg">
+              <!-- Widescreen SVG Viewport with Full Pan & Zoom and Dynamic Coordinate Reinitialization -->
+              <svg viewBox="0 0 1600 520" preserveAspectRatio="xMidYMid meet" id="iso-cellular-svg">
                 <defs>
                   <!-- Ground Grid Pattern -->
                   <pattern id="iso-ground-grid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -347,134 +367,228 @@ function getSectionContent(secId, state) {
                     <circle cx="0" cy="0" r="1" fill="rgba(0, 229, 255, 0.2)"/>
                   </pattern>
 
-                  <!-- Carrier Wave Gradients -->
-                  <linearGradient id="rf-wave-grad-fdma" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.9"/>
-                    <stop offset="50%" stop-color="#38bdf8" stop-opacity="1"/>
-                    <stop offset="100%" stop-color="#0070f3" stop-opacity="0.8"/>
+                  <!-- Large Blue Coverage Sector Radial Glow -->
+                  <radialGradient id="bs-coverage-radial-grad" cx="50%" cy="50%" r="50%">
+                    <stop offset="0%" stop-color="#0070f3" stop-opacity="0.16"/>
+                    <stop offset="45%" stop-color="#00e5ff" stop-opacity="0.08"/>
+                    <stop offset="75%" stop-color="#38bdf8" stop-opacity="0.03"/>
+                    <stop offset="100%" stop-color="#030712" stop-opacity="0"/>
+                  </radialGradient>
+
+                  <!-- Distinct Carrier Wave Gradients for Each Mobile -->
+                  <linearGradient id="wave-grad-ms1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#0070f3" stop-opacity="0.85"/>
                   </linearGradient>
 
-                  <linearGradient id="rf-wave-grad-tdma" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#00ff9d" stop-opacity="0.9"/>
-                    <stop offset="50%" stop-color="#00e5ff" stop-opacity="1"/>
-                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.8"/>
+                  <linearGradient id="wave-grad-ms2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#c084fc" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#a855f7" stop-opacity="0.85"/>
                   </linearGradient>
 
-                  <linearGradient id="rf-wave-grad-cdma" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#ff0055" stop-opacity="0.9"/>
-                    <stop offset="50%" stop-color="#ffb703" stop-opacity="1"/>
-                    <stop offset="100%" stop-color="#a855f7" stop-opacity="0.8"/>
+                  <linearGradient id="wave-grad-ms3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00ff9d" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#059669" stop-opacity="0.85"/>
+                  </linearGradient>
+
+                  <linearGradient id="wave-grad-ms4" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ffb703" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#ea580c" stop-opacity="0.85"/>
+                  </linearGradient>
+
+                  <linearGradient id="wave-grad-downlink" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00ff9d" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.85"/>
                   </linearGradient>
                 </defs>
 
                 <!-- Ground Background & Grid -->
-                <rect width="1600" height="480" fill="#030712"/>
-                <rect width="1600" height="480" fill="url(#iso-ground-grid)"/>
+                <rect id="iso-bg-rect" width="2800" height="1000" fill="#030712"/>
+                <rect id="iso-bg-grid" width="2800" height="1000" fill="url(#iso-ground-grid)"/>
 
-                <!-- Cell Boundary Sector Arc (R = 1.6 km) -->
-                <ellipse cx="780" cy="330" rx="640" ry="145" fill="rgba(0, 112, 243, 0.03)" stroke="rgba(0, 229, 255, 0.15)" stroke-width="1.5" stroke-dasharray="6 4"/>
-                <text x="60" y="460" fill="rgba(255,255,255,0.3)" font-size="10" font-family="monospace">CELL A COVERAGE SECTOR (Radius R = 1.6 km | Inter-Site Distance d = 2.77 km | Macrocell Urban Deployment)</text>
+                <!-- LARGE BLUE SCREEN BASE STATION CELL COVERAGE SECTOR WITH GREATER RADIUS (R = 5.0 km) -->
+                <g id="iso-bs-coverage-sector">
+                  <!-- Main Glowing Coverage Fill (Large Radial Sector) -->
+                  <ellipse id="sector-glow-ellipse" cx="880" cy="310" rx="780" ry="185" fill="url(#bs-coverage-radial-grad)" stroke="rgba(0, 229, 255, 0.28)" stroke-width="1.8" stroke-dasharray="8 5"/>
+                  
+                  <!-- Concentric Range Rings (1 km to 5 km) -->
+                  <ellipse id="sector-ring-1" cx="880" cy="310" rx="160" ry="40" fill="none" stroke="rgba(0, 229, 255, 0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+                  <text id="sector-tag-1" x="890" y="270" fill="rgba(0, 229, 255, 0.35)" font-size="9" font-family="monospace">1.0 km</text>
 
-                <!-- 1. MULTIPLE SUBSCRIBER CLIENTS CONTAINER (LEFT ZONE: x=60..320) -->
+                  <ellipse id="sector-ring-2" cx="880" cy="310" rx="320" ry="80" fill="none" stroke="rgba(0, 229, 255, 0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+                  <text id="sector-tag-2" x="890" y="230" fill="rgba(0, 229, 255, 0.35)" font-size="9" font-family="monospace">2.0 km</text>
+
+                  <ellipse id="sector-ring-3" cx="880" cy="310" rx="480" ry="115" fill="none" stroke="rgba(0, 229, 255, 0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+                  <text id="sector-tag-3" x="890" y="195" fill="rgba(0, 229, 255, 0.35)" font-size="9" font-family="monospace">3.0 km</text>
+
+                  <ellipse id="sector-ring-4" cx="880" cy="310" rx="640" ry="150" fill="none" stroke="rgba(0, 229, 255, 0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+                  <text id="sector-tag-4" x="890" y="160" fill="rgba(0, 229, 255, 0.35)" font-size="9" font-family="monospace">4.0 km</text>
+
+                  <!-- Sector Boundary Legend Label -->
+                  <text id="sector-legend-label" x="40" y="500" fill="rgba(0, 229, 255, 0.55)" font-size="11" font-family="monospace" font-weight="700">
+                    BASE STATION MACROCELL COVERAGE SECTOR (Radius R = 5.0 km | 120° Directional Beam | Inter-Site Distance d = 8.66 km)
+                  </text>
+                </g>
+
+                <!-- 1. MULTIPLE SUBSCRIBER CLIENTS (EACH ON ITS OWN DEDICATED FREQUENCY) -->
                 <g id="iso-subscribers-group">
-                  <!-- MS-1 Primary Client: Laptop + Smartphone (Spaced for maximum clarity at x=160, y=280) -->
-                  <g id="iso-client-primary" transform="translate(0, 0)">
-                    ${drawIsometricLaptop(160, 280, 0.95, '#00e5ff')}
-                    ${drawIsometricPhone(90, 310, 0.8, '#38bdf8')}
-                    <text x="80" y="350" fill="#fff" font-size="11" font-family="monospace" font-weight="700">MS-1 (Primary)</text>
-                    <text x="80" y="364" fill="#00e5ff" font-size="9" font-family="monospace" id="ms1-label-sub">Tx: 825.03 MHz (Ch 1)</text>
+                  <!-- MS-1 Primary Smartphone (Cyan: f1 = 825.03 MHz) -->
+                  <g id="node-ms1" transform="translate(120, 340)">
+                    ${drawIsometricPhone(0, 0, 1.35, '#00e5ff')}
+                    <rect x="-70" y="38" width="140" height="26" fill="#08152e" stroke="#00e5ff" stroke-width="1.5" rx="4"/>
+                    <text x="0" y="50" fill="#fff" font-size="10" font-family="monospace" font-weight="700" text-anchor="middle">MS-1 Phone</text>
+                    <text x="0" y="61" fill="#00e5ff" font-size="9" font-family="monospace" text-anchor="middle" id="ms1-label-freq">f₁: 825.03 MHz</text>
+                    <circle id="pulse-ms1" cx="0" cy="-35" r="14" fill="none" stroke="#00e5ff" stroke-width="1.8" opacity="0.8"/>
                   </g>
 
-                  <!-- Additional Multi-Users (Rendered with distinct spatial separation) -->
-                  <g id="iso-multi-devices"></g>
+                  <!-- MS-2 Secondary Smartphone (Purple: f2 = 825.06 MHz) -->
+                  <g id="node-ms2" transform="translate(120, 190)" style="display: none;">
+                    ${drawIsometricPhone(0, 0, 1.35, '#c084fc')}
+                    <rect x="-70" y="38" width="140" height="26" fill="#170d2b" stroke="#c084fc" stroke-width="1.5" rx="4"/>
+                    <text x="0" y="50" fill="#fff" font-size="10" font-family="monospace" font-weight="700" text-anchor="middle">MS-2 Phone</text>
+                    <text x="0" y="61" fill="#c084fc" font-size="9" font-family="monospace" text-anchor="middle" id="ms2-label-freq">f₂: 825.06 MHz</text>
+                    <circle id="pulse-ms2" cx="0" cy="-35" r="14" fill="none" stroke="#c084fc" stroke-width="1.8" opacity="0.8"/>
+                  </g>
+
+                  <!-- MS-3 Laptop (IN A COMPLETELY DIFFERENT WORKSTATION AREA: Emerald: f3 = 825.09 MHz) -->
+                  <g id="node-ms3" transform="translate(280, 440)" style="display: none;">
+                    <!-- Office Desk Pad -->
+                    <polygon points="-70,25 0,-10 70,25 0,60" fill="#0c1d2e" stroke="rgba(0,255,157,0.3)" stroke-width="1.5"/>
+                    ${drawIsometricLaptop(0, 0, 1.3, '#00ff9d')}
+                    <rect x="-95" y="45" width="190" height="26" fill="#042017" stroke="#00ff9d" stroke-width="1.5" rx="4"/>
+                    <text x="0" y="57" fill="#fff" font-size="10" font-family="monospace" font-weight="700" text-anchor="middle">MS-3 Remote Laptop</text>
+                    <text x="0" y="68" fill="#00ff9d" font-size="9" font-family="monospace" text-anchor="middle" id="ms3-label-freq">Workstation f₃: 825.09 MHz</text>
+                    <circle id="pulse-ms3" cx="0" cy="-30" r="14" fill="none" stroke="#00ff9d" stroke-width="1.8" opacity="0.8"/>
+                  </g>
+
+                  <!-- MS-4 Vehicular Terminal (Amber: f4 = 825.12 MHz) -->
+                  <g id="node-ms4" transform="translate(280, 140)" style="display: none;">
+                    ${drawIsometricVehicle(0, 0, 1.35, '#ffb703')}
+                    <rect x="-85" y="38" width="170" height="26" fill="#241705" stroke="#ffb703" stroke-width="1.5" rx="4"/>
+                    <text x="0" y="50" fill="#fff" font-size="10" font-family="monospace" font-weight="700" text-anchor="middle">MS-4 Highway Car</text>
+                    <text x="0" y="61" fill="#ffb703" font-size="9" font-family="monospace" text-anchor="middle" id="ms4-label-freq">Vehicular f₄: 825.12 MHz</text>
+                    <circle id="pulse-ms4" cx="0" cy="-30" r="14" fill="none" stroke="#ffb703" stroke-width="1.8" opacity="0.8"/>
+                  </g>
                 </g>
 
-                <!-- Pulsing RF Waves Radiating from Client Antennas -->
-                <circle id="iso-client-rf-pulse" cx="160" cy="240" r="10" fill="none" stroke="#00e5ff" stroke-width="1.5" opacity="0"/>
-                <circle id="iso-client-rf-pulse-2" cx="160" cy="240" r="20" fill="none" stroke="#00e5ff" stroke-width="1" opacity="0"/>
+                <!-- REAL-TIME OSCILLATING SINE WAVES FOR EACH SUBSCRIBER ON THEIR OWN FREQUENCIES -->
+                <g id="iso-em-waves-group">
+                  <!-- Wave 1: MS-1 (Cyan) -->
+                  <path id="iso-wave-ms1" d="" fill="none" stroke="url(#wave-grad-ms1)" stroke-width="3" opacity="0.9"/>
+                  <!-- Floating Frequency Tag on Wave 1 -->
+                  <g id="badge-wave-ms1" transform="translate(450, 310)">
+                    <rect x="0" y="0" width="125" height="20" fill="#030c1d" stroke="#00e5ff" stroke-width="1.2" rx="3"/>
+                    <text x="62" y="14" fill="#00e5ff" font-size="8.5" font-family="monospace" font-weight="700" text-anchor="middle">f₁: 825.03 MHz</text>
+                  </g>
 
-                <!-- REAL-TIME OSCILLATING ELECTROMAGNETIC SINE WAVES ACROSS AIR INTERFACE (x=160..780) -->
-                <!-- Uplink Wave (MS -> BS) -->
-                <path id="iso-em-carrier-wave" d="" fill="none" stroke="url(#rf-wave-grad-fdma)" stroke-width="2.5" opacity="0.85"/>
-                <!-- Downlink Wave (BS -> MS Return ACK) -->
-                <path id="iso-em-downlink-wave" d="" fill="none" stroke="#00ff9d" stroke-width="2.2" stroke-dasharray="6 4" opacity="0"/>
+                  <!-- Wave 2: MS-2 (Purple) -->
+                  <path id="iso-wave-ms2" d="" fill="none" stroke="url(#wave-grad-ms2)" stroke-width="2.6" opacity="0"/>
+                  <g id="badge-wave-ms2" transform="translate(450, 230)" opacity="0">
+                    <rect x="0" y="0" width="125" height="20" fill="#140822" stroke="#c084fc" stroke-width="1.2" rx="3"/>
+                    <text x="62" y="14" fill="#c084fc" font-size="8.5" font-family="monospace" font-weight="700" text-anchor="middle">f₂: 825.06 MHz</text>
+                  </g>
 
-                <!-- Air Link Label & Propagation Metrics (x=410, y=85) -->
-                <g id="iso-air-metrics-badge" transform="translate(390, 80)">
-                  <rect x="0" y="0" width="220" height="38" fill="#081024" stroke="rgba(0,229,255,0.4)" stroke-width="1.2" rx="4"/>
-                  <text x="10" y="16" fill="#00e5ff" font-size="9.5" font-family="monospace" font-weight="700" id="iso-air-carrier-txt">fc: 825.03 MHz | λ: 36.34cm</text>
-                  <text x="10" y="30" fill="#64748b" font-size="8.5" font-family="monospace" id="iso-air-loss-txt">Hata Loss: -114.2 dB | d: 2.4km</text>
+                  <!-- Wave 3: MS-3 Laptop (Emerald) -->
+                  <path id="iso-wave-ms3" d="" fill="none" stroke="url(#wave-grad-ms3)" stroke-width="2.6" opacity="0"/>
+                  <g id="badge-wave-ms3" transform="translate(520, 380)" opacity="0">
+                    <rect x="0" y="0" width="135" height="20" fill="#031b13" stroke="#00ff9d" stroke-width="1.2" rx="3"/>
+                    <text x="67" y="14" fill="#00ff9d" font-size="8.5" font-family="monospace" font-weight="700" text-anchor="middle">f₃: 825.09 MHz (Data)</text>
+                  </g>
+
+                  <!-- Wave 4: MS-4 Car (Amber) -->
+                  <path id="iso-wave-ms4" d="" fill="none" stroke="url(#wave-grad-ms4)" stroke-width="2.6" opacity="0"/>
+                  <g id="badge-wave-ms4" transform="translate(520, 180)" opacity="0">
+                    <rect x="0" y="0" width="135" height="20" fill="#201303" stroke="#ffb703" stroke-width="1.2" rx="3"/>
+                    <text x="67" y="14" fill="#ffb703" font-size="8.5" font-family="monospace" font-weight="700" text-anchor="middle">f₄: 825.12 MHz (Doppler)</text>
+                  </g>
+
+                  <!-- Downlink Return ACK Wave (High-Power Green Wave from Tower to MS-1) -->
+                  <path id="iso-wave-downlink" d="" fill="none" stroke="url(#wave-grad-downlink)" stroke-width="3" stroke-dasharray="8 4" opacity="0"/>
+                  <g id="badge-wave-dl" transform="translate(480, 270)" opacity="0">
+                    <rect x="0" y="0" width="170" height="22" fill="#021c15" stroke="#00ff9d" stroke-width="1.5" rx="3"/>
+                    <text x="85" y="15" fill="#00ff9d" font-size="9" font-family="monospace" font-weight="700" text-anchor="middle">DOWNLINK: 870.03 MHz (+45M)</text>
+                  </g>
                 </g>
 
-                <!-- 2. BASE STATION TOWER & EQUIPMENT SHELTER (x=780, y=270) -->
-                <g id="iso-node-bs">
-                  ${drawIsometricBtsShelter(720, 320, 0.95, '#38bdf8')}
-                  ${drawIsometricBaseStation(780, 270, 1.15, '#38bdf8')}
-                  <text x="730" y="350" fill="#fff" font-size="12" font-family="monospace" font-weight="700">BS-A Transceiver</text>
-                  <text x="730" y="365" fill="#00e5ff" font-size="9" font-family="monospace">Base Station Tower & RF Shelter</text>
-                  <circle id="iso-bs-rf-pulse" cx="780" cy="150" r="18" fill="none" stroke="#00ff9d" stroke-width="1.8" opacity="0"/>
+                <!-- 2. BASE STATION TOWER & EQUIPMENT SHELTER (PLACED FURTHER APART) -->
+                <g id="node-tower" transform="translate(880, 290)">
+                  <!-- RF Equipment Shelter -->
+                  <g id="subnode-shelter" transform="translate(-70, 60)">
+                    ${drawIsometricBtsShelter(0, 0, 1.15, '#38bdf8')}
+                    <text x="-40" y="45" fill="#38bdf8" font-size="9" font-family="monospace">BTS LNA Shelter</text>
+                  </g>
+                  <!-- Lattice Tower Mast -->
+                  ${drawIsometricBaseStation(0, 0, 1.45, '#38bdf8')}
+                  <text x="-50" y="90" fill="#fff" font-size="13" font-family="monospace" font-weight="700">BS-A Transceiver</text>
+                  <text x="-50" y="105" fill="#00e5ff" font-size="10" font-family="monospace">Tower Mast & 120° Antennas</text>
+                  <circle id="pulse-tower" cx="0" cy="-120" r="22" fill="none" stroke="#00ff9d" stroke-width="2" opacity="0"/>
                 </g>
 
-                <!-- Cable: BS to BSC / Telecom Edge Trunk (x=820 to 980) -->
-                <line x1="820" y1="280" x2="980" y2="280" stroke="#1e293b" stroke-width="5"/>
-                <line x1="820" y1="280" x2="980" y2="280" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 3" id="wire-link-1"/>
-                <text x="840" y="270" fill="#64748b" font-size="8.5" font-family="monospace">Abis Trunk (2.048M E1)</text>
+                <!-- Cable 1: Tower to BSC (Abis Digital Line) -->
+                <line id="line-abis" x1="930" y1="300" x2="1080" y2="300" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4"/>
+                <text id="label-abis" x="960" y="290" fill="#64748b" font-size="9" font-family="monospace">Abis Trunk (E1)</text>
 
-                <!-- 3. BASE STATION CONTROLLER / ROUTER (x=1020, y=280) -->
-                <g id="iso-node-router">
-                  ${drawIsometricBscCabinet(1020, 300, 0.95, '#ffb703')}
-                  <text x="965" y="355" fill="#fff" font-size="12" font-family="monospace" font-weight="700">BSC Controller</text>
-                  <text x="965" y="370" fill="#ffb703" font-size="9" font-family="monospace">Radio Resource & Transcoder</text>
+                <!-- 3. BASE STATION CONTROLLER (BSC) -->
+                <g id="node-bsc" transform="translate(1120, 290)">
+                  ${drawIsometricBscCabinet(0, 0, 1.25, '#ffb703')}
+                  <text x="-50" y="65" fill="#fff" font-size="12" font-family="monospace" font-weight="700">BSC Controller</text>
+                  <text x="-50" y="78" fill="#ffb703" font-size="9.5" font-family="monospace">TRAU & Resource Control</text>
                 </g>
 
-                <!-- Cable: BSC to Core Cloud / MTSO (x=1060 to 1200) -->
-                <line x1="1060" y1="280" x2="1200" y2="240" stroke="#1e293b" stroke-width="5"/>
-                <line x1="1060" y1="280" x2="1200" y2="240" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 3" id="wire-link-2"/>
-                <text x="1090" y="250" fill="#64748b" font-size="8.5" font-family="monospace">A-Interface / SS7 IP</text>
+                <!-- Cable 2: BSC to MTSO Core (A-Interface SS7/IP) -->
+                <line id="line-ss7" x1="1170" y1="300" x2="1290" y2="260" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6 4"/>
+                <text id="label-ss7" x="1200" y="270" fill="#64748b" font-size="9" font-family="monospace">A-Interface</text>
 
-                <!-- 4. CELLULAR CORE / MTSO / MSC CLOUD & DATABASES (x=1240, y=240) -->
-                <g id="iso-node-cloud">
-                  ${drawIsometricCloud(1240, 240, 1.15, '#38bdf8')}
-                  ${drawIsometricDatabase(1190, 330, 0.75, '#00ff9d', 'HLR')}
-                  ${drawIsometricDatabase(1270, 330, 0.75, '#38bdf8', 'VLR')}
-                  <text x="1190" y="280" fill="#fff" font-size="12" font-family="monospace" font-weight="700">MTSO / MSC Core</text>
-                  <text x="1190" y="295" fill="#38bdf8" font-size="9" font-family="monospace">HLR / VLR / Packet Gateway</text>
+                <!-- 4. MTSO / MSC CORE CLOUD & HLR/VLR DATABASES -->
+                <g id="node-core" transform="translate(1330, 250)">
+                  ${drawIsometricCloud(0, 0, 1.25, '#38bdf8')}
+                  ${drawIsometricDatabase(-45, 95, 0.85, '#00ff9d', 'HLR')}
+                  ${drawIsometricDatabase(45, 95, 0.85, '#38bdf8', 'VLR')}
+                  <text x="-60" y="55" fill="#fff" font-size="12" font-family="monospace" font-weight="700">MTSO / MSC Core</text>
+                  <text x="-60" y="68" fill="#38bdf8" font-size="9.5" font-family="monospace">HLR / VLR / Gateway</text>
                 </g>
 
-                <!-- Cable: Cloud to Public Web Server Backbone (x=1290 to 1430) -->
-                <line x1="1290" y1="230" x2="1430" y2="230" stroke="#1e293b" stroke-width="5"/>
-                <line x1="1290" y1="230" x2="1430" y2="230" stroke="#00ff9d" stroke-width="2" stroke-dasharray="6 3" id="wire-link-3"/>
-                <text x="1315" y="220" fill="#00ff9d" font-size="8.5" font-family="monospace">Public Internet Fiber</text>
+                <!-- Cable 3: Core to Public Web Server Backbone -->
+                <line id="line-fiber" x1="1390" y1="250" x2="1480" y2="290" stroke="#00ff9d" stroke-width="2.5" stroke-dasharray="6 4"/>
+                <text id="label-fiber" x="1405" y="260" fill="#00ff9d" font-size="9" font-family="monospace">Public Internet</text>
 
-                <!-- 5. DESTINATION APPLICATION / WEB SERVER (x=1490, y=270) -->
-                <g id="iso-node-server">
-                  ${drawIsometricServer(1490, 270, 1.05, '#00ff9d')}
-                  <text x="1440" y="335" fill="#fff" font-size="12" font-family="monospace" font-weight="700">Web / DNS Host</text>
-                  <text x="1445" y="350" fill="#00ff9d" font-size="9" font-family="monospace">IP: 8.8.8.8 (Server)</text>
+                <!-- 5. DESTINATION APPLICATION / WEB SERVER (8.8.8.8) -->
+                <g id="node-server" transform="translate(1510, 290)">
+                  ${drawIsometricServer(0, 0, 1.2, '#00ff9d')}
+                  <text x="-50" y="65" fill="#fff" font-size="12" font-family="monospace" font-weight="700">Web Host</text>
+                  <text x="-50" y="78" fill="#00ff9d" font-size="9.5" font-family="monospace">IP: 8.8.8.8 (Server)</text>
                 </g>
 
-                <!-- LIVE MOVING PACKETS (FORWARD UPLINK & RETURN DOWNLINK ACK) -->
+                <!-- LIVE MOVING PACKETS (EACH MOBILE HAS ITS OWN LABELED PACKET) -->
                 <g id="iso-active-packets-container">
-                  <!-- Forward Uplink Packet (MS -> Server) -->
-                  <g id="iso-animated-packet">
-                    <rect id="iso-pkt-bubble" x="160" y="250" width="135" height="26" fill="#0b1329" stroke="#00e5ff" stroke-width="1.8" rx="4"/>
-                    <text id="iso-pkt-text" x="168" y="267" fill="#00e5ff" font-size="9" font-family="monospace" font-weight="700">
-                      UPLINK: f1 825.03M
-                    </text>
+                  <!-- Packet MS-1 (Cyan) -->
+                  <g id="pkt-group-ms1" opacity="1">
+                    <rect id="pkt-box-ms1" x="120" y="320" width="135" height="24" fill="#08152e" stroke="#00e5ff" stroke-width="1.8" rx="4"/>
+                    <text id="pkt-text-ms1" x="128" y="336" fill="#00e5ff" font-size="8.5" font-family="monospace" font-weight="700">MS-1: f1 825.03M</text>
                   </g>
-                  <!-- Return Downlink ACK Packet (Server -> MS) -->
-                  <g id="iso-animated-packet-ack" opacity="0">
-                    <rect id="iso-pkt-bubble-ack" x="1420" y="230" width="135" height="26" fill="#041f17" stroke="#00ff9d" stroke-width="1.8" rx="4"/>
-                    <text id="iso-pkt-text-ack" x="1428" y="247" fill="#00ff9d" font-size="9" font-family="monospace" font-weight="700">
-                      DOWNLINK: HTTP 200
-                    </text>
+
+                  <!-- Packet MS-2 (Purple) -->
+                  <g id="pkt-group-ms2" opacity="0">
+                    <rect id="pkt-box-ms2" x="120" y="190" width="135" height="24" fill="#170d2b" stroke="#c084fc" stroke-width="1.8" rx="4"/>
+                    <text id="pkt-text-ms2" x="128" y="206" fill="#c084fc" font-size="8.5" font-family="monospace" font-weight="700">MS-2: f2 825.06M</text>
                   </g>
-                  <!-- Secondary Packet (Multi-user) -->
-                  <g id="iso-animated-packet-2" opacity="0">
-                    <rect id="iso-pkt-bubble-2" x="160" y="190" width="125" height="24" fill="#0b1329" stroke="#38bdf8" stroke-width="1.5" rx="4"/>
-                    <text id="iso-pkt-text-2" x="168" y="206" fill="#38bdf8" font-size="8.5" font-family="monospace" font-weight="700">
-                      MS-2: f2 825.06M
-                    </text>
+
+                  <!-- Packet MS-3 (Laptop in separate area) -->
+                  <g id="pkt-group-ms3" opacity="0">
+                    <rect id="pkt-box-ms3" x="280" y="440" width="145" height="24" fill="#042017" stroke="#00ff9d" stroke-width="1.8" rx="4"/>
+                    <text id="pkt-text-ms3" x="288" y="456" fill="#00ff9d" font-size="8.5" font-family="monospace" font-weight="700">MS-3: f3 825.09M (Data)</text>
+                  </g>
+
+                  <!-- Packet MS-4 (Highway Car) -->
+                  <g id="pkt-group-ms4" opacity="0">
+                    <rect id="pkt-box-ms4" x="280" y="140" width="145" height="24" fill="#241705" stroke="#ffb703" stroke-width="1.8" rx="4"/>
+                    <text id="pkt-text-ms4" x="288" y="156" fill="#ffb703" font-size="8.5" font-family="monospace" font-weight="700">MS-4: f4 825.12M (Car)</text>
+                  </g>
+
+                  <!-- Return Downlink ACK Packet (Server -> MS-1) -->
+                  <g id="pkt-group-ack" opacity="0">
+                    <rect id="pkt-box-ack" x="1450" y="290" width="155" height="24" fill="#031b13" stroke="#00ff9d" stroke-width="1.8" rx="4"/>
+                    <text id="pkt-text-ack" x="1458" y="306" fill="#00ff9d" font-size="8.5" font-family="monospace" font-weight="700">DOWNLINK: HTTP 200 (ACK)</text>
                   </g>
                 </g>
               </svg>
@@ -502,25 +616,25 @@ function getSectionContent(secId, state) {
 
               <!-- Step Indicator -->
               <span id="iso-step-indicator" style="color:var(--accent-sky); font-size:0.75rem; margin-left:auto; font-weight:700;">
-                STAGE 1 / 10 — UPLINK: MOBILE BASEBAND SPEECH ENCODING
+                STAGE 1 / 6 — UPLINK: MOBILES RADIATE ON OWN FREQUENCIES
               </span>
             </div>
 
             <!-- Real-Time Protocol & RF Layer Telemetry HUD -->
             <div id="iso-hud-box" style="margin-top: 8px; background: rgba(15,23,42,0.85); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.75rem; flex-wrap: wrap; gap: 6px;">
-              <span id="iso-hud-status" style="color: var(--status-ready);">● 2-WAY ROUND TRIP SIMULATION ACTIVE: Automated procedure & camera tracking running</span>
-              <span id="iso-hud-phy" style="color: var(--text-dim);">UPLINK: 825.03 MHz | DOWNLINK: 870.03 MHz | DUPLEX: +45 MHz | MOD: FM (AMPS)</span>
+              <span id="iso-hud-status" style="color: var(--status-ready);">● 2-WAY ROUND TRIP ACTIVE: Mobiles transmitting on dedicated channels</span>
+              <span id="iso-hud-phy" style="color: var(--text-dim);">UPLINK f1: 825.03 MHz | f2: 825.06 MHz | f3: 825.09 MHz | DOWNLINK: 870.03 MHz</span>
             </div>
 
-            <!-- Deep-Dive Protocol Procedure Breakdown Card (10 Granular Stages) -->
+            <!-- Simplified 6-Stage Procedure Breakdown Card -->
             <div id="iso-step-detail" style="margin-top:8px; background:rgba(11, 19, 41, 0.85); border:1px solid var(--border-subtle); border-radius:6px; padding:12px 16px; font-family:var(--font-mono); font-size:0.75rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <div style="color:var(--accent-sky); font-size:0.7rem; font-weight:700;" id="iso-step-num">ROUND TRIP STAGE 1 OF 10</div>
-                <div style="color:var(--status-ready); font-size:0.7rem; font-weight:700;" id="iso-step-direction">⬆️ UPLINK DIRECTION</div>
+                <div style="color:var(--accent-sky); font-size:0.72rem; font-weight:700;" id="iso-step-num">STAGE 1 OF 6</div>
+                <div style="color:var(--status-ready); font-size:0.72rem; font-weight:700;" id="iso-step-direction">⬆️ UPLINK TRANSMISSION</div>
               </div>
-              <div style="color:#fff; font-weight:700; font-size:0.95rem; margin-bottom:4px;" id="iso-step-title">1. MOBILE BASEBAND SPEECH ENCODING</div>
+              <div style="color:#fff; font-weight:700; font-size:0.95rem; margin-bottom:4px;" id="iso-step-title">1. MOBILES RADIATE ON DEDICATED FREQUENCIES</div>
               <div style="color:var(--text-secondary); line-height:1.5;" id="iso-step-desc">
-                The Mobile Subscriber (MS) terminal samples voice at 8 kHz / 13-bit uniform PCM. The RPE-LTP codec compresses the acoustic stream into 260 bits per 20 ms frame.
+                Each mobile subscriber terminal modulates voice or data onto its own dedicated reverse carrier frequency (MS-1 on f1: 825.03 MHz, MS-2 on f2: 825.06 MHz, MS-3 Laptop on f3: 825.09 MHz).
               </div>
               <div style="margin-top:8px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:6px;" id="iso-step-meta"></div>
             </div>
@@ -1636,6 +1750,9 @@ function attachSubEvents(container, secId, progressManager) {
   // ─────────────────────────────────────────────────────────────────────────────
   // SECTION 10.1: FLAGSHIP 2-WAY CELLULAR SIMULATOR WITH AUTO-CAMERA & TOWER LIMIT
   // ─────────────────────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────────────────────
+  // SECTION 10.1: FLAGSHIP 2-WAY CELLULAR SIMULATOR WITH AUTO-CAMERA & TOWER LIMIT
+  // ─────────────────────────────────────────────────────────────────────────────
   if (secId === 'sec-10.sim') {
     const isoSvg = container.querySelector('#iso-cellular-svg');
     const canvasBox = container.querySelector('#canvas-container-box');
@@ -1643,9 +1760,13 @@ function attachSubEvents(container, secId, progressManager) {
     const btnStep = container.querySelector('#btn-iso-step');
     const btnReset = container.querySelector('#btn-iso-reset');
     const btnAutoCam = container.querySelector('#btn-toggle-autocam');
-    const btnMax = container.querySelector('#btn-maximize-canvas');
-    const btnMaxText = container.querySelector('#btn-max-text');
     const btnFloatMin = container.querySelector('#btn-floating-minimize');
+
+    // True Fullscreen Mode Controls
+    const btnTrueFullscreen = container.querySelector('#btn-true-fullscreen');
+    const btnExitFsTop = container.querySelector('#btn-exit-fullscreen-top');
+    const simFsTopBar = container.querySelector('#sim-fullscreen-top-bar');
+    const fsHudStatus = container.querySelector('#fs-hud-status');
 
     // In-App Stage Height Sizing Buttons
     const btnSizeCompact = container.querySelector('#btn-size-compact');
@@ -1680,9 +1801,11 @@ function attachSubEvents(container, secId, progressManager) {
 
     // Multi-device load buttons
     const btnDev1 = container.querySelector('#btn-dev-1');
+    const btnDev2 = container.querySelector('#btn-dev-2');
+    const btnDev3 = container.querySelector('#btn-dev-3');
     const btnDev4 = container.querySelector('#btn-dev-4');
     const btnDev8 = container.querySelector('#btn-dev-8');
-    const btnDev12 = container.querySelector('#btn-dev-12');
+    const fsUserBtns = container.querySelectorAll('#fs-user-quick-btns button');
 
     // HUD & Telemetry elements
     const hudStatus = container.querySelector('#iso-hud-status');
@@ -1702,9 +1825,75 @@ function attachSubEvents(container, secId, progressManager) {
     const towerGrid = container.querySelector('#tower-channels-grid');
     const towerBlockNotice = container.querySelector('#tower-blocking-notice');
 
-    // Dynamic Multi-Devices group
-    const multiDevicesGroup = container.querySelector('#iso-multi-devices');
-    const ms1LabelSub = container.querySelector('#ms1-label-sub');
+    // Subscriber Nodes & Freq Labels
+    const nodeMs1 = container.querySelector('#node-ms1');
+    const nodeMs2 = container.querySelector('#node-ms2');
+    const nodeMs3 = container.querySelector('#node-ms3');
+    const nodeMs4 = container.querySelector('#node-ms4');
+    const ms1LabelFreq = container.querySelector('#ms1-label-freq');
+    const ms2LabelFreq = container.querySelector('#ms2-label-freq');
+    const ms3LabelFreq = container.querySelector('#ms3-label-freq');
+    const ms4LabelFreq = container.querySelector('#ms4-label-freq');
+
+    // Tower & Core Nodes
+    const nodeTower = container.querySelector('#node-tower');
+    const subnodeShelter = container.querySelector('#subnode-shelter');
+    const nodeBsc = container.querySelector('#node-bsc');
+    const nodeCore = container.querySelector('#node-core');
+    const nodeServer = container.querySelector('#node-server');
+
+    // Backhaul & Public Interconnect Lines
+    const lineAbis = container.querySelector('#line-abis');
+    const labelAbis = container.querySelector('#label-abis');
+    const lineSs7 = container.querySelector('#line-ss7');
+    const labelSs7 = container.querySelector('#label-ss7');
+    const lineFiber = container.querySelector('#line-fiber');
+    const labelFiber = container.querySelector('#label-fiber');
+
+    // Base Station Large Blue Coverage Sector Elements
+    const sectorGlowEllipse = container.querySelector('#sector-glow-ellipse');
+    const sectorRing1 = container.querySelector('#sector-ring-1');
+    const sectorRing2 = container.querySelector('#sector-ring-2');
+    const sectorRing3 = container.querySelector('#sector-ring-3');
+    const sectorRing4 = container.querySelector('#sector-ring-4');
+    const sectorTag1 = container.querySelector('#sector-tag-1');
+    const sectorTag2 = container.querySelector('#sector-tag-2');
+    const sectorTag3 = container.querySelector('#sector-tag-3');
+    const sectorTag4 = container.querySelector('#sector-tag-4');
+    const sectorLegendLabel = container.querySelector('#sector-legend-label');
+
+    // Sine Waves & Badges
+    const waveMs1 = container.querySelector('#iso-wave-ms1');
+    const waveMs2 = container.querySelector('#iso-wave-ms2');
+    const waveMs3 = container.querySelector('#iso-wave-ms3');
+    const waveMs4 = container.querySelector('#iso-wave-ms4');
+    const waveDownlink = container.querySelector('#iso-wave-downlink');
+    const badgeMs1 = container.querySelector('#badge-wave-ms1');
+    const badgeMs2 = container.querySelector('#badge-wave-ms2');
+    const badgeMs3 = container.querySelector('#badge-wave-ms3');
+    const badgeMs4 = container.querySelector('#badge-wave-ms4');
+    const badgeDl = container.querySelector('#badge-wave-dl');
+
+    // Moving Packet Elements
+    const pktGroupMs1 = container.querySelector('#pkt-group-ms1');
+    const pktBoxMs1 = container.querySelector('#pkt-box-ms1');
+    const pktTextMs1 = container.querySelector('#pkt-text-ms1');
+
+    const pktGroupMs2 = container.querySelector('#pkt-group-ms2');
+    const pktBoxMs2 = container.querySelector('#pkt-box-ms2');
+    const pktTextMs2 = container.querySelector('#pkt-text-ms2');
+
+    const pktGroupMs3 = container.querySelector('#pkt-group-ms3');
+    const pktBoxMs3 = container.querySelector('#pkt-box-ms3');
+    const pktTextMs3 = container.querySelector('#pkt-text-ms3');
+
+    const pktGroupMs4 = container.querySelector('#pkt-group-ms4');
+    const pktBoxMs4 = container.querySelector('#pkt-box-ms4');
+    const pktTextMs4 = container.querySelector('#pkt-text-ms4');
+
+    const pktGroupAck = container.querySelector('#pkt-group-ack');
+    const pktBoxAck = container.querySelector('#pkt-box-ack');
+    const pktTextAck = container.querySelector('#pkt-text-ack');
 
     // Speed buttons
     const speedBtns = container.querySelectorAll('.sim-speed-btn');
@@ -1717,76 +1906,178 @@ function attachSubEvents(container, secId, progressManager) {
     });
 
     // ─────────────────────────────────────────────────────────────────────────
-    // IN-APP STAGE SIZING (COMPACT 380px, STANDARD 520px, CINEMA 700px, MAX 780px)
+    // DYNAMIC COORDINATE SYSTEM SPECIFICATIONS (STANDARD 1600x520 vs FULLSCREEN 2600x850)
     // ─────────────────────────────────────────────────────────────────────────
-    const setStageSize = (size) => {
-      if (!canvasBox) return;
-      canvasBox.classList.remove('size-compact', 'size-standard', 'size-cinema', 'is-maximized');
-      [btnSizeCompact, btnSizeStandard, btnSizeCinema, btnMax].forEach(b => b && b.classList.remove('active'));
-
-      if (size === 'compact') {
-        canvasBox.classList.add('size-compact');
-        if (btnSizeCompact) btnSizeCompact.classList.add('active');
-        if (btnFloatMin) btnFloatMin.style.display = 'none';
-        if (btnMaxText) btnMaxText.textContent = 'MAXIMIZE STAGE';
-      } else if (size === 'cinema') {
-        canvasBox.classList.add('size-cinema');
-        if (btnSizeCinema) btnSizeCinema.classList.add('active');
-        if (btnFloatMin) btnFloatMin.style.display = 'block';
-        if (btnMaxText) btnMaxText.textContent = 'MAXIMIZE STAGE';
-      } else if (size === 'maximized') {
-        canvasBox.classList.add('is-maximized');
-        if (btnMax) btnMax.classList.add('active');
-        if (btnFloatMin) btnFloatMin.style.display = 'block';
-        if (btnMaxText) btnMaxText.textContent = 'RESTORE STAGE';
-      } else {
-        // standard (default 520px)
-        canvasBox.classList.add('size-standard');
-        if (btnSizeStandard) btnSizeStandard.classList.add('active');
-        if (btnFloatMin) btnFloatMin.style.display = 'none';
-        if (btnMaxText) btnMaxText.textContent = 'MAXIMIZE STAGE';
+    const layoutCoords = {
+      standard: {
+        width: 1600, height: 520,
+        ms1: { x: 120, y: 340 },
+        ms2: { x: 120, y: 190 },
+        ms3: { x: 280, y: 440 }, // Laptop Workstation in a separate area
+        ms4: { x: 280, y: 140 }, // Vehicular Terminal
+        tower: { x: 880, y: 290 },
+        shelter: { x: -70, y: 60 },
+        bsc: { x: 1120, y: 290 },
+        core: { x: 1330, y: 250 },
+        server: { x: 1510, y: 290 },
+        lineAbis: { x1: 930, y1: 300, x2: 1080, y2: 300 },
+        labelAbis: { x: 960, y: 290 },
+        lineSs7: { x1: 1170, y1: 300, x2: 1290, y2: 260 },
+        labelSs7: { x: 1200, y: 270 },
+        lineFiber: { x1: 1390, y1: 250, x2: 1480, y2: 290 },
+        labelFiber: { x: 1405, y: 260 },
+        coverage: { cx: 880, cy: 310, rx: 780, ry: 185 },
+        rings: [
+          { rx: 160, ry: 40, tagX: 890, tagY: 270 },
+          { rx: 320, ry: 80, tagX: 890, tagY: 230 },
+          { rx: 480, ry: 115, tagX: 890, tagY: 195 },
+          { rx: 640, ry: 150, tagX: 890, tagY: 160 }
+        ],
+        legend: { x: 40, y: 500 },
+        cameraTargets: {
+          overview: { vx: 0, vy: 0, vw: 1600, vh: 520, label: 'OVERVIEW (1.0×)', icon: '🌐' },
+          client: { vx: 40, vy: 90, vw: 480, vh: 400, label: 'CLIENT SUBSCRIBERS (3.3×)', icon: '💻' },
+          air: { vx: 260, vy: 60, vw: 680, vh: 420, label: 'AIR PROPAGATION (2.5×)', icon: '📡' },
+          tower: { vx: 740, vy: 90, vw: 480, vh: 400, label: 'BASE STATION TOWER (3.3×)', icon: '🗼' },
+          bsc: { vx: 980, vy: 90, vw: 440, vh: 400, label: 'BSC CONTROLLER (3.6×)', icon: '🎛️' },
+          core: { vx: 1180, vy: 80, vw: 460, vh: 400, label: 'MTSO CORE & HLR/VLR (3.5×)', icon: '☁️' },
+          server: { vx: 1360, vy: 90, vw: 360, vh: 400, label: 'WEB HOST 8.8.8.8 (4.4×)', icon: '🖥️' }
+        }
+      },
+      fullscreen: {
+        width: 2600, height: 850,
+        ms1: { x: 180, y: 510 },
+        ms2: { x: 180, y: 310 },
+        ms3: { x: 440, y: 710 }, // Laptop Workstation in a separate area
+        ms4: { x: 440, y: 210 }, // Vehicular Terminal
+        tower: { x: 1620, y: 470 }, // 1180px - 1440px distance! Expansive real-world feel
+        shelter: { x: -80, y: 70 },
+        bsc: { x: 1940, y: 470 },
+        core: { x: 2220, y: 420 },
+        server: { x: 2460, y: 470 },
+        lineAbis: { x1: 1680, y1: 480, x2: 1900, y2: 480 },
+        labelAbis: { x: 1730, y: 465 },
+        lineSs7: { x1: 1990, y1: 480, x2: 2180, y2: 435 },
+        labelSs7: { x: 2040, y: 445 },
+        lineFiber: { x1: 2280, y1: 435, x2: 2430, y2: 475 },
+        labelFiber: { x: 2310, y: 445 },
+        coverage: { cx: 1620, cy: 490, rx: 1380, ry: 320 },
+        rings: [
+          { rx: 280, ry: 65, tagX: 1630, tagY: 425 },
+          { rx: 560, ry: 130, tagX: 1630, tagY: 360 },
+          { rx: 840, ry: 195, tagX: 1630, tagY: 295 },
+          { rx: 1120, ry: 260, tagX: 1630, tagY: 230 }
+        ],
+        legend: { x: 50, y: 820 },
+        cameraTargets: {
+          overview: { vx: 0, vy: 0, vw: 2600, vh: 850, label: 'EXPANDED OVERVIEW (1.0×)', icon: '🌐' },
+          client: { vx: 60, vy: 140, vw: 720, vh: 680, label: 'CLIENT SUBSCRIBERS (3.6×)', icon: '💻' },
+          air: { vx: 380, vy: 120, vw: 1350, vh: 700, label: 'WIDE AIR LINK (2.0×)', icon: '📡' },
+          tower: { vx: 1450, vy: 160, vw: 600, vh: 650, label: 'BASE STATION TOWER (4.3×)', icon: '🗼' },
+          bsc: { vx: 1780, vy: 180, vw: 500, vh: 650, label: 'BSC CONTROLLER (5.2×)', icon: '🎛️' },
+          core: { vx: 2050, vy: 160, vw: 520, vh: 650, label: 'MTSO CORE & HLR/VLR (5.0×)', icon: '☁️' },
+          server: { vx: 2320, vy: 180, vw: 400, vh: 650, label: 'WEB HOST 8.8.8.8 (6.5×)', icon: '🖥️' }
+        }
       }
     };
 
-    if (btnSizeCompact) btnSizeCompact.addEventListener('click', () => setStageSize('compact'));
-    if (btnSizeStandard) btnSizeStandard.addEventListener('click', () => setStageSize('standard'));
-    if (btnSizeCinema) btnSizeCinema.addEventListener('click', () => setStageSize('cinema'));
-    if (btnMax) {
-      btnMax.addEventListener('click', () => {
-        if (canvasBox.classList.contains('is-maximized')) {
-          setStageSize('standard');
-        } else {
-          setStageSize('maximized');
+    let activeLayoutKey = 'standard';
+    let activeLayout = layoutCoords.standard;
+    let isTrueFullscreen = false;
+
+    let curVx = 0, curVy = 0, curVw = 1600, curVh = 520;
+
+    const applyLayoutCoordinates = (mode) => {
+      activeLayoutKey = mode;
+      activeLayout = layoutCoords[mode] || layoutCoords.standard;
+      const L = activeLayout;
+
+      if (isoSvg) {
+        isoSvg.setAttribute('viewBox', `0 0 ${L.width} ${L.height}`);
+      }
+      curVx = 0; curVy = 0; curVw = L.width; curVh = L.height;
+
+      // Update Node positions
+      if (nodeMs1) nodeMs1.setAttribute('transform', `translate(${L.ms1.x}, ${L.ms1.y})`);
+      if (nodeMs2) nodeMs2.setAttribute('transform', `translate(${L.ms2.x}, ${L.ms2.y})`);
+      if (nodeMs3) nodeMs3.setAttribute('transform', `translate(${L.ms3.x}, ${L.ms3.y})`);
+      if (nodeMs4) nodeMs4.setAttribute('transform', `translate(${L.ms4.x}, ${L.ms4.y})`);
+
+      if (nodeTower) nodeTower.setAttribute('transform', `translate(${L.tower.x}, ${L.tower.y})`);
+      if (subnodeShelter) subnodeShelter.setAttribute('transform', `translate(${L.shelter.x}, ${L.shelter.y})`);
+      if (nodeBsc) nodeBsc.setAttribute('transform', `translate(${L.bsc.x}, ${L.bsc.y})`);
+      if (nodeCore) nodeCore.setAttribute('transform', `translate(${L.core.x}, ${L.core.y})`);
+      if (nodeServer) nodeServer.setAttribute('transform', `translate(${L.server.x}, ${L.server.y})`);
+
+      // Update Interconnect Lines
+      if (lineAbis) {
+        lineAbis.setAttribute('x1', L.lineAbis.x1);
+        lineAbis.setAttribute('y1', L.lineAbis.y1);
+        lineAbis.setAttribute('x2', L.lineAbis.x2);
+        lineAbis.setAttribute('y2', L.lineAbis.y2);
+      }
+      if (labelAbis) {
+        labelAbis.setAttribute('x', L.labelAbis.x);
+        labelAbis.setAttribute('y', L.labelAbis.y);
+      }
+
+      if (lineSs7) {
+        lineSs7.setAttribute('x1', L.lineSs7.x1);
+        lineSs7.setAttribute('y1', L.lineSs7.y1);
+        lineSs7.setAttribute('x2', L.lineSs7.x2);
+        lineSs7.setAttribute('y2', L.lineSs7.y2);
+      }
+      if (labelSs7) {
+        labelSs7.setAttribute('x', L.labelSs7.x);
+        labelSs7.setAttribute('y', L.labelSs7.y);
+      }
+
+      if (lineFiber) {
+        lineFiber.setAttribute('x1', L.lineFiber.x1);
+        lineFiber.setAttribute('y1', L.lineFiber.y1);
+        lineFiber.setAttribute('x2', L.lineFiber.x2);
+        lineFiber.setAttribute('y2', L.lineFiber.y2);
+      }
+      if (labelFiber) {
+        labelFiber.setAttribute('x', L.labelFiber.x);
+        labelFiber.setAttribute('y', L.labelFiber.y);
+      }
+
+      // Update Coverage Sector & Range Rings
+      if (sectorGlowEllipse) {
+        sectorGlowEllipse.setAttribute('cx', L.coverage.cx);
+        sectorGlowEllipse.setAttribute('cy', L.coverage.cy);
+        sectorGlowEllipse.setAttribute('rx', L.coverage.rx);
+        sectorGlowEllipse.setAttribute('ry', L.coverage.ry);
+      }
+      const ringEls = [sectorRing1, sectorRing2, sectorRing3, sectorRing4];
+      const tagEls = [sectorTag1, sectorTag2, sectorTag3, sectorTag4];
+      L.rings.forEach((r, idx) => {
+        if (ringEls[idx]) {
+          ringEls[idx].setAttribute('cx', L.coverage.cx);
+          ringEls[idx].setAttribute('cy', L.coverage.cy);
+          ringEls[idx].setAttribute('rx', r.rx);
+          ringEls[idx].setAttribute('ry', r.ry);
+        }
+        if (tagEls[idx]) {
+          tagEls[idx].setAttribute('x', r.tagX);
+          tagEls[idx].setAttribute('y', r.tagY);
         }
       });
-    }
-    if (btnFloatMin) {
-      btnFloatMin.addEventListener('click', () => setStageSize('standard'));
-    }
-
-    const onKeyEsc = (e) => {
-      if (e.key === 'Escape' || e.keyCode === 27) {
-        if (canvasBox && (canvasBox.classList.contains('is-maximized') || canvasBox.classList.contains('size-cinema'))) {
-          setStageSize('standard');
-        }
+      if (sectorLegendLabel) {
+        sectorLegendLabel.setAttribute('x', L.legend.x);
+        sectorLegendLabel.setAttribute('y', L.legend.y);
       }
-    };
-    window.addEventListener('keydown', onKeyEsc);
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // WIDESCREEN CAMERA VIEWBOX TARGETS (1600 x 480 COORDINATE SYSTEM)
-    // ─────────────────────────────────────────────────────────────────────────
-    const cameraTargets = {
-      overview: { vx: 0, vy: 0, vw: 1600, vh: 480, label: 'OVERVIEW (1.0×)', icon: '🌐' },
-      client: { vx: 40, vy: 80, vw: 480, vh: 360, label: 'CLIENT SUBSCRIBERS (3.3×)', icon: '💻' },
-      air: { vx: 300, vy: 60, vw: 560, vh: 360, label: 'AIR PROPAGATION (2.8×)', icon: '📡' },
-      tower: { vx: 620, vy: 80, vw: 480, vh: 360, label: 'BASE STATION TOWER (3.3×)', icon: '🗼' },
-      bsc: { vx: 860, vy: 80, vw: 440, vh: 360, label: 'BSC CONTROLLER (3.6×)', icon: '🎛️' },
-      core: { vx: 1060, vy: 80, vw: 460, vh: 360, label: 'MTSO CORE & HLR/VLR (3.5×)', icon: '☁️' },
-      server: { vx: 1280, vy: 80, vw: 360, vh: 360, label: 'WEB HOST 8.8.8.8 (4.4×)', icon: '🖥️' }
+      // Update Badges on Waves
+      const midX = (L.ms1.x + L.tower.x) / 2;
+      if (badgeMs1) badgeMs1.setAttribute('transform', `translate(${midX - 60}, ${L.ms1.y - 20})`);
+      if (badgeMs2) badgeMs2.setAttribute('transform', `translate(${midX - 60}, ${L.ms2.y - 15})`);
+      if (badgeMs3) badgeMs3.setAttribute('transform', `translate(${midX}, ${L.ms3.y - 25})`);
+      if (badgeMs4) badgeMs4.setAttribute('transform', `translate(${midX}, ${L.ms4.y - 15})`);
+      if (badgeDl) badgeDl.setAttribute('transform', `translate(${midX - 70}, ${(L.ms1.y + L.tower.y) / 2 - 25})`);
     };
 
-    let curVx = 0, curVy = 0, curVw = 1600, curVh = 480;
     const applyViewBox = (target) => {
       if (!isoSvg) return;
       curVx = target.vx;
@@ -1807,10 +2098,80 @@ function attachSubEvents(container, secId, progressManager) {
       }
       if (btnAutoCam) btnAutoCam.classList.remove('active');
       [btnCamWide, btnCamClient, btnCamAir, btnCamTower, btnCamBsc, btnCamCore, btnCamServer].forEach(b => b && b.classList.remove('active'));
-      const target = cameraTargets[preset] || cameraTargets.overview;
+      const target = activeLayout.cameraTargets[preset] || activeLayout.cameraTargets.overview;
       applyViewBox(target);
     };
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // TRUE FULL-SCREEN TOGGLE (REINITIALIZES CANVAS TO 2600 x 850)
+    // ─────────────────────────────────────────────────────────────────────────
+    const setTrueFullscreen = (enable) => {
+      if (!canvasBox) return;
+      isTrueFullscreen = enable;
+
+      if (enable) {
+        canvasBox.classList.add('is-true-fullscreen');
+        if (simFsTopBar) simFsTopBar.style.display = 'flex';
+        if (btnFloatMin) btnFloatMin.style.display = 'block';
+        if (btnTrueFullscreen) btnTrueFullscreen.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        applyLayoutCoordinates('fullscreen');
+        if (fsHudStatus) {
+          fsHudStatus.textContent = `● EXPANDED VIEW ACTIVE: BTS TOWER & MOBILES PLACED FURTHER APART (2600 × 850)`;
+        }
+      } else {
+        canvasBox.classList.remove('is-true-fullscreen');
+        if (simFsTopBar) simFsTopBar.style.display = 'none';
+        if (btnFloatMin) btnFloatMin.style.display = 'none';
+        if (btnTrueFullscreen) btnTrueFullscreen.classList.remove('active');
+        document.body.style.overflow = '';
+        applyLayoutCoordinates('standard');
+      }
+
+      applyViewBox(activeLayout.cameraTargets.overview);
+    };
+
+    if (btnTrueFullscreen) {
+      btnTrueFullscreen.addEventListener('click', () => setTrueFullscreen(!isTrueFullscreen));
+    }
+    if (btnExitFsTop) {
+      btnExitFsTop.addEventListener('click', () => setTrueFullscreen(false));
+    }
+    if (btnFloatMin) {
+      btnFloatMin.addEventListener('click', () => setTrueFullscreen(false));
+    }
+
+    // In-App Stage Height Buttons (Compact, Standard, Cinema)
+    const setStageSize = (size) => {
+      if (!canvasBox) return;
+      if (isTrueFullscreen) setTrueFullscreen(false);
+      canvasBox.classList.remove('size-compact', 'size-standard', 'size-cinema');
+      [btnSizeCompact, btnSizeStandard, btnSizeCinema].forEach(b => b && b.classList.remove('active'));
+
+      if (size === 'compact') {
+        canvasBox.classList.add('size-compact');
+        if (btnSizeCompact) btnSizeCompact.classList.add('active');
+      } else if (size === 'cinema') {
+        canvasBox.classList.add('size-cinema');
+        if (btnSizeCinema) btnSizeCinema.classList.add('active');
+      } else {
+        canvasBox.classList.add('size-standard');
+        if (btnSizeStandard) btnSizeStandard.classList.add('active');
+      }
+    };
+
+    if (btnSizeCompact) btnSizeCompact.addEventListener('click', () => setStageSize('compact'));
+    if (btnSizeStandard) btnSizeStandard.addEventListener('click', () => setStageSize('standard'));
+    if (btnSizeCinema) btnSizeCinema.addEventListener('click', () => setStageSize('cinema'));
+
+    const onKeyEsc = (e) => {
+      if (e.key === 'Escape' || e.keyCode === 27) {
+        if (isTrueFullscreen) setTrueFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyEsc);
+
+    // Camera preset button event listeners
     if (btnCamWide) btnCamWide.addEventListener('click', () => { setManualCamera('overview'); btnCamWide.classList.add('active'); });
     if (btnCamClient) btnCamClient.addEventListener('click', () => { setManualCamera('client'); btnCamClient.classList.add('active'); });
     if (btnCamAir) btnCamAir.addEventListener('click', () => { setManualCamera('air'); btnCamAir.classList.add('active'); });
@@ -1828,13 +2189,13 @@ function attachSubEvents(container, secId, progressManager) {
         }
         btnAutoCam.classList.toggle('active', ch10State.autoCamera);
         if (!ch10State.autoCamera) {
-          applyViewBox(cameraTargets.overview);
+          applyViewBox(activeLayout.cameraTargets.overview);
         }
       });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // MOUSE DRAG / PAN & WHEEL ZOOM (USER FREEDOM ACROSS 1600 x 480 SPAN)
+    // MOUSE DRAG / PAN & WHEEL ZOOM (USER FREEDOM)
     // ─────────────────────────────────────────────────────────────────────────
     let isPanningViewport = false;
     let panStartX = 0, panStartY = 0;
@@ -1866,8 +2227,8 @@ function attachSubEvents(container, secId, progressManager) {
         const dx = e.clientX - panStartX;
         const dy = e.clientY - panStartY;
         const boxRect = canvasBox.getBoundingClientRect();
-        const scaleX = curVw / (boxRect.width || 1600);
-        const scaleY = curVh / (boxRect.height || 480);
+        const scaleX = curVw / (boxRect.width || activeLayout.width);
+        const scaleY = curVh / (boxRect.height || activeLayout.height);
         curVx = panStartVx - dx * scaleX;
         curVy = panStartVy - dy * scaleY;
         isoSvg.setAttribute('viewBox', `${curVx.toFixed(1)} ${curVy.toFixed(1)} ${curVw.toFixed(1)} ${curVh.toFixed(1)}`);
@@ -1891,14 +2252,16 @@ function attachSubEvents(container, secId, progressManager) {
           if (btnAutoCam) btnAutoCam.classList.remove('active');
         }
         const zoomFactor = e.deltaY < 0 ? 0.9 : 1.1;
-        const newVw = Math.max(260, Math.min(2200, curVw * zoomFactor));
-        const newVh = Math.max(90, Math.min(750, curVh * zoomFactor));
+        const maxVw = activeLayout.width * 1.5;
+        const maxVh = activeLayout.height * 1.5;
+        const newVw = Math.max(300, Math.min(maxVw, curVw * zoomFactor));
+        const newVh = Math.max(120, Math.min(maxVh, curVh * zoomFactor));
         curVx += (curVw - newVw) / 2;
         curVy += (curVh - newVh) / 2;
         curVw = newVw;
         curVh = newVh;
         isoSvg.setAttribute('viewBox', `${curVx.toFixed(1)} ${curVy.toFixed(1)} ${curVw.toFixed(1)} ${curVh.toFixed(1)}`);
-        if (camStatus) camStatus.textContent = `ZOOM (${(1600 / curVw).toFixed(1)}×)`;
+        if (camStatus) camStatus.textContent = `ZOOM (${(activeLayout.width / curVw).toFixed(1)}×)`;
       }, { passive: false });
     }
 
@@ -1911,14 +2274,14 @@ function attachSubEvents(container, secId, progressManager) {
         ch10State.autoCamera = false;
         if (autoCamText) { autoCamText.textContent = 'OFF'; autoCamText.style.color = 'var(--text-dim)'; }
         if (btnAutoCam) btnAutoCam.classList.remove('active');
-        const newVw = Math.max(260, curVw * 0.8);
-        const newVh = Math.max(90, curVh * 0.8);
+        const newVw = Math.max(300, curVw * 0.8);
+        const newVh = Math.max(120, curVh * 0.8);
         curVx += (curVw - newVw) / 2;
         curVy += (curVh - newVh) / 2;
         curVw = newVw;
         curVh = newVh;
         isoSvg.setAttribute('viewBox', `${curVx.toFixed(1)} ${curVy.toFixed(1)} ${curVw.toFixed(1)} ${curVh.toFixed(1)}`);
-        if (camStatus) camStatus.textContent = `ZOOM (${(1600 / curVw).toFixed(1)}×)`;
+        if (camStatus) camStatus.textContent = `ZOOM (${(activeLayout.width / curVw).toFixed(1)}×)`;
       });
     }
 
@@ -1927,14 +2290,14 @@ function attachSubEvents(container, secId, progressManager) {
         ch10State.autoCamera = false;
         if (autoCamText) { autoCamText.textContent = 'OFF'; autoCamText.style.color = 'var(--text-dim)'; }
         if (btnAutoCam) btnAutoCam.classList.remove('active');
-        const newVw = Math.min(2200, curVw * 1.25);
-        const newVh = Math.min(750, curVh * 1.25);
+        const newVw = Math.min(activeLayout.width * 1.5, curVw * 1.25);
+        const newVh = Math.min(activeLayout.height * 1.5, curVh * 1.25);
         curVx += (curVw - newVw) / 2;
         curVy += (curVh - newVh) / 2;
         curVw = newVw;
         curVh = newVh;
         isoSvg.setAttribute('viewBox', `${curVx.toFixed(1)} ${curVy.toFixed(1)} ${curVw.toFixed(1)} ${curVh.toFixed(1)}`);
-        if (camStatus) camStatus.textContent = `ZOOM (${(1600 / curVw).toFixed(1)}×)`;
+        if (camStatus) camStatus.textContent = `ZOOM (${(activeLayout.width / curVw).toFixed(1)}×)`;
       });
     }
 
@@ -1945,7 +2308,7 @@ function attachSubEvents(container, secId, progressManager) {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // OFFICIAL REAL-LIFE CELLULAR FREQUENCY CALCULATOR & BAND SELECTOR
+    // DYNAMIC FREQUENCIES FOR EACH MOBILE (OWN FREQUENCY TRANSPARENCY)
     // ─────────────────────────────────────────────────────────────────────────
     const updateFrequencyParams = () => {
       const fUl = parseFloat(inUplink ? inUplink.value : 825.03) || 825.03;
@@ -1953,25 +2316,67 @@ function attachSubEvents(container, secId, progressManager) {
       const fDl = fUl + duplex;
       if (dispDownlink) dispDownlink.textContent = `${fDl.toFixed(2)} MHz`;
 
-      // Free space wavelength lambda = c / f = 300 / f_MHz (in meters -> cm)
-      const lambdaCm = (300 / fUl) * 100;
+      const mode = ch10State.accessMode;
 
-      // Hata urban path loss calculation for d = 2.4 km, hb = 35m, hm = 1.5m
-      const a_hm = (1.1 * Math.log10(fUl) - 0.7) * 1.5 - (1.56 * Math.log10(fUl) - 0.8);
-      const hataLoss = 69.55 + 26.16 * Math.log10(fUl) - 13.82 * Math.log10(35) - a_hm + (44.9 - 6.55 * Math.log10(35)) * Math.log10(2.4);
+      // Calculate distinct frequencies for Mobiles 1, 2, 3, 4
+      const f1 = fUl;
+      const f2 = fUl + 0.03;
+      const f3 = fUl + 0.06;
+      const f4 = fUl + 0.09;
 
-      const airCarrierTxt = container.querySelector('#iso-air-carrier-txt');
-      const airLossTxt = container.querySelector('#iso-air-loss-txt');
-      if (airCarrierTxt) {
-        airCarrierTxt.textContent = `fc: ${fUl.toFixed(2)} MHz | λ: ${lambdaCm.toFixed(1)}cm | DL: ${fDl.toFixed(2)} MHz`;
-      }
-      if (airLossTxt) {
-        airLossTxt.textContent = `Hata Loss: -${hataLoss.toFixed(1)} dB | d: 2.4km | Δf: +${duplex.toFixed(0)} MHz`;
+      if (mode === 'fdma') {
+        if (ms1LabelFreq) ms1LabelFreq.textContent = `f₁: ${f1.toFixed(2)} MHz`;
+        if (ms2LabelFreq) ms2LabelFreq.textContent = `f₂: ${f2.toFixed(2)} MHz`;
+        if (ms3LabelFreq) ms3LabelFreq.textContent = `Workstation f₃: ${f3.toFixed(2)} MHz`;
+        if (ms4LabelFreq) ms4LabelFreq.textContent = `Vehicular f₄: ${f4.toFixed(2)} MHz`;
+
+        const b1 = badgeMs1 ? badgeMs1.querySelector('text') : null;
+        const b2 = badgeMs2 ? badgeMs2.querySelector('text') : null;
+        const b3 = badgeMs3 ? badgeMs3.querySelector('text') : null;
+        const b4 = badgeMs4 ? badgeMs4.querySelector('text') : null;
+        const bDl = badgeDl ? badgeDl.querySelector('text') : null;
+        if (b1) b1.textContent = `f₁: ${f1.toFixed(2)} MHz`;
+        if (b2) b2.textContent = `f₂: ${f2.toFixed(2)} MHz`;
+        if (b3) b3.textContent = `f₃: ${f3.toFixed(2)} MHz (Data)`;
+        if (b4) b4.textContent = `f₄: ${f4.toFixed(2)} MHz (Doppler)`;
+        if (bDl) bDl.textContent = `DOWNLINK: ${fDl.toFixed(2)} MHz (+${duplex.toFixed(0)}M)`;
+      } else if (mode === 'tdma') {
+        if (ms1LabelFreq) ms1LabelFreq.textContent = `TS 1: ${f1.toFixed(2)} MHz (577 µs)`;
+        if (ms2LabelFreq) ms2LabelFreq.textContent = `TS 3: ${f1.toFixed(2)} MHz (577 µs)`;
+        if (ms3LabelFreq) ms3LabelFreq.textContent = `TS 5: Workstation (Data)`;
+        if (ms4LabelFreq) ms4LabelFreq.textContent = `TS 7: Vehicular (Doppler)`;
+
+        const b1 = badgeMs1 ? badgeMs1.querySelector('text') : null;
+        const b2 = badgeMs2 ? badgeMs2.querySelector('text') : null;
+        const b3 = badgeMs3 ? badgeMs3.querySelector('text') : null;
+        const b4 = badgeMs4 ? badgeMs4.querySelector('text') : null;
+        const bDl = badgeDl ? badgeDl.querySelector('text') : null;
+        if (b1) b1.textContent = `GSM TS 1 (${f1.toFixed(1)} MHz)`;
+        if (b2) b2.textContent = `GSM TS 3 (${f1.toFixed(1)} MHz)`;
+        if (b3) b3.textContent = `GSM TS 5 (Laptop Data)`;
+        if (b4) b4.textContent = `GSM TS 7 (Vehicular)`;
+        if (bDl) bDl.textContent = `DL TS 1: ${fDl.toFixed(2)} MHz`;
+      } else {
+        if (ms1LabelFreq) ms1LabelFreq.textContent = `Walsh W₁ (1.2288 Mcps)`;
+        if (ms2LabelFreq) ms2LabelFreq.textContent = `Walsh W₂ (1.2288 Mcps)`;
+        if (ms3LabelFreq) ms3LabelFreq.textContent = `Walsh W₃ (Laptop Data)`;
+        if (ms4LabelFreq) ms4LabelFreq.textContent = `Walsh W₄ (Vehicular)`;
+
+        const b1 = badgeMs1 ? badgeMs1.querySelector('text') : null;
+        const b2 = badgeMs2 ? badgeMs2.querySelector('text') : null;
+        const b3 = badgeMs3 ? badgeMs3.querySelector('text') : null;
+        const b4 = badgeMs4 ? badgeMs4.querySelector('text') : null;
+        const bDl = badgeDl ? badgeDl.querySelector('text') : null;
+        if (b1) b1.textContent = `CDMA Code W₁`;
+        if (b2) b2.textContent = `CDMA Code W₂`;
+        if (b3) b3.textContent = `CDMA Code W₃ (Data)`;
+        if (b4) b4.textContent = `CDMA Code W₄ (Car)`;
+        if (bDl) bDl.textContent = `DL Pilot + W₆₄: ${fDl.toFixed(2)}M`;
       }
 
       if (hudPhy) {
-        const mode = ch10State.accessMode.toUpperCase();
-        hudPhy.textContent = `[${mode}] UPLINK: ${fUl.toFixed(2)} MHz | DOWNLINK: ${fDl.toFixed(2)} MHz | DUPLEX: +${duplex.toFixed(0)} MHz | λ: ${lambdaCm.toFixed(1)} cm | LOSS: -${hataLoss.toFixed(1)} dB`;
+        const m = mode.toUpperCase();
+        hudPhy.textContent = `[${m}] UPLINK: f1=${f1.toFixed(2)}M | f2=${f2.toFixed(2)}M | f3=${f3.toFixed(2)}M | f4=${f4.toFixed(2)}M | DOWNLINK: ${fDl.toFixed(2)} MHz`;
       }
     };
 
@@ -2013,7 +2418,7 @@ function attachSubEvents(container, secId, progressManager) {
     });
 
     // ─────────────────────────────────────────────────────────────────────────
-    // RENDER TOWER CAPACITY & CHANNELS
+    // TOWER CAPACITY & SUBSCRIBER MULTI-ACCESS ALLOCATION
     // ─────────────────────────────────────────────────────────────────────────
     const updateTowerCapacityDisplay = () => {
       if (!towerGrid || !towerMeterFill || !towerUtilText) return;
@@ -2044,21 +2449,11 @@ function attachSubEvents(container, secId, progressManager) {
           const inUse = i <= count;
           chipsHtml += `<span class="channel-chip ${inUse ? 'in-use' : 'free'}">f${i} (${(825.0 + i*0.03).toFixed(2)} MHz)</span>`;
         }
-        if (count > 8) {
-          for (let i = 9; i <= count; i++) {
-            chipsHtml += `<span class="channel-chip blocked">f${i} (BLOCKED!)</span>`;
-          }
-        }
       } else if (mode === 'tdma') {
         if (towerTypeLabel) towerTypeLabel.textContent = 'GSM 8-SLOT TDMA FRAME (200 kHz):';
         for (let i = 0; i < 8; i++) {
           const inUse = i < count;
           chipsHtml += `<span class="channel-chip ${inUse ? 'in-use' : 'free'}">Slot ${i} (${(i*0.577).toFixed(1)}ms)</span>`;
-        }
-        if (count > 8) {
-          for (let i = 8; i < count; i++) {
-            chipsHtml += `<span class="channel-chip blocked">User ${i+1} (QUEUED!)</span>`;
-          }
         }
       } else {
         if (towerTypeLabel) towerTypeLabel.textContent = 'CDMA WALSH 64 ORTHOGONAL CODES:';
@@ -2068,139 +2463,69 @@ function attachSubEvents(container, secId, progressManager) {
         for (let i = count + 1; i <= 8; i++) {
           chipsHtml += `<span class="channel-chip free">W_${i} (Free)</span>`;
         }
-        if (count > 8) {
-          for (let i = 9; i <= count; i++) {
-            chipsHtml += `<span class="channel-chip blocked">W_${i} (+${(i-8)*1.5}dB Noise)</span>`;
-          }
-        }
       }
       towerGrid.innerHTML = chipsHtml;
     };
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // RENDER MULTI-DEVICES WITH GENEROUS SPATIAL SEPARATION (1600 x 480 CANVAS)
-    // ─────────────────────────────────────────────────────────────────────────
-    const updateMultiDevicesGraphic = () => {
-      if (!multiDevicesGroup) return;
+    // Show/Hide subscriber nodes and distinct carrier wave paths
+    const updateVisibleSubscribers = () => {
       const count = ch10State.activeDevicesCount;
-      let svg = '';
+      if (nodeMs1) nodeMs1.style.display = 'block';
+      if (nodeMs2) nodeMs2.style.display = count >= 2 ? 'block' : 'none';
+      if (nodeMs3) nodeMs3.style.display = count >= 3 ? 'block' : 'none';
+      if (nodeMs4) nodeMs4.style.display = count >= 4 ? 'block' : 'none';
 
-      if (count >= 4) {
-        // Device 2: Smartphone MS-2 (Clean vertical placement at x=80, y=150)
-        svg += `
-          <g id="iso-client-dev2">
-            ${drawIsometricPhone(80, 150, 0.75, '#38bdf8')}
-            <text x="50" y="180" fill="#fff" font-size="9" font-family="monospace" font-weight="700">MS-2 (Phone)</text>
-            <text x="50" y="192" fill="#38bdf8" font-size="8" font-family="monospace">Voice Carrier 2</text>
-          </g>
-        `;
-        // Device 3: Laptop MS-3 (Clean upper placement at x=270, y=140)
-        svg += `
-          <g id="iso-client-dev3">
-            ${drawIsometricLaptop(270, 140, 0.75, '#00ff9d')}
-            <text x="245" y="175" fill="#fff" font-size="9" font-family="monospace" font-weight="700">MS-3 (Laptop)</text>
-            <text x="245" y="187" fill="#00ff9d" font-size="8" font-family="monospace">IP Web Session</text>
-          </g>
-        `;
-        // Device 4: Vehicular Terminal MS-4 (Bottom placement at x=240, y=390)
-        svg += `
-          <g id="iso-client-dev4">
-            ${drawIsometricVehicle(240, 390, 0.85, '#ffb703')}
-            <text x="210" y="430" fill="#fff" font-size="9" font-family="monospace" font-weight="700">MS-4 (Vehicular)</text>
-            <text x="210" y="442" fill="#ffb703" font-size="8" font-family="monospace">Doppler v = 60 km/h</text>
-          </g>
-        `;
-      }
-
-      if (count >= 8) {
-        svg += `
-          <g id="iso-client-dev5">
-            ${drawIsometricPhone(50, 230, 0.65, '#818cf8')}
-            <text x="35" y="255" fill="#818cf8" font-size="8" font-family="monospace">MS-5</text>
-          </g>
-          <g id="iso-client-dev6">
-            ${drawIsometricPhone(170, 110, 0.65, '#a855f7')}
-            <text x="155" y="135" fill="#a855f7" font-size="8" font-family="monospace">MS-6</text>
-          </g>
-          <g id="iso-client-dev7">
-            ${drawIsometricPhone(310, 220, 0.65, '#f43f5e')}
-            <text x="295" y="245" fill="#f43f5e" font-size="8" font-family="monospace">MS-7</text>
-          </g>
-          <g id="iso-client-dev8">
-            ${drawIsometricLaptop(130, 410, 0.65, '#38bdf8')}
-            <text x="115" y="440" fill="#38bdf8" font-size="8" font-family="monospace">MS-8</text>
-          </g>
-        `;
-      }
-
-      if (count >= 12) {
-        svg += `
-          <g id="iso-client-overload">
-            <g transform="translate(40, 370)">
-              <circle cx="0" cy="0" r="16" fill="rgba(255,0,85,0.2)" stroke="#ff0055" stroke-width="1.8" stroke-dasharray="3 3"/>
-              ${drawIsometricPhone(0, 0, 0.65, '#ff0055')}
-              <text x="-25" y="25" fill="#ff0055" font-size="8.5" font-family="monospace" font-weight="700">MS-9 (BLOCKED)</text>
-            </g>
-            <g transform="translate(310, 320)">
-              <circle cx="0" cy="0" r="16" fill="rgba(255,0,85,0.2)" stroke="#ff0055" stroke-width="1.8" stroke-dasharray="3 3"/>
-              ${drawIsometricPhone(0, 0, 0.65, '#ff0055')}
-              <text x="-28" y="25" fill="#ff0055" font-size="8.5" font-family="monospace" font-weight="700">MS-10 (BLOCKED)</text>
-            </g>
-            <g transform="translate(220, 70)">
-              <circle cx="0" cy="0" r="16" fill="rgba(255,0,85,0.2)" stroke="#ff0055" stroke-width="1.8" stroke-dasharray="3 3"/>
-              ${drawIsometricPhone(0, 0, 0.65, '#ff0055')}
-              <text x="-28" y="25" fill="#ff0055" font-size="8.5" font-family="monospace" font-weight="700">MS-11 (BLOCKED)</text>
-            </g>
-            <g transform="translate(70, 80)">
-              <circle cx="0" cy="0" r="16" fill="rgba(255,0,85,0.2)" stroke="#ff0055" stroke-width="1.8" stroke-dasharray="3 3"/>
-              ${drawIsometricVehicle(0, 0, 0.65, '#ff0055')}
-              <text x="-28" y="28" fill="#ff0055" font-size="8.5" font-family="monospace" font-weight="700">MS-12 (BLOCKED)</text>
-            </g>
-          </g>
-        `;
-      }
-
-      multiDevicesGroup.innerHTML = svg;
+      // Wave opacity
+      if (badgeMs2) badgeMs2.setAttribute('opacity', count >= 2 ? '1' : '0');
+      if (badgeMs3) badgeMs3.setAttribute('opacity', count >= 3 ? '1' : '0');
+      if (badgeMs4) badgeMs4.setAttribute('opacity', count >= 4 ? '1' : '0');
     };
 
     const setDeviceCount = (num) => {
       ch10State.activeDevicesCount = num;
-      [btnDev1, btnDev4, btnDev8, btnDev12].forEach(b => b && b.classList.remove('active'));
-      if (num === 1) btnDev1 && btnDev1.classList.add('active');
-      else if (num === 4) btnDev4 && btnDev4.classList.add('active');
-      else if (num === 8) btnDev8 && btnDev8.classList.add('active');
-      else btnDev12 && btnDev12.classList.add('active');
+      [btnDev1, btnDev2, btnDev3, btnDev4, btnDev8].forEach(b => b && b.classList.remove('active'));
+      if (num === 1 && btnDev1) btnDev1.classList.add('active');
+      else if (num === 2 && btnDev2) btnDev2.classList.add('active');
+      else if (num === 3 && btnDev3) btnDev3.classList.add('active');
+      else if (num === 4 && btnDev4) btnDev4.classList.add('active');
+      else if (num === 8 && btnDev8) btnDev8.classList.add('active');
 
-      updateMultiDevicesGraphic();
+      fsUserBtns.forEach(btn => {
+        const c = Number(btn.getAttribute('data-fs-count'));
+        btn.classList.toggle('active', c === num);
+      });
+
+      updateVisibleSubscribers();
       updateTowerCapacityDisplay();
+      updateFrequencyParams();
     };
 
     if (btnDev1) btnDev1.addEventListener('click', () => setDeviceCount(1));
+    if (btnDev2) btnDev2.addEventListener('click', () => setDeviceCount(2));
+    if (btnDev3) btnDev3.addEventListener('click', () => setDeviceCount(3));
     if (btnDev4) btnDev4.addEventListener('click', () => setDeviceCount(4));
     if (btnDev8) btnDev8.addEventListener('click', () => setDeviceCount(8));
-    if (btnDev12) btnDev12.addEventListener('click', () => setDeviceCount(12));
+
+    fsUserBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const c = Number(btn.getAttribute('data-fs-count'));
+        setDeviceCount(c);
+      });
+    });
 
     const setAccessMode = (mode) => {
       ch10State.accessMode = mode;
       [btnTopFdma, btnTopTdma, btnTopCdma].forEach(b => b && b.classList.remove('active'));
 
-      const emWave = container.querySelector('#iso-em-carrier-wave');
-
       if (mode === 'fdma') {
         btnTopFdma && btnTopFdma.classList.add('active');
         if (modeTag) modeTag.textContent = '1G FDMA (AMPS ANALOG)';
-        if (ms1LabelSub) ms1LabelSub.textContent = 'Tx: 825.03 MHz (Ch 1 FM)';
-        if (emWave) emWave.setAttribute('stroke', 'url(#rf-wave-grad-fdma)');
       } else if (mode === 'tdma') {
         btnTopTdma && btnTopTdma.classList.add('active');
         if (modeTag) modeTag.textContent = '2G TDMA (GSM DIGITAL)';
-        if (ms1LabelSub) ms1LabelSub.textContent = 'Tx: Slot 3/8 (GMSK Burst)';
-        if (emWave) emWave.setAttribute('stroke', 'url(#rf-wave-grad-tdma)');
       } else {
         btnTopCdma && btnTopCdma.classList.add('active');
         if (modeTag) modeTag.textContent = '2G/3G CDMA (IS-95 SPREAD SPECTRUM)';
-        if (ms1LabelSub) ms1LabelSub.textContent = 'Tx: Walsh W_64 (1.2288 Mcps)';
-        if (emWave) emWave.setAttribute('stroke', 'url(#rf-wave-grad-cdma)');
       }
 
       const tdmaClockOverlay = container.querySelector('#sim-tdma-clock-overlay');
@@ -2235,200 +2560,128 @@ function attachSubEvents(container, secId, progressManager) {
     });
 
     // ─────────────────────────────────────────────────────────────────────────
-    // COMPLETE 10-STAGE 2-WAY ROUND TRIP PROCEDURE SPECIFICATION (STALLINGS CH 10)
+    // SIMPLIFIED, CRYSTAL-CLEAR 6-STAGE 2-WAY ROUND TRIP PROCEDURE SPECIFICATION
     // ─────────────────────────────────────────────────────────────────────────
-    const stepProcedures10 = {
+    const stepProcedures6 = {
       fdma: [
         {
-          num: 'STAGE 1 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '1. MS-1 ACOUSTIC SAMPLING & COMPANDOR',
-          desc: 'The Mobile Subscriber (MS-1) microphone captures voice. Audio is band-filtered (300–3400 Hz) and processed by a syllabus compandor (compressor/expander) to suppress noise and avoid overmodulation.',
-          meta: [{ k: 'TRANSMITTER', v: 'MS-1 Handset' }, { k: 'AUDIO BANDWIDTH', v: '300 Hz – 3.4 kHz' }, { k: 'PRE-EMPHASIS', v: '+6 dB/octave high-boost' }, { k: 'PEAK DEVIATION', v: 'Δf = ±12 kHz FM' }]
+          num: 'STAGE 1 OF 6', dir: '⬆️ UPLINK TRANSMISSION',
+          title: '1. MOBILES RADIATE ON DEDICATED FREQUENCIES',
+          desc: 'Each mobile handset modulates voice onto its own dedicated reverse carrier: MS-1 transmits on f1 (825.03 MHz), MS-2 on f2 (825.06 MHz), and the remote Laptop on f3 (825.09 MHz) to avoid co-channel clash.',
+          meta: [{ k: 'TRANSMITTERS', v: 'MS-1 (Handset), MS-2, MS-3 (Laptop)' }, { k: 'ACCESS SCHEME', v: 'Frequency Division Multiplexing' }, { k: 'CHANNEL SEPARATION', v: '30 kHz Carson Guard Band' }, { k: 'POWER OUTPUT', v: '+28 dBm (600 mW Mobile EIRP)' }]
         },
         {
-          num: 'STAGE 2 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '2. 30 kHz SIMPLEX CARRIER FM MODULATION',
-          desc: 'Voice audio frequency-modulates the dedicated reverse channel carrier (825.03 MHz, Channel 1). Total Carson bandwidth is B_T = 2(Δf + f_m) = 30 kHz.',
-          meta: [{ k: 'CARRIER FREQ', v: '825.03 MHz (Ch 1 Reverse)' }, { k: 'CARSON BANDWIDTH', v: '30 kHz RF Channel' }, { k: 'WAVELENGTH λ', v: '36.34 cm' }, { k: 'MODULATION INDEX', v: 'β ≈ 2.8' }]
+          num: 'STAGE 2 OF 6', dir: '⬆️ UPLINK PROPAGATION',
+          title: '2. AIR PROPAGATION ACROSS COVERAGE SECTOR',
+          desc: 'Electromagnetic carrier waves traverse through the 5.0 km cellular coverage sector. Waves experience free-space path loss and urban shadow fading according to the Hata propagation model.',
+          meta: [{ k: 'SECTOR RADIUS', v: 'R = 5.0 km Macrocell' }, { k: 'ANTENNA PATTERN', v: '120° Tri-Sector Directional' }, { k: 'PATH LOSS', v: '-114 dB Urban Attenuation' }, { k: 'SPEED OF LIGHT', v: 'c = 3.0 × 10⁸ m/s' }]
         },
         {
-          num: 'STAGE 3 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '3. RF POWER AMPLIFICATION & AIR RADIATION',
-          desc: 'Power class 3 amplifier boosts RF signal to +28 dBm (600 mW). The antenna radiates an electromagnetic wave across the cellular coverage sector toward Tower BS-A.',
-          meta: [{ k: 'TX POWER', v: '+28 dBm (600 mW)' }, { k: 'ANTENNA TYPE', v: 'Quarter-wave whip (λ/4)' }, { k: 'EIRP', v: '+30.15 dBm' }, { k: 'POWER CONTROL', v: '8 steps (4 dB steps via MTSO)' }]
+          num: 'STAGE 3 OF 6', dir: '⬆️ UPLINK BACKHAUL',
+          title: '3. TOWER RECEPTION, DEMUX & ABIS E1 BACKHAUL',
+          desc: 'BS-A lattice tower array intercepts RF waves. Low-Noise Amplifiers (LNA) boost the weak signal, bandpass demultiplexes each frequency, and transmits digital PCM over the Abis E1 line.',
+          meta: [{ k: 'TOWER MAST', v: 'BS-A 35m Lattice Transceiver' }, { k: 'LNA GAIN', v: '+24 dB Low-Noise Preamplifier' }, { k: 'BACKHAUL LINE', v: 'Abis E1 Trunk (2.048 Mbps TDM)' }, { k: 'VOICE CODEC', v: '64 kbps G.711 PCM Trunk' }]
         },
         {
-          num: 'STAGE 4 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '4. AIR PROPAGATION & HATA URBAN PATH LOSS',
-          desc: 'EM wave traverses 2.4 km of urban terrain, experiencing free-space spreading and Rayleigh multipath reflection. Hata urban model predicts 114.2 dB median attenuation.',
-          meta: [{ k: 'PROPAGATION DISTANCE', v: 'd = 2.4 km' }, { k: 'HATA PATH LOSS', v: '114.2 dB Urban Loss' }, { k: 'FADING MARGIN', v: 'Rayleigh (m = 1) 10 dB' }, { k: 'RECEIVED POWER', v: '-84.2 dBm at Tower LNA' }]
+          num: 'STAGE 4 OF 6', dir: '⬆️ UPLINK ROUTING',
+          title: '4. BSC SWITCHING & CORE NETWORK TO WEB SERVER',
+          desc: 'Base Station Controller handles radio resource allocation and routes trunk frames into MTSO / MSC Core. The Core validates HLR/VLR subscriber records and routes IP packets to Web Host 8.8.8.8.',
+          meta: [{ k: 'RADIO CONTROLLER', v: 'BSC TRAU Processor' }, { k: 'CORE SWITCHING', v: 'MTSO / MSC Gateway' }, { k: 'DATABASE', v: 'HLR / VLR Subscriber Auth' }, { k: 'DESTINATION', v: 'Host 8.8.8.8 (Web Server)' }]
         },
         {
-          num: 'STAGE 5 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '5. BASE STATION TOWER RECEPTION & DEMUX',
-          desc: '120° directional sector antenna array at 35m mast intercepts the RF wave. Low-Noise Amplifier (LNA) boosts signal and bandpass filter bank separates the 30 kHz user channel.',
-          meta: [{ k: 'RECEIVER', v: 'BS-A Tower Mast (35m)' }, { k: 'SECTORING', v: '120° Tri-Sector (N=7)' }, { k: 'LNA GAIN', v: '+24 dB (Noise Fig < 2 dB)' }, { k: 'DEMUX METHOD', v: 'Bandpass Filter Bank' }]
+          num: 'STAGE 5 OF 6', dir: '⬇️ DOWNLINK RETURN RESPONSE',
+          title: '5. WEB HOST DISPATCHES RETURN ACK PACKET',
+          desc: 'Destination application host (8.8.8.8) processes the request and dispatches a return HTTP 200 OK / ACK response packet back across the core network toward serving Base Station BS-A.',
+          meta: [{ k: 'RESPONDING HOST', v: '8.8.8.8 (Application Server)' }, { k: 'RETURN PACKET', v: 'HTTP 200 OK / Voice ACK' }, { k: 'CORE HOP', v: 'Internet → MTSO → BSC' }, { k: 'FORWARD MAPPING', v: 'Paired Downlink Channel' }]
         },
         {
-          num: 'STAGE 6 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '6. BTS DEMODULATION & ABIS E1 TRUNK TRANSIT',
-          desc: 'BTS demodulates FM carrier into 64 kbps standard DS0 PCM audio stream. It is multiplexed onto an Abis E1 digital trunk line (2.048 Mbps, 32 time slots) leading to BSC.',
-          meta: [{ k: 'BACKHAUL TRUNK', v: 'Abis E1 Line (2.048 Mbps)' }, { k: 'CHANNELS PER E1', v: '30 Traffic + 2 Signaling' }, { k: 'CODEC', v: '64 kbps G.711 A-law PCM' }, { k: 'FRAME SYNCHRONY', v: '125 µs Frame' }]
-        },
-        {
-          num: 'STAGE 7 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '7. BSC ROUTING & MTSO SS7 / IP CONVERSION',
-          desc: 'Base Station Controller routes trunk into Mobile Telecommunications Switching Office (MTSO). MTSO queries HLR/VLR, converts audio/data to IP packets, and dispatches to server.',
-          meta: [{ k: 'SWITCHING NODE', v: 'MTSO / MSC Gateway' }, { k: 'SIGNALING', v: 'SS7 / IS-41 Location Register' }, { k: 'AUTHENTICATION', v: 'HLR/VLR Verified' }, { k: 'PUBLIC GATEWAY', v: 'IP Backbone Routing' }]
-        },
-        {
-          num: 'STAGE 8 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '8. SERVER ACKNOWLEDGMENT GENERATION',
-          desc: 'Destination application host (8.8.8.8) processes packet and generates return response (HTTP 200 OK / DNS Response / Call Ack). The packet enters the cellular downlink pipe.',
-          meta: [{ k: 'HOST', v: '8.8.8.8 (Web/DNS Server)' }, { k: 'PACKET TYPE', v: 'HTTP 200 OK / Voice ACK' }, { k: 'DIRECTION', v: 'DOWNLINK (Forward Path)' }, { k: 'PAYLOAD SIZE', v: '512 Bytes' }]
-        },
-        {
-          num: 'STAGE 9 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '9. MTSO & BSC FORWARD CARRIER MAPPING',
-          desc: 'MTSO routes the packet back through the BSC over the Abis line to serving Base Station BS-A. BTS maps the audio onto forward frequency carrier (870.03 MHz = 825.03 + 45 MHz).',
-          meta: [{ k: 'ROUTING HOP', v: 'MTSO → BSC → BS-A' }, { k: 'DUPLEX SEPARATION', v: '+45.0 MHz Offset' }, { k: 'FORWARD CARRIER', v: '870.03 MHz (Ch 1 Forward)' }, { k: 'TRANSIT DELAY', v: '< 2.8 ms' }]
-        },
-        {
-          num: 'STAGE 10 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '10. TOWER FORWARD TRANSMIT & MS-1 ACK RECEIPT',
-          desc: 'Tower high-power transmitter (100 W) radiates forward FM carrier. MS-1 receiver antenna captures the signal, recovers audio/ACK, and flashes green. 2-way round trip confirmed!',
-          meta: [{ k: 'BASE STATION TX', v: '100 W (+50 dBm)' }, { k: 'MS-1 RECEPTION', v: 'Demodulated & Verified' }, { k: 'ROUND TRIP TIME', v: '48.2 ms RTT' }, { k: 'STATUS', v: '2-WAY ROUND TRIP SUCCESS' }]
+          num: 'STAGE 6 OF 6', dir: '⬇️ DOWNLINK ARRIVAL & CONFIRMATION',
+          title: '6. TOWER BROADCASTS FORWARD CARRIER TO MOBILES',
+          desc: 'Base Station tower high-power transmitter radiates forward carrier wave (870.03 MHz = 825.03 + 45 MHz). Mobile receiver antenna captures signal, verifies ACK, and lights green. Round trip complete!',
+          meta: [{ k: 'FORWARD CARRIER', v: '870.03 MHz (+45.0 MHz Duplex)' }, { k: 'TX POWER', v: '100 W (+50 dBm Macro Base Station)' }, { k: 'SUBSCRIBER RECEPTION', v: 'Demodulated & Verified at Handset' }, { k: 'ROUND TRIP STATUS', v: '✅ 2-WAY ROUND TRIP SUCCESS' }]
         }
       ],
       tdma: [
         {
-          num: 'STAGE 1 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '1. GSM BASEBAND SPEECH ENCODING (RPE-LTP)',
-          desc: 'Acoustic voice is sampled at 8 kHz / 13-bit uniform PCM. The GSM 06.10 RPE-LTP (Regular Pulse Excitation - Long Term Prediction) codec compresses 160 samples (20 ms) into 260 bits (13 kbps).',
-          meta: [{ k: 'SAMPLING RATE', v: '8 kHz / 13-bit Linear' }, { k: 'CODEC', v: 'GSM 06.10 RPE-LTP (13 kbps)' }, { k: 'SPEECH BLOCK', v: '260 bits per 20 ms' }, { k: 'CLASS IA BITS', v: '50 most critical bits' }]
+          num: 'STAGE 1 OF 6', dir: '⬆️ UPLINK TRANSMISSION',
+          title: '1. GSM MOBILE BURST EMISSION (TIME SLOTS)',
+          desc: 'Each subscriber transmits in its assigned 577 µs time window on the 890.2 MHz carrier: MS-1 transmits in Slot 1, MS-2 in Slot 3, and MS-3 Laptop in Slot 5 using 0.3 GMSK digital modulation.',
+          meta: [{ k: 'FRAME DURATION', v: '4.615 ms (8 Time Slots)' }, { k: 'SLOT DURATION', v: '577 µs per user burst' }, { k: 'MODULATION', v: '0.3 GMSK (270.833 kbps)' }, { k: 'BURST FORMAT', v: '156.25 bits Normal Burst' }]
         },
         {
-          num: 'STAGE 2 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '2. CHANNEL ENCODING, FEC & INTERLEAVING',
-          desc: 'Class IA bits receive 3-bit CRC. The 182 sensitive bits are protected by half-rate convolutional code (R=1/2, K=5), yielding 456 encoded bits, diagonal interleaved across 8 TDMA bursts.',
-          meta: [{ k: 'ERROR DETECTION', v: '3-bit CRC Checksum' }, { k: 'CONVOLUTIONAL FEC', v: 'Rate 1/2, Constraint K=5' }, { k: 'TOTAL BITS', v: '456 bits / 20 ms' }, { k: 'INTERLEAVING', v: 'Diagonal over 8 bursts' }]
+          num: 'STAGE 2 OF 6', dir: '⬆️ UPLINK PROPAGATION',
+          title: '2. AIR PROPAGATION & TIMING ADVANCE SYNC',
+          desc: 'Digital bursts propagate 5.0 km across the coverage sector. Tower adaptive equalizer correlates the 26-bit midamble sequence to cancel multipath dispersion and enforce timing advance alignment.',
+          meta: [{ k: 'SECTOR RADIUS', v: 'R = 5.0 km Macrocell' }, { k: 'TIMING ADVANCE', v: '0..63 steps (3.69 µs step)' }, { k: 'MIDAMBLE', v: '26-bit Training Sequence' }, { k: 'EQUALIZER', v: 'Viterbi MLSE Detector' }]
         },
         {
-          num: 'STAGE 3 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '3. 156.25-BIT NORMAL BURST ASSEMBLY',
-          desc: 'Bits are formatted into a GSM normal burst: 3 tail bits, 57 encrypted data bits, 1 stealing flag, 26-bit training sequence midamble, 1 stealing flag, 57 data bits, 3 tail bits, and 8.25 guard bits.',
-          meta: [{ k: 'BURST STRUCTURE', v: '156.25 bits total' }, { k: 'DATA PAYLOAD', v: '114 encrypted bits' }, { k: 'TRAINING MIDAMBLE', v: '26-bit known pattern' }, { k: 'GUARD PERIOD', v: '8.25 bits (30.46 µs)' }]
+          num: 'STAGE 3 OF 6', dir: '⬆️ UPLINK BACKHAUL',
+          title: '3. BTS DEMODULATION & ABIS E1 TRUNK TRANSIT',
+          desc: 'Tower BTS collects synchronized bursts, performs convolutional FEC decoding and de-interleaving, and dispatches 16 kbps TRAU sub-multiplexed speech onto the Abis E1 line.',
+          meta: [{ k: 'BASE STATION', v: 'BS-A GSM Transceiver' }, { k: 'ABIS INTERFACE', v: 'LAPD over 2.048 Mbps E1' }, { k: 'SUB-MULTIPLEX', v: 'TRAU 16 kbps Channels' }, { k: 'CONTROLLER', v: 'BSC Switch Frame' }]
         },
         {
-          num: 'STAGE 4 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '4. 0.3 GMSK MODULATION & TIME SLOT 3 TRANSMIT',
-          desc: 'MS-1 modulates the burst onto 890.2 MHz carrier using Gaussian Minimum Shift Keying (BT = 0.3) at 270.833 kbps. It transmits strictly during assigned Time Slot 3 (577 µs window).',
-          meta: [{ k: 'MODULATION', v: '0.3 GMSK (Constant Envelope)' }, { k: 'DATA RATE', v: '270.833 kbps' }, { k: 'CARRIER FREQ', v: '890.2 MHz (ARFCN 1)' }, { k: 'TIME SLOT', v: 'TS 3 (577 µs duration)' }]
+          num: 'STAGE 4 OF 6', dir: '⬆️ UPLINK ROUTING',
+          title: '4. BSC SWITCHING, A5 CIPHER & SGSN/GGSN GATEWAY',
+          desc: 'BSC decrypts subscriber data using A5 session keys and forwards frames to MSC/SGSN. GGSN decapsulates IP packets and dispatches them across the fiber internet backbone to 8.8.8.8.',
+          meta: [{ k: 'CIPHER DECRYPT', v: 'A5/1 Voice & GPRS Encryption' }, { k: 'PACKET CORE', v: 'SGSN / GGSN Gateway' }, { k: 'AUTHENTICATION', v: 'HLR/VLR Verified' }, { k: 'TARGET HOST', v: '8.8.8.8 (Web Server)' }]
         },
         {
-          num: 'STAGE 5 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '5. AIR PROPAGATION & ADAPTIVE EQUALIZATION',
-          desc: 'Burst propagates 2.4 km through multipath delay spread. Tower Viterbi equalizer correlates the received 26-bit midamble with known reference to cancel intersymbol interference (ISI).',
-          meta: [{ k: 'TIMING ADVANCE', v: '0..63 steps (3.69 µs step)' }, { k: 'EQUALIZER', v: 'MLSE Viterbi Receiver' }, { k: 'MULTIPATH SPREAD', v: 'Up to 16 µs delay spread' }, { k: 'CARRIER BW', v: '200 kHz channel' }]
+          num: 'STAGE 5 OF 6', dir: '⬇️ DOWNLINK RETURN RESPONSE',
+          title: '5. SERVER DISPATCHES RETURN ACK PACKET',
+          desc: 'Web server (8.8.8.8) returns HTTP 200 OK / TCP ACK. The packet traverses back into GGSN and BSC, where it is scheduled into the forward GSM time-slot frame.',
+          meta: [{ k: 'RESPONDING HOST', v: '8.8.8.8 (Server)' }, { k: 'DOWNLINK PAYLOAD', v: 'HTTP 200 OK / TCP ACK' }, { k: 'SCHEDULER', v: 'BSC Forward Slot Allocator' }, { k: 'PAIRED FREQ', v: '935.2 MHz (+45 MHz Offset)' }]
         },
         {
-          num: 'STAGE 6 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '6. BTS DE-INTERLEAVING & ABIS E1 TRUNK TRANSIT',
-          desc: 'BTS gathers 8 bursts, performs de-interleaving and Viterbi FEC decoding. Demodulated speech frames are sent over the Abis 2.048 Mbps E1 trunk to the Base Station Controller.',
-          meta: [{ k: 'ABIS PROTOCOL', v: 'GSM 08.58 / LAPD' }, { k: 'TRUNK INTERFACE', v: 'E1 2.048 Mbps' }, { k: 'TRAU UNIT', v: '16 kbps sub-multiplexing' }, { k: 'CONTROLLER', v: 'BSC Switch Frame' }]
-        },
-        {
-          num: 'STAGE 7 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '7. MSC SWITCHING, A5 CIPHER & GGSN IP GATEWAY',
-          desc: 'Speech is decrypted using the subscriber A5 session cipher key. For data, SGSN/GGSN decapsulates the GTP tunnel and forwards IP datagram onto the public fiber backbone to 8.8.8.8.',
-          meta: [{ k: 'CIPHER DECRYPT', v: 'A5/1 Encryption Verified' }, { k: 'CORE NODES', v: 'MSC / SGSN / GGSN' }, { k: 'HLR/VLR', v: 'IMSI & Triplet Verified' }, { k: 'DESTINATION', v: '8.8.8.8 Web Host' }]
-        },
-        {
-          num: 'STAGE 8 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '8. WEB HOST DISPATCHES RETURN ACK PACKET',
-          desc: 'Application server at 8.8.8.8 generates return response (HTTP 200 OK / TCP ACK). The IP packet traverses back into the cellular gateway (GGSN / MSC Core).',
-          meta: [{ k: 'RESPONSE SOURCE', v: '8.8.8.8 (Web Server)' }, { k: 'PAYLOAD', v: 'HTTP 200 OK / TCP ACK' }, { k: 'CORE INGRESS', v: 'GGSN Gateway' }, { k: 'DIRECTION', v: 'DOWNLINK FORWARD' }]
-        },
-        {
-          num: 'STAGE 9 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '9. CORE & BSC DOWNLINK FRAME SCHEDULING',
-          desc: 'BSC transcoder encodes downlink speech into 456 bits, interleave across bursts, and schedules forward transmission in TS 3 of the paired 935.2 MHz carrier (890.2 + 45 MHz).',
-          meta: [{ k: 'DOWNLINK FREQ', v: '935.2 MHz (+45 MHz Offset)' }, { k: 'FRAME SCHEDULER', v: 'TDMA TS 3 Allocated' }, { k: 'BURST TYPE', v: 'Downlink Normal Burst' }, { k: 'LATENCY', v: '3.1 ms Backhaul' }]
-        },
-        {
-          num: 'STAGE 10 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '10. BTS FORWARD BURST & MS-1 CLIENT RECEIPT',
-          desc: 'BTS transmits forward 156.25-bit burst on Slot 3. MS-1 receiver deciphers with A5 key, plays audio / renders data, and lights up green. Full 2-way GSM round trip finished!',
-          meta: [{ k: 'DOWNLINK BURST', v: 'TS 3 (577 µs Burst)' }, { k: 'CLIENT RECEIVER', v: 'MS-1 Acknowledged' }, { k: 'ROUND TRIP TIME', v: '58.4 ms RTT' }, { k: 'STATUS', v: '2-WAY ROUND TRIP SUCCESS' }]
+          num: 'STAGE 6 OF 6', dir: '⬇️ DOWNLINK ARRIVAL & CONFIRMATION',
+          title: '6. BTS TRANSMITS FORWARD BURST & HANDSET ACCEPTS',
+          desc: 'Tower transmits forward 156.25-bit burst on downlink Slot 1. MS-1 mobile receiver deciphers data, verifies packet delivery, and confirms round trip success!',
+          meta: [{ k: 'FORWARD BURST', v: 'TS 1 on 935.2 MHz' }, { k: 'CLIENT RECEIVER', v: 'MS-1 Acknowledged' }, { k: 'ROUND TRIP TIME', v: '52.4 ms RTT' }, { k: 'ROUND TRIP STATUS', v: '✅ 2-WAY ROUND TRIP SUCCESS' }]
         }
       ],
       cdma: [
         {
-          num: 'STAGE 1 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '1. QCELP VOICE CODEC & CONVOLUTIONAL FEC',
-          desc: 'Voice is digitized by variable-rate 8 kbps QCELP vocoder (9600, 4800, 2400, or 1200 bps). Convolutional encoder applies powerful rate 1/3, constraint length K=9 FEC for robust protection.',
-          meta: [{ k: 'VOICE CODEC', v: 'QCELP 8 kbps Variable Rate' }, { k: 'CONVOLUTIONAL FEC', v: 'Rate 1/3, Constraint K=9' }, { k: 'SYMBOL RATE', v: '28.8 ksps Encoded' }, { k: 'INTERLEAVING', v: '20 ms Block Interleaver' }]
+          num: 'STAGE 1 OF 6', dir: '⬆️ UPLINK TRANSMISSION',
+          title: '1. CDMA SPREAD SPECTRUM MODULATION (WALSH)',
+          desc: 'All subscribers transmit simultaneously on the same 1.25 MHz band. MS-1 is spread by Walsh code W1, MS-2 by W2, and MS-3 by W3 at 1.2288 Mcps chip rate.',
+          meta: [{ k: 'CHIP RATE', v: '1.2288 Mcps (128 chips/bit)' }, { k: 'SPREADING CODES', v: 'Orthogonal Walsh Functions' }, { k: 'CHANNEL BANDWIDTH', v: '1.25 MHz Spread Spectrum' }, { k: 'POWER CONTROL', v: 'Fast Closed-Loop (800 Hz)' }]
         },
         {
-          num: 'STAGE 2 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '2. 64-ARY ORTHOGONAL MODULATION (WALSH)',
-          desc: 'Every 6 encoded code symbols are mapped into one of 64 orthogonal Walsh functions (W_0 to W_63), providing 64-ary orthogonal modulation at 307.2 kcps.',
-          meta: [{ k: 'WALSH MAPPING', v: '6 symbols → 1 Walsh row' }, { k: 'WALSH RATE', v: '307.2 kcps' }, { k: 'CODE SET', v: 'Hadamard-Walsh Matrix 64×64' }, { k: 'CROSS-CORRELATION', v: 'R_ij = 0 (Orthogonal)' }]
+          num: 'STAGE 2 OF 6', dir: '⬆️ UPLINK PROPAGATION',
+          title: '2. AIR PROPAGATION ACROSS 1.25 MHz CARRIER',
+          desc: 'Composite spread spectrum waveform traverses 5.0 km across the macrocell sector. Signals from all users superimpose in the air, separated solely by orthogonal mathematical coding.',
+          meta: [{ k: 'SECTOR RADIUS', v: 'R = 5.0 km Macrocell' }, { k: 'FREQUENCY REUSE', v: 'Universal N = 1 (All Cells)' }, { k: 'CARRIER FREQ', v: '824.70 MHz (Ch 283)' }, { k: 'SOFT CAPACITY', v: 'Graceful Degradation' }]
         },
         {
-          num: 'STAGE 3 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '3. LONG CODE SPREADING & PN QUENCHING',
-          desc: 'Signal is spread by 42-bit user long code PN sequence at 1.2288 Mcps (giving 128 chips per symbol) and scrambled by I and Q pilot PN sequences (length 2^15).',
-          meta: [{ k: 'SPREADING FACTOR', v: 'G = 128 (21.1 dB Gain)' }, { k: 'CHIP RATE', v: '1.2288 Mcps' }, { k: 'PN SEQUENCE', v: '42-bit Long Code Mask' }, { k: 'CHANNEL BW', v: '1.25 MHz Spread Spectrum' }]
+          num: 'STAGE 3 OF 6', dir: '⬆️ UPLINK BACKHAUL',
+          title: '3. TOWER RAKE RECEIVER & IUB BACKHAUL',
+          desc: 'Tower 3-finger RAKE receiver resolves multipath delays (> 814 ns apart) and correlates user codes. Despread bitstreams are multiplexed over Iub ATM/IP backhaul to RNC.',
+          meta: [{ k: 'RAKE RECEIVER', v: '3-Finger Maximal Ratio Combining' }, { k: 'DESPREADING', v: 'Correlates W1, W2, W3' }, { k: 'DIVERSITY GAIN', v: '+3 dB Eb/N0' }, { k: 'BACKHAUL TRUNK', v: 'Iub ATM / IP Backbone' }]
         },
         {
-          num: 'STAGE 4 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '4. AIR PROPAGATION ACROSS 1.25 MHz CARRIER',
-          desc: 'Spread spectrum waveform propagates over 2.4 km. All cell users transmit concurrently on the exact same 1.25 MHz channel. Background noise increases gracefully (soft capacity limit).',
-          meta: [{ k: 'FREQUENCY REUSE', v: 'Universal Reuse N = 1' }, { k: 'CARRIER FREQ', v: '824.70 MHz (Ch 283)' }, { k: 'PATH LOSS', v: '114 dB Urban' }, { k: 'FAST POWER CONTROL', v: '800 bps closed loop (±1 dB)' }]
+          num: 'STAGE 4 OF 6', dir: '⬆️ UPLINK ROUTING',
+          title: '4. RNC / PDSN CORE DECAPSULATION TO INTERNET',
+          desc: 'Radio Network Controller (RNC) manages soft handoff and routes frames to Packet Data Serving Node (PDSN). PDSN extracts IP datagrams and routes them to 8.8.8.8.',
+          meta: [{ k: 'RADIO CONTROLLER', v: 'RNC Unit' }, { k: 'PACKET CORE', v: 'PDSN / AAA Gateway' }, { k: 'PUBLIC ROUTING', v: 'Fiber Core to Internet' }, { k: 'DESTINATION', v: '8.8.8.8 (Web Host)' }]
         },
         {
-          num: 'STAGE 5 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '5. TOWER RAKE RECEIVER MULTIPATH RESOLUTION',
-          desc: 'Tower RAKE receiver assigns 3 separate correlator fingers (τ_1, τ_2, τ_3) to track multipath echoes arriving > 814 ns apart, combining them via Maximal Ratio Combining (MRC).',
-          meta: [{ k: 'RAKE FINGERS', v: '3 Multipath Resolvers' }, { k: 'CHIP DURATION', v: 'Tc = 813.8 ns resolution' }, { k: 'DIVERSITY GAIN', v: '+3 dB Eb/N0 Gain' }, { k: 'DESPREADING', v: 'Correlated with User Code' }]
+          num: 'STAGE 5 OF 6', dir: '⬇️ DOWNLINK RETURN RESPONSE',
+          title: '5. SERVER DISPATCHES RETURN ACK PACKET',
+          desc: 'Web server (8.8.8.8) generates return HTTP 200 OK / TCP ACK response. It travels across PDSN and RNC to be encoded onto forward Walsh code W64.',
+          meta: [{ k: 'RESPONDING HOST', v: '8.8.8.8 (Server)' }, { k: 'RETURN PACKET', v: 'HTTP 200 OK' }, { k: 'FORWARD CODE', v: 'Walsh Channel W64' }, { k: 'FORWARD FREQ', v: '869.70 MHz (+45 MHz Offset)' }]
         },
         {
-          num: 'STAGE 6 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '6. BTS CORRELATION & RNC MACRO-DIVERSITY',
-          desc: 'BTS correlates user code and recovers the 9.6 kbps bitstream. Frame is forwarded over Iub ATM/IP backhaul to Radio Network Controller (RNC) for soft handoff frame selection.',
-          meta: [{ k: 'BACKHAUL', v: 'Iub ATM / IP Trunk' }, { k: 'HANDOFF TYPE', v: 'Soft Handoff (Make-Before-Break)' }, { k: 'FRAME SELECTION', v: 'Best Eb/N0 from BS-A / BS-B' }, { k: 'CONTROLLER', v: 'RNC Unit' }]
-        },
-        {
-          num: 'STAGE 7 OF 10', dir: '⬆️ UPLINK DIRECTION',
-          title: '7. PDSN CORE DECAPSULATION & IP BACKBONE',
-          desc: 'Packet Data Serving Node (PDSN) terminates PPP session, decapsulates IP datagram, and routes it across the public core backbone to destination web host 8.8.8.8.',
-          meta: [{ k: 'CORE NODE', v: 'PDSN / Packet Core' }, { k: 'AUTHENTICATION', v: 'AAA Server / RADIUS' }, { k: 'IP ROUTE', v: 'Public Fiber Backbone' }, { k: 'DESTINATION', v: '8.8.8.8 Web Host' }]
-        },
-        {
-          num: 'STAGE 8 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '8. APPLICATION SERVER DISPATCHES RETURN ACK',
-          desc: 'Web server 8.8.8.8 responds with HTTP 200 OK / DNS Response. The return packet reaches PDSN to begin the forward link transit.',
-          meta: [{ k: 'REPLY SOURCE', v: '8.8.8.8 (Web Server)' }, { k: 'PACKET', v: 'HTTP 200 OK' }, { k: 'INGRESS NODE', v: 'PDSN Gateway' }, { k: 'DIRECTION', v: 'DOWNLINK FORWARD' }]
-        },
-        {
-          num: 'STAGE 9 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '9. RNC & BTS FORWARD WALSH CODE MULTIPLEXING',
-          desc: 'BTS modulates return data onto the forward link using Walsh code W_64. Pilot channel (W_0), sync channel (W_32), and paging channels are combined into composite QPSK wave.',
-          meta: [{ k: 'FORWARD CARRIER', v: '869.70 MHz (+45 MHz Offset)' }, { k: 'FORWARD CODE', v: 'Walsh Channel W_64' }, { k: 'PILOT CHANNEL', v: 'Walsh W_0 (Phase Reference)' }, { k: 'POWER ALLOCATION', v: 'Dynamic Forward Power Control' }]
-        },
-        {
-          num: 'STAGE 10 OF 10', dir: '⬇️ DOWNLINK RETURN PATH',
-          title: '10. BTS SPREAD BROADCAST & MOBILE RAKE RECOVERY',
-          desc: 'Tower transmits forward 1.25 MHz waveform. MS-1 mobile RAKE receiver correlates with Walsh code W_64, cancels other users via code orthogonality, and confirms round trip!',
-          meta: [{ k: 'FORWARD MOD', v: 'QPSK 1.2288 Mcps' }, { k: 'ORTHOGONALITY', v: '⟨W_i, W_j⟩ = 0' }, { k: 'ROUND TRIP TIME', v: '44.6 ms RTT' }, { k: 'STATUS', v: '2-WAY ROUND TRIP SUCCESS' }]
+          num: 'STAGE 6 OF 6', dir: '⬇️ DOWNLINK ARRIVAL & CONFIRMATION',
+          title: '6. TOWER BROADCASTS DOWNLINK & MOBILE CONFIRMS',
+          desc: 'Tower broadcasts composite spread waveform. MS-1 handset RAKE receiver correlates with Walsh code W64, rejects other codes, and verifies round trip completion!',
+          meta: [{ k: 'FORWARD CARRIER', v: '869.70 MHz QPSK Spread' }, { k: 'CLIENT RECEIVER', v: 'MS-1 RAKE Despreader' }, { k: 'ROUND TRIP TIME', v: '44.8 ms RTT' }, { k: 'ROUND TRIP STATUS', v: '✅ 2-WAY ROUND TRIP SUCCESS' }]
         }
       ]
     };
 
     const updateStepDetailCard = (stage) => {
       const mode = ch10State.accessMode;
-      const list = stepProcedures10[mode] || stepProcedures10.fdma;
+      const list = stepProcedures6[mode] || stepProcedures6.fdma;
       const step = list[stage];
       if (!step) return;
 
@@ -2436,7 +2689,7 @@ function attachSubEvents(container, secId, progressManager) {
       if (stepNum) stepNum.textContent = step.num;
       if (stepDirection) {
         stepDirection.textContent = step.dir;
-        stepDirection.style.color = stage < 7 ? 'var(--accent-cyan)' : 'var(--status-ready)';
+        stepDirection.style.color = stage < 4 ? 'var(--accent-cyan)' : 'var(--status-ready)';
       }
       if (stepTitle) stepTitle.textContent = step.title;
       if (stepDesc) stepDesc.textContent = step.desc;
@@ -2453,58 +2706,54 @@ function attachSubEvents(container, secId, progressManager) {
     };
 
     // ─────────────────────────────────────────────────────────────────────────
-    // CAMERA AUTO-FOLLOW INTERPOLATION FOR 10-STAGE 2-WAY ROUND TRIP
+    // CAMERA AUTO-FOLLOW INTERPOLATION FOR 6 SIMPLIFIED STAGES
     // ─────────────────────────────────────────────────────────────────────────
-    const updateCameraAutoFollow = (progress10) => {
+    const updateCameraAutoFollow = (progress6) => {
       if (!ch10State.autoCamera || !isoSvg) return;
+      const L = activeLayout;
+      const targets = L.cameraTargets;
 
       let target;
-      if (progress10 < 2.0) {
-        // Stage 0 & 1: Client Baseband Encoding & FEC
-        target = cameraTargets.client;
-      } else if (progress10 < 4.0) {
-        // Stage 2 & 3: Air Propagation from Client to Tower
-        const t = (progress10 - 2.0) / 2.0;
+      if (progress6 < 1.0) {
+        // Stage 0: Mobiles radiating on own frequencies
+        target = targets.client;
+      } else if (progress6 < 2.0) {
+        // Stage 1: Air propagation from Mobiles to Tower across expansive sector
+        const t = progress6 - 1.0;
         target = {
-          vx: 40 + t * 580,
-          vy: 80 - t * 0,
-          vw: 480 + t * 80,
-          vh: 360,
+          vx: targets.client.vx + t * (targets.tower.vx - targets.client.vx),
+          vy: targets.client.vy + t * (targets.tower.vy - targets.client.vy),
+          vw: targets.client.vw + t * (targets.tower.vw - targets.client.vw),
+          vh: targets.client.vh,
           label: `AIR LINK UPLINK (${(t*100).toFixed(0)}%)`,
           icon: '📡'
         };
-      } else if (progress10 < 5.0) {
-        // Stage 4: Base Station Tower & LNA Reception
-        target = cameraTargets.tower;
-      } else if (progress10 < 6.0) {
-        // Stage 5: BSC Controller
-        target = cameraTargets.bsc;
-      } else if (progress10 < 7.0) {
-        // Stage 6: Core Cloud & HLR/VLR
-        target = cameraTargets.core;
-      } else if (progress10 < 8.0) {
-        // Stage 7: Web Host Server (8.8.8.8)
-        target = cameraTargets.server;
-      } else if (progress10 < 9.0) {
-        // Stage 8: Downlink return through Core & BSC to Tower
-        const t = (progress10 - 8.0);
+      } else if (progress6 < 3.0) {
+        // Stage 2: Tower reception & Abis trunk
+        target = targets.tower;
+      } else if (progress6 < 4.0) {
+        // Stage 3: Core switching to Web server
+        const t = progress6 - 3.0;
         target = {
-          vx: 1280 - t * 660,
-          vy: 80,
-          vw: 360 + t * 120,
-          vh: 360,
-          label: `DOWNLINK TRANSIT (${(t*100).toFixed(0)}%)`,
-          icon: '🗼'
+          vx: targets.core.vx + t * (targets.server.vx - targets.core.vx),
+          vy: targets.core.vy,
+          vw: targets.core.vw + t * (targets.server.vw - targets.core.vw),
+          vh: targets.core.vh,
+          label: `CORE ROUTING TO SERVER (${(t*100).toFixed(0)}%)`,
+          icon: '🖥️'
         };
+      } else if (progress6 < 5.0) {
+        // Stage 4: Server generates Downlink ACK
+        target = targets.server;
       } else {
-        // Stage 9: Forward RF Broadcast from Tower to MS-1
-        const t = (progress10 - 9.0);
+        // Stage 5: Downlink RF broadcast from Tower back to Mobiles
+        const t = progress6 - 5.0;
         target = {
-          vx: 620 - t * 580,
-          vy: 80,
-          vw: 480,
-          vh: 360,
-          label: `FORWARD RF ARRIVAL (${(t*100).toFixed(0)}%)`,
+          vx: targets.tower.vx - t * (targets.tower.vx - targets.client.vx),
+          vy: targets.tower.vy - t * (targets.tower.vy - targets.client.vy),
+          vw: targets.tower.vw - t * (targets.tower.vw - targets.client.vw),
+          vh: targets.tower.vh,
+          label: `DOWNLINK ARRIVAL (${(t*100).toFixed(0)}%)`,
           icon: '💻'
         };
       }
@@ -2520,8 +2769,25 @@ function attachSubEvents(container, secId, progressManager) {
       if (camIcon) camIcon.textContent = target.icon;
     };
 
+    // Helper to generate smooth sine wave path from start to end
+    const buildSinePath = (x1, y1, x2, y2, cycles, amp, phase) => {
+      let d = `M ${x1.toFixed(1)} ${y1.toFixed(1)}`;
+      const steps = 40;
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      for (let s = 1; s <= steps; s++) {
+        const frac = s / steps;
+        const wx = x1 + frac * dx;
+        const baseY = y1 + frac * dy;
+        const offset = Math.sin(frac * cycles * Math.PI * 2 - phase) * amp;
+        const wy = baseY + offset;
+        d += ` L ${wx.toFixed(1)} ${wy.toFixed(1)}`;
+      }
+      return d;
+    };
+
     // ─────────────────────────────────────────────────────────────────────────
-    // DEDICATED INDEPENDENT 2-WAY ROUND TRIP ANIMATION LOOP (1600 x 480)
+    // DEDICATED ANIMATION LOOP (SIMPLIFIED 6 STAGES, INDIVIDUAL WAVES & PACKETS)
     // ─────────────────────────────────────────────────────────────────────────
     let localSimClock = 0;
     let lastPerfTimestamp = performance.now();
@@ -2538,261 +2804,294 @@ function attachSubEvents(container, secId, progressManager) {
       const speed = ch10State.simSpeedMultiplier;
       const mode = ch10State.accessMode;
       const count = ch10State.activeDevicesCount;
+      const L = activeLayout;
 
-      // 10 full stages over 12.0 seconds
+      // 6 full stages over 12.0 seconds (2.0s per stage)
       const cycleDuration = 12.0;
-      const progress10 = ch10State.manualStep >= 0
+      const progress6 = ch10State.manualStep >= 0
         ? (ch10State.manualStep + 0.5)
-        : ((time % cycleDuration) / cycleDuration) * 10.0; // 0.0 to 10.0
+        : ((time % cycleDuration) / cycleDuration) * 6.0;
 
-      const currentStage = Math.min(9, Math.floor(progress10));
-      const subT = ch10State.manualStep >= 0 ? 0.5 : (progress10 - currentStage);
+      const currentStage = Math.min(5, Math.floor(progress6));
+      const subT = ch10State.manualStep >= 0 ? 0.5 : (progress6 - currentStage);
 
       // 1. Update Camera
-      updateCameraAutoFollow(progress10);
+      updateCameraAutoFollow(progress6);
 
-      // 2. Oscillate Electromagnetic Sine Waves across Air Interface (x=160 to 780)
-      const emWaveUplink = container.querySelector('#iso-em-carrier-wave');
-      const emWaveDownlink = container.querySelector('#iso-em-downlink-wave');
+      // 2. Animate Oscillating Sine Waves for each mobile on its own frequency
+      const isAirStage = currentStage === 1;
+      const towerAntX = L.tower.x;
+      const towerAntY = L.tower.y - 120; // top antenna tip of tower
 
-      if (emWaveUplink) {
-        const isUplinkActive = currentStage >= 2 && currentStage <= 4;
-        emWaveUplink.setAttribute('opacity', isUplinkActive ? '0.88' : '0.15');
-        const waveStartX = 160;
-        const waveEndX = 780;
-        const waveY = 220;
-        const waveFreq = mode === 'cdma' ? 32 : mode === 'tdma' ? 22 : 14;
-        const wavePhase = time * 14 * speed;
-        let waveD = `M ${waveStartX} ${waveY}`;
-        const steps = 48;
-        for (let s = 0; s <= steps; s++) {
-          const frac = s / steps;
-          const wx = waveStartX + frac * (waveEndX - waveStartX);
-          const atten = 1 - frac * 0.35;
-          const wy = waveY + Math.sin(frac * waveFreq * Math.PI * 2 - wavePhase) * (15 * atten);
-          waveD += ` L ${wx.toFixed(1)} ${wy.toFixed(1)}`;
-        }
-        emWaveUplink.setAttribute('d', waveD);
+      if (waveMs1) {
+        const op = isAirStage ? 0.95 : 0.15;
+        waveMs1.setAttribute('opacity', op);
+        const d1 = buildSinePath(L.ms1.x, L.ms1.y - 35, towerAntX, towerAntY, 14, 14, time * 14 * speed);
+        waveMs1.setAttribute('d', d1);
       }
 
-      if (emWaveDownlink) {
-        const isDownlinkActive = currentStage >= 8;
-        emWaveDownlink.setAttribute('opacity', isDownlinkActive ? '0.88' : '0');
-        if (isDownlinkActive) {
-          const waveStartX = 780;
-          const waveEndX = 160;
-          const waveY = 205;
-          const wavePhase = -time * 14 * speed;
-          let waveD = `M ${waveStartX} ${waveY}`;
-          const steps = 48;
-          for (let s = 0; s <= steps; s++) {
-            const frac = s / steps;
-            const wx = waveStartX - frac * (waveStartX - waveEndX);
-            const wy = waveY + Math.sin(frac * 18 * Math.PI * 2 - wavePhase) * 14;
-            waveD += ` L ${wx.toFixed(1)} ${wy.toFixed(1)}`;
-          }
-          emWaveDownlink.setAttribute('d', waveD);
+      if (waveMs2) {
+        const op = (count >= 2 && isAirStage) ? 0.9 : 0;
+        waveMs2.setAttribute('opacity', op);
+        if (count >= 2) {
+          const d2 = buildSinePath(L.ms2.x, L.ms2.y - 35, towerAntX, towerAntY, 16, 13, time * 16 * speed + 1.2);
+          waveMs2.setAttribute('d', d2);
         }
       }
 
-      // 3. Pulse Antennas
-      const clientPulse = container.querySelector('#iso-client-rf-pulse');
-      const clientPulse2 = container.querySelector('#iso-client-rf-pulse-2');
-      const bsPulse = container.querySelector('#iso-bs-rf-pulse');
-
-      if (clientPulse && clientPulse2 && bsPulse) {
-        const pR = 10 + ((time * 24 * speed) % 35);
-        const pOp = Math.max(0, 1 - (pR / 45));
-        clientPulse.setAttribute('r', pR);
-        clientPulse.setAttribute('opacity', (currentStage === 2 || currentStage === 9) ? pOp * 0.85 : 0.12);
-
-        const pR2 = 14 + ((time * 24 * speed + 14) % 40);
-        const pOp2 = Math.max(0, 1 - (pR2 / 50));
-        clientPulse2.setAttribute('r', pR2);
-        clientPulse2.setAttribute('opacity', (currentStage === 2 || currentStage === 9) ? pOp2 * 0.6 : 0.08);
-
-        if (currentStage === 4 || currentStage === 8 || currentStage === 9) {
-          const bsR = 14 + ((time * 22 * speed) % 40);
-          bsPulse.setAttribute('r', bsR);
-          bsPulse.setAttribute('opacity', Math.max(0, 1 - bsR / 50));
-        } else {
-          bsPulse.setAttribute('opacity', 0);
+      if (waveMs3) {
+        const op = (count >= 3 && isAirStage) ? 0.9 : 0;
+        waveMs3.setAttribute('opacity', op);
+        if (count >= 3) {
+          const d3 = buildSinePath(L.ms3.x, L.ms3.y - 30, towerAntX, towerAntY, 18, 12, time * 18 * speed + 2.4);
+          waveMs3.setAttribute('d', d3);
         }
       }
 
-      // 4. Move Packets: Forward Uplink (Stages 0..6) & Return Downlink ACK (Stages 7..9)
-      const isoBubbleUplink = container.querySelector('#iso-pkt-bubble');
-      const isoTextUplink = container.querySelector('#iso-pkt-text');
-      const isoPktAck = container.querySelector('#iso-animated-packet-ack');
-      const isoBubbleAck = container.querySelector('#iso-pkt-bubble-ack');
-      const isoTextAck = container.querySelector('#iso-pkt-text-ack');
-      const isoBubble2 = container.querySelector('#iso-animated-packet-2');
-      const isoText2 = container.querySelector('#iso-pkt-text-2');
+      if (waveMs4) {
+        const op = (count >= 4 && isAirStage) ? 0.9 : 0;
+        waveMs4.setAttribute('opacity', op);
+        if (count >= 4) {
+          const d4 = buildSinePath(L.ms4.x, L.ms4.y - 30, towerAntX, towerAntY, 20, 12, time * 20 * speed + 3.6);
+          waveMs4.setAttribute('d', d4);
+        }
+      }
 
-      // Forward Uplink Packet Movement
-      if (isoBubbleUplink && isoTextUplink) {
-        if (currentStage < 7) {
-          isoBubbleUplink.setAttribute('opacity', 1);
-          isoTextUplink.setAttribute('opacity', 1);
+      // Downlink return wave from Tower back to MS-1 during Stage 5
+      if (waveDownlink) {
+        const isDlStage = currentStage === 5;
+        waveDownlink.setAttribute('opacity', isDlStage ? 0.95 : 0);
+        if (isDlStage) {
+          const dlPath = buildSinePath(towerAntX, towerAntY, L.ms1.x, L.ms1.y - 35, 18, 16, -time * 16 * speed);
+          waveDownlink.setAttribute('d', dlPath);
+        }
+      }
+      if (badgeDl) {
+        badgeDl.setAttribute('opacity', currentStage === 5 ? '1' : '0');
+      }
 
-          let px = 160, py = 250, label = 'UPLINK BASEBAND', color = '#00e5ff', bw = 135;
+      // 3. Pulse Antennas on transmitting nodes
+      const pulseMs1 = container.querySelector('#pulse-ms1');
+      const pulseMs2 = container.querySelector('#pulse-ms2');
+      const pulseMs3 = container.querySelector('#pulse-ms3');
+      const pulseMs4 = container.querySelector('#pulse-ms4');
+      const pulseTower = container.querySelector('#pulse-tower');
+
+      const pR = 12 + ((time * 26 * speed) % 35);
+      const pOp = Math.max(0, 1 - (pR / 45));
+
+      if (pulseMs1) {
+        pulseMs1.setAttribute('r', pR);
+        pulseMs1.setAttribute('opacity', (currentStage === 0 || currentStage === 1 || currentStage === 5) ? pOp : 0.1);
+      }
+      if (pulseMs2 && count >= 2) {
+        pulseMs2.setAttribute('r', pR);
+        pulseMs2.setAttribute('opacity', (currentStage === 0 || currentStage === 1) ? pOp : 0.1);
+      }
+      if (pulseMs3 && count >= 3) {
+        pulseMs3.setAttribute('r', pR);
+        pulseMs3.setAttribute('opacity', (currentStage === 0 || currentStage === 1) ? pOp : 0.1);
+      }
+      if (pulseMs4 && count >= 4) {
+        pulseMs4.setAttribute('r', pR);
+        pulseMs4.setAttribute('opacity', (currentStage === 0 || currentStage === 1) ? pOp : 0.1);
+      }
+      if (pulseTower) {
+        const twR = 16 + ((time * 26 * speed) % 45);
+        pulseTower.setAttribute('r', twR);
+        pulseTower.setAttribute('opacity', (currentStage === 2 || currentStage === 5) ? Math.max(0, 1 - twR / 55) : 0);
+      }
+
+      // 4. Move Packets along 6 stages
+      const fUl = parseFloat(inUplink ? inUplink.value : 825.03) || 825.03;
+      const duplex = parseFloat(inDuplex ? inDuplex.value : 45.0) || 45.0;
+      const fDl = fUl + duplex;
+
+      // Packet 1 (MS-1 Handset)
+      if (pktGroupMs1 && pktBoxMs1 && pktTextMs1) {
+        if (currentStage < 4) {
+          pktGroupMs1.setAttribute('opacity', 1);
+          let px = L.ms1.x, py = L.ms1.y;
+          let label = `MS-1: f1 ${fUl.toFixed(2)}M`;
 
           if (currentStage === 0) {
-            // Stage 0: Mobile Speech Sampling & Codec
-            px = 160;
-            py = 250;
-            label = mode === 'fdma' ? 'COMPANDED VOICE' : mode === 'tdma' ? 'RPE-LTP: 260b' : 'QCELP: 9.6 kbps';
-            color = '#38bdf8';
+            // Stage 0: At Mobile terminal
+            px = L.ms1.x; py = L.ms1.y - 10;
+            label = mode === 'fdma' ? `MS-1: f1 ${fUl.toFixed(2)}M` : mode === 'tdma' ? 'MS-1: GSM TS 1' : 'MS-1: Walsh W1';
           } else if (currentStage === 1) {
-            // Stage 1: Channel FEC Encoding & Interleaving
-            px = 160;
-            py = 240;
-            label = mode === 'fdma' ? 'PRE-EMPHASIS FM' : mode === 'tdma' ? 'CONVOLUTIONAL FEC' : 'WALSH W_64 MOD';
-            color = '#00ff9d';
+            // Stage 1: Air link propagation across wide sector to Tower
+            px = L.ms1.x + subT * (L.tower.x - L.ms1.x);
+            py = (L.ms1.y - 10) + subT * ((L.tower.y - 60) - (L.ms1.y - 10)) + Math.sin(subT * Math.PI) * -18;
+            label = mode === 'fdma' ? `AIR: ${fUl.toFixed(2)} MHz` : mode === 'tdma' ? 'AIR: TS 1 BURST' : 'AIR: CDMA W1 SPREAD';
           } else if (currentStage === 2) {
-            // Stage 2: RF Burst radiating into air
-            px = 160 + subT * (360 - 160);
-            py = 240 + subT * (210 - 240);
-            label = mode === 'fdma' ? 'FM: 825.03 MHz' : mode === 'tdma' ? 'GMSK BURST TS 3' : 'CDMA 1.2288 Mcps';
-            color = mode === 'fdma' ? '#0070f3' : mode === 'tdma' ? '#00ff9d' : '#ff0055';
-          } else if (currentStage === 3) {
-            // Stage 3: Free-space air interface propagation (360 to 780)
-            px = 360 + subT * (780 - 360);
-            py = 210 + subT * (180 - 210) + Math.sin(subT * Math.PI) * -16;
-            label = mode === 'fdma' ? 'AIR CH 1 (-114dB)' : mode === 'tdma' ? 'AIR BURST TS 3' : 'AIR W_64 SPREAD';
-            color = mode === 'fdma' ? '#0070f3' : mode === 'tdma' ? '#00ff9d' : '#ff0055';
-          } else if (currentStage === 4) {
-            // Stage 4: BTS Tower Reception & Equalizer
-            px = 780 + subT * (820 - 780);
-            py = 270 + subT * (280 - 270);
-            label = mode === 'fdma' ? 'LNA DEMUX (+24dB)' : mode === 'tdma' ? 'VITERBI EQUALIZER' : 'RAKE COMBINER';
-            color = '#38bdf8';
-          } else if (currentStage === 5) {
-            // Stage 5: Abis E1 Trunk Transit to BSC (820 to 1020)
-            px = 820 + subT * (1020 - 820);
-            py = 280;
-            label = mode === 'cdma' ? 'Iub ATM CELL' : 'Abis E1 TDM (2.048M)';
-            color = '#ffb703';
+            // Stage 2: Tower reception & Abis trunk line to BSC
+            px = L.tower.x + subT * (L.bsc.x - L.tower.x);
+            py = (L.tower.y + 10);
+            label = 'Abis E1 Trunk';
           } else {
-            // Stage 6: BSC to MTSO Core Cloud to Server (1020 to 1490)
-            px = 1020 + subT * (1490 - 1020);
-            py = 280 + subT * (270 - 280) + Math.sin(subT * Math.PI) * -20;
-            label = 'GTP-U / IP PDU';
-            color = '#00ff9d';
+            // Stage 3: BSC to MTSO Core to Web Server (8.8.8.8)
+            px = L.bsc.x + subT * (L.server.x - L.bsc.x);
+            py = (L.bsc.y) + subT * (L.server.y - L.bsc.y) + Math.sin(subT * Math.PI) * -20;
+            label = 'Core → IP 8.8.8.8';
           }
 
-          isoBubbleUplink.setAttribute('x', px - bw / 2);
-          isoBubbleUplink.setAttribute('y', py - 13);
-          isoBubbleUplink.setAttribute('width', bw);
-          isoBubbleUplink.setAttribute('stroke', color);
-          isoTextUplink.setAttribute('x', px - bw / 2 + 8);
-          isoTextUplink.setAttribute('y', py + 4);
-          isoTextUplink.setAttribute('fill', color);
-          isoTextUplink.textContent = label;
+          pktBoxMs1.setAttribute('x', px - 65);
+          pktBoxMs1.setAttribute('y', py - 12);
+          pktTextMs1.setAttribute('x', px - 58);
+          pktTextMs1.setAttribute('y', py + 4);
+          pktTextMs1.textContent = label;
         } else {
-          // Uplink delivered; hide while return ACK travels
-          isoBubbleUplink.setAttribute('opacity', 0);
-          isoTextUplink.setAttribute('opacity', 0);
+          // Uplink delivered; hide while downlink ACK travels
+          pktGroupMs1.setAttribute('opacity', 0);
         }
       }
 
-      // Return Downlink ACK Packet Movement (Stages 7..9)
-      if (isoPktAck && isoBubbleAck && isoTextAck) {
-        if (currentStage >= 7) {
-          isoPktAck.setAttribute('opacity', 1);
-          let ackX = 1490, ackY = 270, ackLabel = 'DOWNLINK ACK', ackBw = 140;
+      // Packet 2 (MS-2 Handset, when active)
+      if (pktGroupMs2 && pktBoxMs2 && pktTextMs2) {
+        if (count >= 2 && currentStage <= 2) {
+          pktGroupMs2.setAttribute('opacity', 1);
+          let p2x = L.ms2.x, p2y = L.ms2.y;
+          let label2 = `MS-2: f2 ${(fUl + 0.03).toFixed(2)}M`;
 
-          if (currentStage === 7) {
-            // Stage 7: Server creates response
-            ackX = 1490 - subT * (1490 - 1240);
-            ackY = 270 - subT * (270 - 240);
-            ackLabel = 'HTTP 200 OK (ACK)';
-          } else if (currentStage === 8) {
-            // Stage 8: Core Cloud & BSC backhaul to BTS Tower (1240 to 780)
-            ackX = 1240 - subT * (1240 - 780);
-            ackY = 240 + subT * (270 - 240);
-            ackLabel = mode === 'fdma' ? 'Abis FORWARD AUDIO' : mode === 'tdma' ? 'BSC SLOT SCHEDULER' : 'RNC FORWARD WALSH';
+          if (currentStage === 0) {
+            p2x = L.ms2.x; p2y = L.ms2.y - 10;
+          } else if (currentStage === 1) {
+            p2x = L.ms2.x + subT * (L.tower.x - L.ms2.x);
+            p2y = (L.ms2.y - 10) + subT * ((L.tower.y - 60) - (L.ms2.y - 10));
           } else {
-            // Stage 9: BTS Tower forward RF transmission back across air link to MS-1 (780 to 160)!
-            ackX = 780 - subT * (780 - 160);
-            ackY = 205 + subT * (280 - 205);
-            ackLabel = mode === 'fdma' ? 'DL: 870.03 MHz (+45M)' : mode === 'tdma' ? 'DL: GSM TS 3 BURST' : 'DL: CDMA FORWARD W_64';
+            p2x = L.tower.x + subT * (L.bsc.x - L.tower.x);
+            p2y = L.tower.y + 10;
           }
 
-          isoBubbleAck.setAttribute('x', ackX - ackBw / 2);
-          isoBubbleAck.setAttribute('y', ackY - 13);
-          isoBubbleAck.setAttribute('width', ackBw);
-          isoTextAck.setAttribute('x', ackX - ackBw / 2 + 8);
-          isoTextAck.setAttribute('y', ackY + 4);
-          isoTextAck.textContent = ackLabel;
+          pktBoxMs2.setAttribute('x', p2x - 65);
+          pktBoxMs2.setAttribute('y', p2y - 12);
+          pktTextMs2.setAttribute('x', p2x - 58);
+          pktTextMs2.setAttribute('y', p2y + 4);
+          pktTextMs2.textContent = label2;
+        } else {
+          pktGroupMs2.setAttribute('opacity', 0);
+        }
+      }
 
-          // If at the end of Stage 9, flash MS-1 terminal green
-          if (currentStage === 9 && subT > 0.8) {
+      // Packet 3 (MS-3 Laptop Workstation, in separate area)
+      if (pktGroupMs3 && pktBoxMs3 && pktTextMs3) {
+        if (count >= 3 && currentStage <= 2) {
+          pktGroupMs3.setAttribute('opacity', 1);
+          let p3x = L.ms3.x, p3y = L.ms3.y;
+          let label3 = `MS-3: f3 ${(fUl + 0.06).toFixed(2)}M (Data)`;
+
+          if (currentStage === 0) {
+            p3x = L.ms3.x; p3y = L.ms3.y - 10;
+          } else if (currentStage === 1) {
+            p3x = L.ms3.x + subT * (L.tower.x - L.ms3.x);
+            p3y = (L.ms3.y - 10) + subT * ((L.tower.y - 60) - (L.ms3.y - 10));
+          } else {
+            p3x = L.tower.x + subT * (L.bsc.x - L.tower.x);
+            p3y = L.tower.y + 10;
+          }
+
+          pktBoxMs3.setAttribute('x', p3x - 72);
+          pktBoxMs3.setAttribute('y', p3y - 12);
+          pktTextMs3.setAttribute('x', p3x - 65);
+          pktTextMs3.setAttribute('y', p3y + 4);
+          pktTextMs3.textContent = label3;
+        } else {
+          pktGroupMs3.setAttribute('opacity', 0);
+        }
+      }
+
+      // Packet 4 (MS-4 Highway Car)
+      if (pktGroupMs4 && pktBoxMs4 && pktTextMs4) {
+        if (count >= 4 && currentStage <= 2) {
+          pktGroupMs4.setAttribute('opacity', 1);
+          let p4x = L.ms4.x, p4y = L.ms4.y;
+          let label4 = `MS-4: f4 ${(fUl + 0.09).toFixed(2)}M`;
+
+          if (currentStage === 0) {
+            p4x = L.ms4.x; p4y = L.ms4.y - 10;
+          } else if (currentStage === 1) {
+            p4x = L.ms4.x + subT * (L.tower.x - L.ms4.x);
+            p4y = (L.ms4.y - 10) + subT * ((L.tower.y - 60) - (L.ms4.y - 10));
+          } else {
+            p4x = L.tower.x + subT * (L.bsc.x - L.tower.x);
+            p4y = L.tower.y + 10;
+          }
+
+          pktBoxMs4.setAttribute('x', p4x - 65);
+          pktBoxMs4.setAttribute('y', p4y - 12);
+          pktTextMs4.setAttribute('x', p4x - 58);
+          pktTextMs4.setAttribute('y', p4y + 4);
+          pktTextMs4.textContent = label4;
+        } else {
+          pktGroupMs4.setAttribute('opacity', 0);
+        }
+      }
+
+      // Downlink Return ACK Packet (Stages 4 and 5)
+      if (pktGroupAck && pktBoxAck && pktTextAck) {
+        if (currentStage >= 4) {
+          pktGroupAck.setAttribute('opacity', 1);
+          let ackX = L.server.x, ackY = L.server.y;
+          let ackLabel = 'DOWNLINK ACK (HTTP 200)';
+
+          if (currentStage === 4) {
+            // Stage 4: Server dispatches ACK through Core & BSC to Tower
+            ackX = L.server.x - subT * (L.server.x - L.tower.x);
+            ackY = L.server.y - subT * (L.server.y - L.tower.y) + Math.sin(subT * Math.PI) * -16;
+            ackLabel = 'HTTP 200 OK (ACK)';
+          } else {
+            // Stage 5: Tower broadcasts forward radio wave back across air to MS-1!
+            ackX = L.tower.x - subT * (L.tower.x - L.ms1.x);
+            ackY = (L.tower.y - 50) + subT * ((L.ms1.y - 10) - (L.tower.y - 50));
+            ackLabel = `DL: ${fDl.toFixed(2)} MHz (+${duplex.toFixed(0)}M)`;
+          }
+
+          pktBoxAck.setAttribute('x', ackX - 78);
+          pktBoxAck.setAttribute('y', ackY - 12);
+          pktTextAck.setAttribute('x', ackX - 70);
+          pktTextAck.setAttribute('y', ackY + 4);
+          pktTextAck.textContent = ackLabel;
+
+          // Flash confirmation at end of Stage 5
+          if (currentStage === 5 && subT > 0.8) {
             if (hudStatus) {
-              hudStatus.textContent = `✅ ROUND TRIP DELIVERED: Full 2-way handshake confirmed at MS-1! (RTT ~48 ms)`;
+              hudStatus.textContent = `✅ 2-WAY ROUND TRIP COMPLETE: Forward ACK arrived at Handset (f_dl = ${fDl.toFixed(2)} MHz)`;
               hudStatus.style.color = 'var(--status-ready)';
             }
           }
         } else {
-          isoPktAck.setAttribute('opacity', 0);
+          pktGroupAck.setAttribute('opacity', 0);
         }
       }
 
-      // Secondary Multi-User Packet (when count >= 4)
-      if (isoBubble2 && isoText2) {
-        if (count >= 4 && currentStage >= 2 && currentStage <= 5) {
-          isoBubble2.setAttribute('opacity', 1);
-          let p2x = 80 + subT * (780 - 80);
-          let p2y = 150 + subT * (270 - 150);
-          const rect = isoBubble2.querySelector('rect');
-          if (rect) {
-            rect.setAttribute('x', p2x - 55);
-            rect.setAttribute('y', p2y - 11);
-          }
-          isoText2.setAttribute('x', p2x - 48);
-          isoText2.setAttribute('y', p2y + 4);
-          if (mode === 'fdma') {
-            isoText2.textContent = 'MS-2: f₂ 825.06M';
-          } else if (mode === 'tdma') {
-            isoText2.textContent = 'MS-2: SLOT 4/8';
-          } else {
-            isoText2.textContent = 'MS-2: W_2 Code';
-          }
-        } else {
-          isoBubble2.setAttribute('opacity', 0);
-        }
-      }
-
-      // Auto update step detail card if playing in continuous mode
+      // Auto update step detail card if playing continuously
       if (ch10State.manualStep < 0) {
         updateStepDetailCard(currentStage);
       }
 
-      // ───────────────────────────────────────────────────────────────────────
-      // REAL DYNAMIC TDMA 8-SLOT FRAME CLOCK & TIME-SLOTTED BURST PIPELINE
-      // ───────────────────────────────────────────────────────────────────────
+      // Real GSM TDMA slot clock strip animation
       if (mode === 'tdma') {
         const tdmaSlotsGrid = container.querySelector('#sim-tdma-slots-hud-grid');
         const tdmaActiveTxt = container.querySelector('#sim-tdma-active-slot-txt');
         if (tdmaSlotsGrid && tdmaActiveTxt) {
           const activeSlot = Math.floor((time * 5) % 8);
           const slotLabels = [
-            'MS-2 (Phone)',
-            'Guard / Monitor',
-            'Other Cell Tx',
+            'BCCH Beacon',
             'MS-1 (Normal Burst)',
-            'MS-3 (Laptop)',
-            'MS-4 (Vehicular)',
-            'Paging / Sync',
-            'BCCH Beacon'
+            'Guard / Sync',
+            'MS-2 (Phone)',
+            'Other Cell Tx',
+            'MS-3 (Laptop Data)',
+            'Paging Channel',
+            'MS-4 (Vehicular)'
           ];
-          const isMs1Active = activeSlot === 3;
-          tdmaActiveTxt.textContent = `Active Time Slot: TS ${activeSlot}/7 — ${slotLabels[activeSlot]} (577 µs Tx Window | Frame 4.615 ms)`;
+          const isMs1Active = activeSlot === 1;
+          tdmaActiveTxt.textContent = `Active Slot: TS ${activeSlot}/7 — ${slotLabels[activeSlot]} (577 µs Tx Window | Frame 4.615 ms)`;
 
           let html = '';
           for (let s = 0; s < 8; s++) {
             const isCur = s === activeSlot;
-            const isMs1Slot = s === 3;
+            const isMs1Slot = s === 1;
             const bg = isCur ? 'rgba(0, 255, 157, 0.28)' : isMs1Slot ? 'rgba(0, 229, 255, 0.12)' : 'rgba(255, 255, 255, 0.04)';
             const bdr = isCur ? '#00ff9d' : isMs1Slot ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.1)';
             const col = isCur ? '#00ff9d' : isMs1Slot ? 'var(--accent-cyan)' : 'var(--text-dim)';
@@ -2822,7 +3121,7 @@ function attachSubEvents(container, secId, progressManager) {
         btnPlay.style.background = 'rgba(255,183,3,0.15)';
       }
       if (hudStatus) {
-        hudStatus.textContent = `● 2-WAY ROUND TRIP ACTIVE: ${ch10State.accessMode.toUpperCase()} | ${ch10State.activeDevicesCount} Subscribers in session`;
+        hudStatus.textContent = `● 2-WAY ROUND TRIP ACTIVE: ${ch10State.accessMode.toUpperCase()} | ${ch10State.activeDevicesCount} Subscribers radiating`;
         hudStatus.style.color = 'var(--status-ready)';
       }
       if (!activeAnimationRaf) {
@@ -2848,7 +3147,7 @@ function attachSubEvents(container, secId, progressManager) {
       stopSimulation();
       ch10State.manualStep = -1;
       localSimClock = 0;
-      applyViewBox(cameraTargets.overview);
+      applyViewBox(activeLayout.cameraTargets.overview);
       if (btnCamWide) {
         [btnCamWide, btnCamClient, btnCamAir, btnCamTower, btnCamBsc, btnCamCore, btnCamServer].forEach(b => b && b.classList.remove('active'));
         btnCamWide.classList.add('active');
@@ -2873,7 +3172,7 @@ function attachSubEvents(container, secId, progressManager) {
     if (btnStep) {
       btnStep.addEventListener('click', () => {
         if (ch10State.isPlaying) stopSimulation();
-        ch10State.manualStep = (ch10State.manualStep + 1) % 10;
+        ch10State.manualStep = (ch10State.manualStep + 1) % 6;
         updateStepDetailCard(ch10State.manualStep);
         if (ch10State.autoCamera) {
           updateCameraAutoFollow(ch10State.manualStep + 0.5);
@@ -2881,6 +3180,8 @@ function attachSubEvents(container, secId, progressManager) {
       });
     }
 
+    // Initialize layout and state
+    applyLayoutCoordinates('standard');
     setAccessMode(ch10State.accessMode);
     setDeviceCount(ch10State.activeDevicesCount);
     updateFrequencyParams();
