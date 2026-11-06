@@ -10,6 +10,7 @@ import { calculateNyquistCapacity, calculateShannonCapacity, calculateFreeSpaceL
 import { formatFrequency, formatBitrate, formatDb } from '../utils/formatters.js';
 import { renderChapter1 } from './Chapter1Lesson.js';
 import { renderChapter2 } from './Chapter2Lesson.js';
+import { renderChapter10 } from './Chapter10Lesson.js';
 
 export class Workspace {
   constructor(containerEl) {
@@ -194,6 +195,8 @@ export class Workspace {
       renderChapter1(lessonMount, state, progressManager);
     } else if (state.activeChapterId === 'ch-02') {
       renderChapter2(lessonMount, state, progressManager);
+    } else if (state.activeChapterId === 'ch-10') {
+      renderChapter10(lessonMount, state, progressManager);
     } else {
       const { chapter } = this.getActiveChapter();
       lessonMount.innerHTML = `
