@@ -643,6 +643,165 @@
   text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
 }
 
+/* --- Elegant Mathematical Typography & Fraction Display --- */
+.math-display-card {
+  background: radial-gradient(circle at 50% 50%, #071329 0%, #030712 100%);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 8px;
+  padding: 14px 20px;
+  margin: 12px 0 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 0 12px rgba(0, 229, 255, 0.05);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.math-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.12rem;
+  color: var(--accent-cyan);
+}
+
+.math-fraction {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  padding: 0 8px;
+}
+
+.math-num {
+  padding-bottom: 3px;
+  border-bottom: 2px solid var(--accent-cyan);
+  text-align: center;
+  font-size: 1.05rem;
+  color: #fff;
+  font-weight: 700;
+  width: 100%;
+}
+
+.math-den {
+  padding-top: 3px;
+  text-align: center;
+  font-size: 1.02rem;
+  color: #7dd3fc;
+  font-weight: 600;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.math-sum-sym {
+  font-size: 1.45rem;
+  line-height: 1;
+  color: #ffb703;
+  margin-right: 2px;
+}
+
+.math-sum-limits {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 0.65rem;
+  line-height: 1;
+  color: #ffb703;
+  margin-right: 4px;
+}
+
+.math-tag-pill {
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  color: var(--accent-sky);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* --- Collapsible Drawer Sections in Workspace --- */
+.workspace-drawer-toggle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 16px 0 8px 0;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.workspace-drawer-toggle-bar:hover {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: rgba(0, 229, 255, 0.35);
+}
+
+.workspace-drawer-toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.05em;
+}
+
+.workspace-drawer-status-pill {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+}
+
+.workspace-drawer-chevron {
+  font-size: 0.85rem;
+  color: var(--accent-cyan);
+  transition: transform 0.25s ease;
+}
+
+.workspace-drawer-collapsed .workspace-drawer-chevron {
+  transform: rotate(-90deg);
+}
+
+.workspace-drawer-collapsed .workspace-drawer-content {
+  display: none !important;
+}
+
+/* --- Fullscreen Simulation Toolbar Overhaul --- */
+.fs-top-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fs-freq-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 3px 7px;
+  background: rgba(3, 7, 18, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: 3px;
+  color: #7dd3fc;
+}
+
+.fs-freq-badge strong {
+  color: #00ff9d;
+}
+
 /* Interactive Panels inside Lessons */
 .interactive-panel {
   background: var(--bg-tertiary);
@@ -1700,5 +1859,349 @@
 .canvas-interactive-wrapper.is-panning .hex-canvas-element,
 .hex-canvas-element.is-dragging {
   cursor: grabbing !important;
+}
+
+/* ==========================================================================
+   D3.js Signal Visualization & Modulation Suite Styles
+   ========================================================================== */
+.d3-visualizer-card {
+  margin: 0 20px 24px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+.d3-vis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-subtle);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.d3-vis-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.d3-vis-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #030712;
+  background: var(--accent-cyan);
+  padding: 2px 7px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+}
+
+.d3-vis-title {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  color: var(--text-bright);
+  letter-spacing: 0.08em;
+  margin: 0;
+  font-weight: 700;
+}
+
+.d3-vis-telemetry {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.d3-tel-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  background: rgba(3, 7, 18, 0.75);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+.d3-vis-viewport {
+  width: 100%;
+  height: 300px;
+  background: #02050e;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.d3-oscilloscope-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.d3-cursor-bar {
+  display: flex;
+  align-items: center;
+  padding: 6px 16px;
+  background: rgba(11, 19, 41, 0.95);
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.d3-controls-panel {
+  padding: 16px;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.d3-ctrl-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.d3-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.d3-scheme-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.d3-scheme-btn:hover {
+  background: rgba(0, 229, 255, 0.08);
+  border-color: var(--accent-cyan);
+  color: var(--text-bright);
+}
+
+.d3-scheme-btn.active {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+}
+
+.d3-fading-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.d3-fading-btn:hover {
+  background: rgba(255, 183, 3, 0.1);
+  border-color: #ffb703;
+  color: #fff;
+}
+
+.d3-fading-btn.active {
+  background: rgba(255, 183, 3, 0.2);
+  border-color: #ffb703;
+  color: #ffb703;
+  box-shadow: 0 0 10px rgba(255, 183, 3, 0.25);
+}
+
+.d3-btn-icon {
+  font-size: 0.95rem;
+}
+
+.d3-sliders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.d3-slider-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.d3-slider-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.d3-slider-val {
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.d3-slider-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* Interactive Bitstream Clicker */
+.d3-bitstream-container {
+  background: rgba(3, 7, 18, 0.6);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+.d3-preset-group {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.d3-preset-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.d3-preset-btn:hover {
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--text-bright);
+}
+
+.d3-bits-strip {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 8px;
+}
+
+.d3-bit-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 4px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.d3-bit-card:hover {
+  transform: translateY(-2px);
+}
+
+.d3-bit-card.is-one {
+  background: rgba(0, 255, 157, 0.12);
+  border-color: #00ff9d;
+  box-shadow: 0 0 8px rgba(0, 255, 157, 0.2);
+}
+
+.d3-bit-card.is-zero {
+  background: rgba(148, 163, 184, 0.08);
+  border-color: var(--border-subtle);
+}
+
+.d3-bit-idx {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-dim);
+}
+
+.d3-bit-val {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.d3-bit-card.is-one .d3-bit-val {
+  color: #00ff9d;
+}
+
+.d3-bit-card.is-zero .d3-bit-val {
+  color: var(--text-dim);
+}
+
+.d3-bit-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Footer toolbar & formula banner */
+.d3-footer-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 12px;
+}
+
+.d3-formula-banner {
+  background: rgba(11, 19, 41, 0.85);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 6px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.d3-formula-label {
+  color: var(--text-dim);
+  font-size: 0.68rem;
+}
+
+.d3-formula-text {
+  color: var(--accent-cyan);
+  font-weight: 700;
 }
 

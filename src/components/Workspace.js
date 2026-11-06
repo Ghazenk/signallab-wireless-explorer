@@ -11,6 +11,7 @@ import { formatFrequency, formatBitrate, formatDb } from '../utils/formatters.js
 import { renderChapter1 } from './Chapter1Lesson.js';
 import { renderChapter2 } from './Chapter2Lesson.js';
 import { renderChapter10 } from './Chapter10Lesson.js';
+import { D3SignalVisualizer } from './D3SignalVisualizer.js';
 
 export class Workspace {
   constructor(containerEl) {
@@ -56,139 +57,155 @@ export class Workspace {
           <h1>${chapter.title}</h1>
           <p>${chapter.description}</p>
         </div>
-        <div style="text-align: right; font-family: var(--font-mono); font-size: 0.75rem;">
-          <div style="color: var(--text-dim);">SOURCE REFERENCE</div>
-          <div style="color: var(--accent-cyan); font-weight: 700;">Book p. ${chapter.bookPage} (PDF p. ${chapter.pdfPage})</div>
+        <div style="text-align: right; font-family: var(--font-mono); font-size: 0.75rem; display: flex; flex-direction: column; align-items: flex-end; gap: 6px;">
+          <div>
+            <span style="color: var(--text-dim);">SOURCE REFERENCE: </span>
+            <span style="color: var(--accent-cyan); font-weight: 700;">Book p. ${chapter.bookPage} (PDF p. ${chapter.pdfPage})</span>
+          </div>
+          <!-- Quick Instrument Drawer Toggles -->
+          <div style="display: flex; gap: 6px; margin-top: 4px;">
+            <button class="btn-ctrl active" id="btn-toggle-d3-top" title="Toggle D3 Signal Oscilloscope & Control Systems Suite">
+              📡 D3 WAVE & CONTROL LAB
+            </button>
+            <button class="btn-ctrl" id="btn-toggle-metrics-top" title="Toggle Shannon & Nyquist RF Capacity Cards">
+              📊 LINK CAPACITY CARDS
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Chapter Interactive Learning Modules & Pedagogical Workspace -->
+      <!-- Theory & Chapter Interactive Learning Modules Prominently on Top -->
       <div id="chapter-lesson-mount" class="chapter-lesson-wrapper"></div>
 
-      <!-- Real-Time Interactive SVG Signal Oscilloscope -->
-      <div class="instrument-container">
-        <div class="instrument-topbar">
-          <div class="instrument-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-            </svg>
-            <span>RF SIGNAL ANALYZER & OSCILLOSCOPE (SVG VECTOR RENDERER)</span>
-          </div>
-          <div style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);" id="scope-status">
-            CARRIER: ${formatFrequency(state.simParams.carrierFreqHz)} | TIME-DOMAIN ACTIVE
-          </div>
+      <!-- Toggleable D3 Oscilloscope, Modulation & Control Systems Laboratory Drawer -->
+      <div class="workspace-drawer-toggle-bar" id="drawer-bar-d3" title="Click to collapse or expand D3 Oscilloscope & Control Systems Suite">
+        <div class="workspace-drawer-toggle-title">
+          <span class="workspace-drawer-chevron" id="chevron-d3">▼</span>
+          <span>📡 D3.JS OSCILLOSCOPE, MODULATION & CONTROL SYSTEMS LABORATORY</span>
         </div>
-
-        <div class="oscilloscope-screen" id="scope-screen">
-          <svg class="oscilloscope-svg" id="scope-svg" viewBox="0 0 800 240" preserveAspectRatio="none">
-            <defs>
-              <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(0, 229, 255, 0.08)" stroke-width="1"/>
-                <path d="M 10 0 L 10 40 M 20 0 L 20 40 M 30 0 L 30 40 M 0 10 L 40 10 M 0 20 L 40 20 M 0 30 L 40 30" fill="none" stroke="rgba(0, 229, 255, 0.025)" stroke-width="0.5"/>
-              </pattern>
-              <linearGradient id="wave-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#0070f3" stop-opacity="0.8"/>
-                <stop offset="50%" stop-color="#00e5ff" stop-opacity="1"/>
-                <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.8"/>
-              </linearGradient>
-            </defs>
-
-            <!-- Background Grid -->
-            <rect width="800" height="240" fill="#040812"/>
-            <rect width="800" height="240" fill="url(#grid-pattern)"/>
-            
-            <!-- Center Line -->
-            <line x1="0" y1="120" x2="800" y2="120" stroke="rgba(0, 229, 255, 0.2)" stroke-width="1" stroke-dasharray="4 4"/>
-
-            <!-- Signal Waveform Path -->
-            <path id="signal-path" d="" fill="none" stroke="url(#wave-grad)" stroke-width="2.5" stroke-linecap="round"/>
-          </svg>
-        </div>
-
-        <!-- Real-Time Instrument Controls -->
-        <div class="instrument-controls">
-          <div class="control-item">
-            <div class="control-label">
-              <span>CARRIER FREQUENCY</span>
-              <span id="ctrl-freq-val">${formatFrequency(state.simParams.carrierFreqHz)}</span>
-            </div>
-            <input type="range" class="control-slider" id="ctrl-freq" min="800000000" max="5800000000" step="100000000" value="${state.simParams.carrierFreqHz}"/>
-          </div>
-
-          <div class="control-item">
-            <div class="control-label">
-              <span>SIGNAL-TO-NOISE RATIO</span>
-              <span id="ctrl-snr-val">${formatDb(state.simParams.snrDb)}</span>
-            </div>
-            <input type="range" class="control-slider" id="ctrl-snr" min="0" max="50" step="1" value="${state.simParams.snrDb}"/>
-          </div>
-
-          <div class="control-item">
-            <div class="control-label">
-              <span>CHANNEL BANDWIDTH</span>
-              <span id="ctrl-bw-val">${formatFrequency(state.simParams.bandwidthHz)}</span>
-            </div>
-            <input type="range" class="control-slider" id="ctrl-bw" min="5000000" max="80000000" step="5000000" value="${state.simParams.bandwidthHz}"/>
-          </div>
-
-          <div class="control-item">
-            <div class="control-label">
-              <span>MODULATION SCHEME (M-ARY)</span>
-              <span id="ctrl-mod-val">${state.simParams.modulationScheme}</span>
-            </div>
-            <select class="control-select" id="ctrl-mod" style="width: 100%; background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-subtle); padding: 5px 8px; font-family: var(--font-mono); font-size: 0.75rem; border-radius: 4px; outline: none; margin-top: 4px;">
-              <option value="BPSK" ${state.simParams.modulationScheme === 'BPSK' ? 'selected' : ''}>BPSK (M=2, 1 bit/sym)</option>
-              <option value="QPSK" ${state.simParams.modulationScheme === 'QPSK' ? 'selected' : ''}>QPSK (M=4, 2 bits/sym)</option>
-              <option value="16-QAM" ${state.simParams.modulationScheme === '16-QAM' ? 'selected' : ''}>16-QAM (M=16, 4 bits/sym)</option>
-              <option value="64-QAM" ${state.simParams.modulationScheme === '64-QAM' ? 'selected' : ''}>64-QAM (M=64, 6 bits/sym)</option>
-            </select>
-          </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="workspace-drawer-status-pill" id="status-pill-d3">EXPANDED</span>
+          <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">CLICK TO TOGGLE</span>
         </div>
       </div>
+      <div id="d3-drawer-wrapper" class="workspace-drawer-content">
+        <div id="d3-signal-visualizer-mount"></div>
+      </div>
 
-      <!-- Real-Time Mathematical Telemetry Cards (Stallings Ch. 2 Formulas) -->
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-card-header">
-            <span>SHANNON CAPACITY (LIMIT)</span>
-            <span>EQ. 2.13</span>
-          </div>
-          <div class="metric-card-val" id="metric-shannon">--</div>
-          <div class="metric-card-sub">C = B · log₂(1 + SNR)</div>
+      <!-- Toggleable Real-Time Mathematical Telemetry Cards (Stallings Ch. 2 & 5) -->
+      <div class="workspace-drawer-toggle-bar" id="drawer-bar-metrics" title="Click to collapse or expand Shannon Capacity & Path Loss Telemetry">
+        <div class="workspace-drawer-toggle-title">
+          <span class="workspace-drawer-chevron" id="chevron-metrics">▶</span>
+          <span>📊 RF LINK CAPACITY & PATH LOSS TELEMETRY (EQ. 2.12, 2.13 & 5.2)</span>
         </div>
-
-        <div class="metric-card">
-          <div class="metric-card-header">
-            <span>NYQUIST MAXIMUM RATE</span>
-            <span>EQ. 2.12</span>
-          </div>
-          <div class="metric-card-val" id="metric-nyquist">--</div>
-          <div class="metric-card-sub" id="metric-nyquist-sub">C = 2B · log₂(M)</div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="workspace-drawer-status-pill" id="status-pill-metrics" style="color: var(--text-dim); border-color: var(--border-subtle);">COLLAPSED</span>
+          <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">CLICK TO EXPAND</span>
         </div>
-
-        <div class="metric-card">
-          <div class="metric-card-header">
-            <span>FREE SPACE PATH LOSS</span>
-            <span>EQ. 5.2</span>
+      </div>
+      <div id="metrics-drawer-content" class="workspace-drawer-content" style="display: none;">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>SHANNON CAPACITY (LIMIT)</span>
+              <span>EQ. 2.13</span>
+            </div>
+            <div class="metric-card-val" id="metric-shannon">--</div>
+            <div class="metric-card-sub">C = B · log₂(1 + SNR)</div>
           </div>
-          <div class="metric-card-val" id="metric-fspl">--</div>
-          <div class="metric-card-sub">L = (4πd / λ)²</div>
-        </div>
 
-        <div class="metric-card">
-          <div class="metric-card-header">
-            <span>TRANSMIT POWER (EIRP)</span>
-            <span>PARAM</span>
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>NYQUIST MAXIMUM RATE</span>
+              <span>EQ. 2.12</span>
+            </div>
+            <div class="metric-card-val" id="metric-nyquist">--</div>
+            <div class="metric-card-sub" id="metric-nyquist-sub">C = 2B · log₂(M)</div>
           </div>
-          <div class="metric-card-val">${state.simParams.txPowerDbm} dBm</div>
-          <div class="metric-card-sub">100.0 mW Radiated Power</div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>FREE SPACE PATH LOSS</span>
+              <span>EQ. 5.2</span>
+            </div>
+            <div class="metric-card-val" id="metric-fspl">--</div>
+            <div class="metric-card-sub">L = (4πd / λ)²</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-header">
+              <span>TRANSMIT POWER (EIRP)</span>
+              <span>PARAM</span>
+            </div>
+            <div class="metric-card-val">${state.simParams.txPowerDbm} dBm</div>
+            <div class="metric-card-sub">100.0 mW Radiated Power</div>
+          </div>
         </div>
       </div>
     `;
 
+    // Instantiate D3 Signal Visualization & Modulation Module
+    if (this.d3Visualizer) {
+      this.d3Visualizer.destroy();
+      this.d3Visualizer = null;
+    }
+    const d3Mount = this.container.querySelector('#d3-signal-visualizer-mount');
+    if (d3Mount) {
+      this.d3Visualizer = new D3SignalVisualizer(d3Mount);
+    }
+
+    this.attachDrawerListeners();
     this.attachControlListeners();
     this.updateMetrics();
     this.renderActiveChapterModule();
+  }
+
+  attachDrawerListeners() {
+    // 1. D3 Drawer Toggle
+    const barD3 = this.container.querySelector('#drawer-bar-d3');
+    const wrapD3 = this.container.querySelector('#d3-drawer-wrapper');
+    const chevronD3 = this.container.querySelector('#chevron-d3');
+    const pillD3 = this.container.querySelector('#status-pill-d3');
+    const btnTopD3 = this.container.querySelector('#btn-toggle-d3-top');
+
+    const toggleD3 = () => {
+      const isVisible = wrapD3 && wrapD3.style.display !== 'none';
+      if (wrapD3) wrapD3.style.display = isVisible ? 'none' : 'block';
+      if (chevronD3) chevronD3.textContent = isVisible ? '▶' : '▼';
+      if (pillD3) {
+        pillD3.textContent = isVisible ? 'COLLAPSED' : 'EXPANDED';
+        pillD3.style.color = isVisible ? 'var(--text-dim)' : 'var(--accent-cyan)';
+      }
+      if (btnTopD3) {
+        btnTopD3.classList.toggle('active', !isVisible);
+      }
+    };
+
+    if (barD3) barD3.addEventListener('click', toggleD3);
+    if (btnTopD3) btnTopD3.addEventListener('click', toggleD3);
+
+    // 2. Metrics Drawer Toggle
+    const barMetrics = this.container.querySelector('#drawer-bar-metrics');
+    const wrapMetrics = this.container.querySelector('#metrics-drawer-content');
+    const chevronMetrics = this.container.querySelector('#chevron-metrics');
+    const pillMetrics = this.container.querySelector('#status-pill-metrics');
+    const btnTopMetrics = this.container.querySelector('#btn-toggle-metrics-top');
+
+    const toggleMetrics = () => {
+      const isVisible = wrapMetrics && wrapMetrics.style.display !== 'none';
+      if (wrapMetrics) wrapMetrics.style.display = isVisible ? 'none' : 'block';
+      if (chevronMetrics) chevronMetrics.textContent = isVisible ? '▶' : '▼';
+      if (pillMetrics) {
+        pillMetrics.textContent = isVisible ? 'COLLAPSED' : 'EXPANDED';
+        pillMetrics.style.color = isVisible ? 'var(--text-dim)' : '#00ff9d';
+      }
+      if (btnTopMetrics) {
+        btnTopMetrics.classList.toggle('active', !isVisible);
+      }
+    };
+
+    if (barMetrics) barMetrics.addEventListener('click', toggleMetrics);
+    if (btnTopMetrics) btnTopMetrics.addEventListener('click', toggleMetrics);
   }
 
   renderActiveChapterModule() {

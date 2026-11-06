@@ -247,10 +247,10 @@ export const CURRICULUM = [
           { id: "sec-10.7", num: "10.7", title: "Key Terms, Review Questions, and Problems", bookPage: 314, pdfPage: 324 }
         ],
         keyFormulas: [
-          { name: "Cluster Reuse Factor", formula: "N = i^2 + j^2 + i \\cdot j" },
-          { name: "Cochannel Reuse Distance", formula: "D = R \\sqrt{3N} \\quad (D/d = \\sqrt{N})" },
-          { name: "Erlang B Blocking Formula", formula: "P = \\frac{A^N / N!}{\\sum_{k=0}^N A^k / k!}" },
-          { name: "Hata Urban Path Loss", formula: "L_{dB} = 69.55 + 26.16\\log f_c - 13.82\\log h_t - A(h_r) + (44.9 - 6.55\\log h_t)\\log d" }
+          { name: "Cluster Reuse Factor", formula: "N = i² + j² + i·j" },
+          { name: "Cochannel Reuse Distance", formula: "D = R·√(3N)  (D/d = √N)" },
+          { name: "Erlang B Blocking Formula", formula: "P = (Aᴺ/N!) / ∑ₖ (Aᵏ/k!)" },
+          { name: "Hata Urban Path Loss", formula: "L_dB = 69.55 + 26.16·log(fc) - 13.82·log(ht) - A(hr) + (44.9 - 6.55·log(ht))·log(d)" }
         ]
       },
       {
