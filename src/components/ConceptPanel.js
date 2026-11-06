@@ -122,9 +122,19 @@ export class ConceptPanel {
 
         <!-- Pedagogical Plan -->
         <div class="concept-section-block">
-          <div class="concept-section-title">DEVELOPMENT ROADMAP</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
-            This module's interactive simulations, SVG block diagrams, and quantitative problem-solving tools will be built in upcoming development phases following the strict stop condition.
+          <div class="concept-section-title">DEVELOPMENT STATUS</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+            <span class="badge badge-${(chapter.badge || 'planned').toLowerCase()}">${chapter.badge || 'PLANNED'}</span>
+            <span style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--text-dim);">
+              ${chapter.status === 'staged' ? 'Active Staged Module with Interactive Simulation Engine' : chapter.status === 'complete' ? 'Production Ready' : 'Specification Staged'}
+            </span>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-top: 6px;">
+            ${chapter.id === 'ch-10' 
+              ? 'Chapter 10 is STAGED with complete hexagonal reuse clustering, dynamic handoff hysteresis engine, Erlang B traffic engineering calculator, CDMA2000 1xEV-DO simulator, and Protocol Explorer-style isometric cellular topology.'
+              : chapter.id === 'ch-02'
+              ? 'Chapter 2 is COMPLETE with Fourier dual-domain synthesizer, real-world cascaded rack transmission simulator, Nyquist/Shannon engine, FDM/TDM multiplexer, and Appendix 2A link budget calculator.'
+              : 'This module\'s interactive simulations, SVG block diagrams, and quantitative problem-solving tools will be built in upcoming development phases.'}
           </p>
         </div>
       </div>

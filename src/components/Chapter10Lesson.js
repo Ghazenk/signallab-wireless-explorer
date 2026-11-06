@@ -16,7 +16,7 @@
 import { simEngine } from '../simulations/engine.js';
 import { pointsToSvgPath } from '../utils/svgUtils.js';
 import { formatFrequency, formatBitrate, formatDb } from '../utils/formatters.js';
-import { drawIsometricLaptop, drawIsometricRouter, drawIsometricBaseStation, drawIsometricServer, drawIsometricCloud } from '../utils/isoGraphics.js';
+import { drawIsometricLaptop, drawIsometricRouter, drawIsometricBaseStation, drawIsometricServer, drawIsometricCloud, drawIsometricPhone } from '../utils/isoGraphics.js';
 
 export function renderChapter10(container, state, progressManager) {
   const currentSec = state.activeSectionId && state.activeSectionId.startsWith('sec-10')
@@ -93,12 +93,36 @@ function getSectionContent(secId, state) {
           <!-- Real-World End-to-End Cellular Topology (Protocol Explorer Isometric Style) -->
           <div class="interactive-panel" style="margin-top: 16px;">
             <div class="panel-header">
-              <span>END-TO-END CELLULAR SYSTEM TOPOLOGY & PACKET FLOW (PROTOCOL EXPLORER ISOMETRIC STYLE)</span>
-              <span class="panel-tag">ISOMETRIC HARDWARE & IP/PSTN PACKET BURST</span>
+              <span>END-TO-END CELLULAR SYSTEM TOPOLOGY & DYNAMIC MULTIPLE-ACCESS PACKET FLOW</span>
+              <span class="panel-tag" id="iso-active-mode-tag">FDMA (ANALOG AMPS)</span>
             </div>
 
-            <div style="background: #020408; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; position: relative;">
-              <svg viewBox="0 0 880 260" style="width: 100%; height: 260px;" id="iso-cellular-svg">
+            <!-- Protocol Explorer Multi-Access Mode Selector & Zoom Controls -->
+            <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+              <div style="display: flex; gap: 8px;">
+                <button class="btn-ctrl active" id="btn-top-fdma" style="font-size: 0.75rem; padding: 4px 10px;">
+                  📡 1G FDMA (Freq Sliced)
+                </button>
+                <button class="btn-ctrl" id="btn-top-tdma" style="font-size: 0.75rem; padding: 4px 10px;">
+                  ⏱️ 2G TDMA (Time Slot Bursts)
+                </button>
+                <button class="btn-ctrl" id="btn-top-cdma" style="font-size: 0.75rem; padding: 4px 10px;">
+                  🧬 2G/3G CDMA (Orthogonal Codes)
+                </button>
+              </div>
+
+              <!-- Zoom Camera Presets -->
+              <div style="display: flex; gap: 6px; align-items: center; font-family: var(--font-mono); font-size: 0.75rem;">
+                <span style="color: var(--text-dim);">CAMERA:</span>
+                <button class="btn-ctrl active" id="btn-cam-wide" title="Wide View">🌐 OVERVIEW</button>
+                <button class="btn-ctrl" id="btn-cam-device" title="Zoom Mobile Client">💻 CLIENT</button>
+                <button class="btn-ctrl" id="btn-cam-tower" title="Zoom Base Station">🗼 BS TOWER</button>
+                <button class="btn-ctrl" id="btn-cam-core" title="Zoom Core Network">☁️ CORE/SERVER</button>
+              </div>
+            </div>
+
+            <div style="background: #020408; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; position: relative; overflow: hidden;">
+              <svg viewBox="0 0 880 260" style="width: 100%; height: 260px; transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);" id="iso-cellular-svg">
                 <!-- Subtle Isometric Ground Grid -->
                 <g opacity="0.08" stroke="#00e5ff" stroke-width="1">
                   <line x1="0" y1="120" x2="880" y2="120"/>
@@ -111,16 +135,21 @@ function getSectionContent(secId, state) {
                   <line x1="800" y1="60" x2="800" y2="260"/>
                 </g>
 
-                <!-- 1. Client Mobile Laptop with Wi-Fi / Cellular Modem -->
+                <!-- RF Emission Pulse Rings from Client -->
+                <circle id="iso-client-rf-pulse" cx="120" cy="140" r="10" fill="none" stroke="#00e5ff" stroke-width="1.5" opacity="0"/>
+                <circle id="iso-bs-rf-pulse" cx="300" cy="80" r="15" fill="none" stroke="#00ff9d" stroke-width="1.5" opacity="0"/>
+
+                <!-- 1. Client Mobile Laptop with Cellular Modem & Handset -->
                 <g id="iso-node-client">
                   ${drawIsometricLaptop(120, 160, 0.9, '#38bdf8')}
-                  <text x="75" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Mobile Subscriber</text>
-                  <text x="85" y="228" fill="#38bdf8" font-size="9" font-family="monospace">MS: 192.168.1.10</text>
+                  ${drawIsometricPhone(60, 180, 0.8, '#00e5ff')}
+                  <text x="55" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Mobile Subscriber (MS)</text>
+                  <text x="65" y="228" fill="#38bdf8" font-size="9" font-family="monospace">MS: 192.168.1.10 (SIM Active)</text>
                 </g>
 
                 <!-- RF Link Line from Laptop to Base Station -->
                 <path d="M 160 145 Q 220 100, 280 85" fill="none" stroke="#00e5ff" stroke-width="2" stroke-dasharray="4 4" id="rf-link-line"/>
-                <text x="180" y="95" fill="#00e5ff" font-size="9" font-family="monospace">AIR LINK (Uplink/Downlink)</text>
+                <text x="175" y="95" fill="#00e5ff" font-size="9" font-family="monospace" id="iso-link-label">AIR LINK (30 kHz FM Carrier)</text>
 
                 <!-- 2. Cellular Base Station Tower (BS) -->
                 <g id="iso-node-bs">
@@ -137,7 +166,7 @@ function getSectionContent(secId, state) {
                 <g id="iso-node-router">
                   ${drawIsometricRouter(490, 165, 0.9, '#38bdf8')}
                   <text x="440" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">BSC / Core Router</text>
-                  <text x="455" y="228" fill="#ffb703" font-size="9" font-family="monospace">IP: 10.0.0.1</text>
+                  <text x="455" y="228" fill="#ffb703" font-size="9" font-family="monospace">IP: 10.0.0.1 (GTP Tunnel)</text>
                 </g>
 
                 <!-- Cable from Router to Internet Cloud -->
@@ -148,7 +177,7 @@ function getSectionContent(secId, state) {
                 <g id="iso-node-cloud">
                   ${drawIsometricCloud(660, 135, 1.0, '#38bdf8')}
                   <text x="615" y="175" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Cellular Core / IP</text>
-                  <text x="630" y="188" fill="#38bdf8" font-size="9" font-family="monospace">MTSO Backbone</text>
+                  <text x="630" y="188" fill="#38bdf8" font-size="9" font-family="monospace">MTSO / MSC Backbone</text>
                 </g>
 
                 <!-- Link from Cloud to DNS / Application Server -->
@@ -159,15 +188,50 @@ function getSectionContent(secId, state) {
                 <g id="iso-node-server">
                   ${drawIsometricServer(800, 160, 0.9, '#00ff9d')}
                   <text x="760" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Web / DNS Server</text>
-                  <text x="770" y="228" fill="#00ff9d" font-size="9" font-family="monospace">IP: 8.8.8.8</text>
+                  <text x="770" y="228" fill="#00ff9d" font-size="9" font-family="monospace">IP: 8.8.8.8 (Resolved)</text>
                 </g>
 
                 <!-- Live Animated Moving Packet Bubble -->
                 <g id="iso-animated-packet">
-                  <rect id="iso-pkt-bubble" x="150" y="130" width="85" height="22" fill="#0b1329" stroke="#00e5ff" stroke-width="1.5" rx="3"/>
-                  <text id="iso-pkt-text" x="158" y="145" fill="#00e5ff" font-size="8" font-family="monospace" font-weight="700">RF FRAME #1</text>
+                  <rect id="iso-pkt-bubble" x="150" y="130" width="105" height="24" fill="#0b1329" stroke="#00e5ff" stroke-width="1.5" rx="3"/>
+                  <text id="iso-pkt-text" x="156" y="146" fill="#00e5ff" font-size="8" font-family="monospace" font-weight="700">RF CARRIER f₁</text>
                 </g>
               </svg>
+
+              <!-- Play / Pause / Reset Controls (Protocol Explorer style) -->
+              <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-family: var(--font-mono);">
+                <button class="btn-ctrl active" id="btn-iso-play" style="font-size:0.75rem; padding:5px 14px; background: rgba(0,229,255,0.15); border-color:#00e5ff; color:#00e5ff; min-width:90px;">
+                  ▶ PLAY
+                </button>
+                <button class="btn-ctrl" id="btn-iso-step" style="font-size:0.75rem; padding:5px 10px;" title="Advance one packet">
+                  ⏭ STEP
+                </button>
+                <button class="btn-ctrl" id="btn-iso-reset" style="font-size:0.75rem; padding:5px 10px;" title="Reset">
+                  ↺ RESET
+                </button>
+                <select id="sim-speed-select" style="background:var(--bg-tertiary);color:var(--text-bright);border:1px solid var(--border-subtle);font-family:var(--font-mono);font-size:0.72rem;padding:4px 6px;border-radius:3px;">
+                  <option value="0.5">0.5× Speed</option>
+                  <option value="1" selected>1× Speed</option>
+                  <option value="2">2× Speed</option>
+                  <option value="4">4× Speed</option>
+                </select>
+                <!-- Step Indicator -->
+                <span id="iso-step-indicator" style="color:var(--text-dim);font-size:0.72rem; margin-left:4px;">STEP — / 4</span>
+              </div>
+
+              <!-- Step Explanation HUD Overlay (Protocol Explorer style) -->
+              <div id="iso-hud-box" style="margin-top: 8px; background: rgba(15,23,42,0.85); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 0.75rem;">
+                <span id="iso-hud-status" style="color: var(--accent-cyan);">⏸ PAUSED — Click ▶ PLAY to start packet flow animation</span>
+                <span id="iso-hud-phy" style="color: var(--text-dim);">FREQ: 825.03 MHz | DUPLEX: +45 MHz | MOD: FM/FSK</span>
+              </div>
+
+              <!-- Per-step Detail Panel (Protocol Explorer "Step Details" style) -->
+              <div id="iso-step-detail" style="margin-top:8px; background:rgba(15,23,42,0.7); border:1px solid var(--border-subtle); border-radius:4px; padding:8px 12px; font-family:var(--font-mono); font-size:0.73rem; display:none;">
+                <div style="color:var(--text-dim); font-size:0.65rem; margin-bottom:4px;" id="iso-step-num">STEP 1 OF 4</div>
+                <div style="color:#fff; font-weight:700; font-size:0.85rem; margin-bottom:4px;" id="iso-step-title">RF AIR LINK</div>
+                <div style="color:var(--text-secondary);" id="iso-step-desc">Mobile Subscriber transmits data over the air interface to the Base Station.</div>
+                <div style="margin-top:6px; display:grid; grid-template-columns:1fr 1fr; gap:4px;" id="iso-step-meta"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -568,7 +632,8 @@ const ch10State = {
   speed: 60,
   carT: 0,
   accessMode: 'fdma',
-  evdoSnr: 14
+  evdoSnr: 14,
+  cameraZoom: 'wide'
 };
 
 function attachSubEvents(container, secId, progressManager) {
@@ -578,6 +643,265 @@ function attachSubEvents(container, secId, progressManager) {
     const sliderH = container.querySelector('#ch10-slider-h');
     const selectStrat = container.querySelector('#ch10-select-strat');
     const sliderSpeed = container.querySelector('#ch10-slider-speed');
+
+    // Topology Multi-Access Buttons
+    const btnTopFdma = container.querySelector('#btn-top-fdma');
+    const btnTopTdma = container.querySelector('#btn-top-tdma');
+    const btnTopCdma = container.querySelector('#btn-top-cdma');
+    const modeTag = container.querySelector('#iso-active-mode-tag');
+    const linkLabel = container.querySelector('#iso-link-label');
+    const hudStatus = container.querySelector('#iso-hud-status');
+    const hudPhy = container.querySelector('#iso-hud-phy');
+
+    // Camera Zoom Buttons
+    const btnCamWide = container.querySelector('#btn-cam-wide');
+    const btnCamDevice = container.querySelector('#btn-cam-device');
+    const btnCamTower = container.querySelector('#btn-cam-tower');
+    const btnCamCore = container.querySelector('#btn-cam-core');
+    const isoSvg = container.querySelector('#iso-cellular-svg');
+
+    const setCamera = (preset) => {
+      ch10State.cameraZoom = preset;
+      [btnCamWide, btnCamDevice, btnCamTower, btnCamCore].forEach(b => b && b.classList.remove('active'));
+      if (!isoSvg) return;
+
+      if (preset === 'device') {
+        btnCamDevice && btnCamDevice.classList.add('active');
+        isoSvg.style.transformOrigin = '120px 160px';
+        isoSvg.style.transform = 'scale(2.0)';
+      } else if (preset === 'tower') {
+        btnCamTower && btnCamTower.classList.add('active');
+        isoSvg.style.transformOrigin = '300px 150px';
+        isoSvg.style.transform = 'scale(2.0)';
+      } else if (preset === 'core') {
+        btnCamCore && btnCamCore.classList.add('active');
+        isoSvg.style.transformOrigin = '680px 150px';
+        isoSvg.style.transform = 'scale(1.8)';
+      } else {
+        btnCamWide && btnCamWide.classList.add('active');
+        isoSvg.style.transformOrigin = 'center center';
+        isoSvg.style.transform = 'scale(1.0)';
+      }
+    };
+
+    if (btnCamWide) btnCamWide.addEventListener('click', () => setCamera('wide'));
+    if (btnCamDevice) btnCamDevice.addEventListener('click', () => setCamera('device'));
+    if (btnCamTower) btnCamTower.addEventListener('click', () => setCamera('tower'));
+    if (btnCamCore) btnCamCore.addEventListener('click', () => setCamera('core'));
+
+    const setAccessPreset = (mode) => {
+      ch10State.accessMode = mode;
+      [btnTopFdma, btnTopTdma, btnTopCdma].forEach(b => b && b.classList.remove('active'));
+
+      if (mode === 'fdma') {
+        btnTopFdma && btnTopFdma.classList.add('active');
+        if (modeTag) modeTag.textContent = 'FDMA (ANALOG AMPS)';
+        if (linkLabel) linkLabel.textContent = 'AIR LINK (30 kHz FM Carrier)';
+        if (hudStatus) hudStatus.textContent = '● SIMULATION: 1G FDMA (Dedicated continuous frequency slice per user)';
+        if (hudPhy) hudPhy.textContent = 'FREQ: 825.03 MHz | DUPLEX: +45 MHz | MOD: FM Audio';
+        progressManager.addLog('AIR-IF', 'Access Mode changed to FDMA (AMPS 30kHz channels)');
+      } else if (mode === 'tdma') {
+        btnTopTdma && btnTopTdma.classList.add('active');
+        if (modeTag) modeTag.textContent = 'TDMA (DIGITAL GSM)';
+        if (linkLabel) linkLabel.textContent = 'AIR LINK (577 µs Time Slot Bursts)';
+        if (hudStatus) hudStatus.textContent = '● SIMULATION: 2G TDMA (8 interleaved time slots per 200 kHz carrier)';
+        if (hudPhy) hudPhy.textContent = 'FRAME: 4.615 ms | SLOT: 577 µs | MOD: 0.3 GMSK 270.833 kbps';
+        progressManager.addLog('AIR-IF', 'Access Mode changed to TDMA (GSM 8-slot frames)');
+      } else {
+        btnTopCdma && btnTopCdma.classList.add('active');
+        if (modeTag) modeTag.textContent = 'CDMA (IS-95 / 3G SPREAD SPECTRUM)';
+        if (linkLabel) linkLabel.textContent = 'AIR LINK (1.2288 Mcps Orthogonal Walsh 64)';
+        if (hudStatus) hudStatus.textContent = '● SIMULATION: CDMA (All users share full 1.25 MHz carrier simultaneously)';
+        if (hudPhy) hudPhy.textContent = 'SPREAD: 1.2288 Mcps | WALSH: W_64 | SOFT HANDOFF ACTIVE';
+        progressManager.addLog('AIR-IF', 'Access Mode changed to CDMA (IS-95 spread spectrum)');
+      }
+    };
+
+    if (btnTopFdma) btnTopFdma.addEventListener('click', () => setAccessPreset('fdma'));
+    if (btnTopTdma) btnTopTdma.addEventListener('click', () => setAccessPreset('tdma'));
+    if (btnTopCdma) btnTopCdma.addEventListener('click', () => setAccessPreset('cdma'));
+
+    // ── Play / Pause / Step / Reset / Speed controls ──────────────────────────
+    const btnPlay   = container.querySelector('#btn-iso-play');
+    const btnStep   = container.querySelector('#btn-iso-step');
+    const btnReset  = container.querySelector('#btn-iso-reset');
+    const speedSel  = container.querySelector('#sim-speed-select');
+    const stepInd   = container.querySelector('#iso-step-indicator');
+    const stepDetail = container.querySelector('#iso-step-detail');
+    const stepNum   = container.querySelector('#iso-step-num');
+    const stepTitle = container.querySelector('#iso-step-title');
+    const stepDesc  = container.querySelector('#iso-step-desc');
+    const stepMeta  = container.querySelector('#iso-step-meta');
+
+    // Per-step explanations for each access mode
+    const stepDefs = {
+      fdma: [
+        { title:'RF AIR LINK (FDMA)', desc:'Mobile Subscriber transmits voice data over its dedicated 30 kHz FM sub-carrier (f₁). No other user shares this frequency slice for the duration of the call.', meta:'SRC: MS 192.168.1.10 | DST: BS-A | FREQ: 825.03 MHz | MOD: FM' },
+        { title:'BASE STATION BACKHAUL', desc:'BS-A decodes the FM signal and re-encodes it onto a wired E1 trunk (2.048 Mbps T1/E1 circuit) towards the Base Station Controller (BSC).', meta:'PROTOCOL: E1 TDM | INTERFACE: Abis | RATE: 64 kbps per channel' },
+        { title:'CORE IP ROUTING (MTSO)', desc:'The Mobile Telephone Switching Office (MTSO) routes the GTP-encapsulated IP packet across the cellular core backbone towards the destination server.', meta:'ENCAP: IP-in-GTP | HOP: BSC → MTSO → PDN-GW' },
+        { title:'INTERNET DELIVERY', desc:'The IP packet exits the cellular core and is delivered to the destination Web / DNS server on the public Internet. HTTP 200 OK response travels the reverse path.', meta:'DST: 8.8.8.8 | PROTOCOL: HTTP | SIZE: 200–1500 Bytes' }
+      ],
+      tdma: [
+        { title:'TIME SLOT BURST (TDMA/GSM)', desc:'Mobile Subscriber transmits a compressed 577 µs speech burst in its assigned time slot (Slot 3 of 8) on a 200 kHz GSM carrier. GMSK modulation at 270.833 kbps.', meta:'FRAME: 4.615 ms | SLOT: 577 µs | MOD: 0.3-GMSK | CODEC: 13 kbps RPE-LPC' },
+        { title:'BASE STATION DECODING', desc:'BS-A decodes the GMSK burst, de-interleaves the 8-slot frame, and reconstructs the speech frame. The frame is forwarded via the Abis interface to the BSC.', meta:'INTERFACE: Abis (E1) | FRAME SIZE: 20 ms speech | FEC: Convolutional 1/2' },
+        { title:'CORE SWITCHING (MSC)', desc:'The Mobile Switching Centre (MSC) performs call routing. For data calls, GPRS packets are tunnelled via GTP over the SGSN/GGSN nodes to reach the IP backbone.', meta:'NODES: BSC → SGSN → GGSN → Internet | PROTOCOL: GTP-C/GTP-U' },
+        { title:'INTERNET DELIVERY', desc:'The IP datagram exits the GGSN and is routed over the public Internet to the destination server. TDMA supports data rates up to 384 kbps (EDGE/EGPRS).', meta:'DST: 8.8.8.8 | MAX RATE: 384 kbps (EDGE) | LATENCY: ~100 ms' }
+      ],
+      cdma: [
+        { title:'SPREAD SPECTRUM AIR LINK (CDMA)', desc:'All users transmit simultaneously across the entire 1.25 MHz band. The MS spreads its data with a unique 64-chip Walsh code (W₆₄). RAKE receiver at BS separates users via code orthogonality.', meta:'CHIP RATE: 1.2288 Mcps | CODE: Walsh W₆₄ | POWER CTRL: Open+Closed Loop' },
+        { title:'A-BIS / IUB INTERFACE', desc:'BS-A uses a RAKE receiver to despread the composite signal. The recovered user bits are packetised and forwarded via the Iub/A-interface towards the RNC/BSC using ATM or IP transport.', meta:'INTERFACE: Iub (ATM) | SOFT HANDOFF ACTIVE: 3 BS branches combined' },
+        { title:'RNC / CORE PACKET DATA', desc:'The Radio Network Controller (RNC) performs macro-diversity combining for soft handoff. SGSN tunnels the IP PDU through the GPRS/EPC core towards the PDN gateway.', meta:'DIVERSITY: Maximum-Ratio Combining (3-way) | EB/N0 GAIN: ~3 dB' },
+        { title:'INTERNET DELIVERY', desc:'The IP packet exits the CDMA2000 / W-CDMA core and reaches the destination. CDMA enables universal frequency reuse (N=1), giving 10–15× capacity gain over FDMA.', meta:'DST: 8.8.8.8 | REUSE FACTOR: N=1 | CAPACITY GAIN: ~13× vs FDMA' }
+      ]
+    };
+
+    let isPlaying = false;
+    let simSubId  = null;
+    let simSpeedMultiplier = 1.0;
+    let manualStep = -1; // -1 = auto (driven by time), 0-3 = manual step override
+
+    const getStepInfo = (seg) => {
+      const mode = ch10State.accessMode;
+      return stepDefs[mode] ? stepDefs[mode][seg] : stepDefs.fdma[seg];
+    };
+
+    const updateStepDetail = (seg) => {
+      const info = getStepInfo(seg);
+      if (!info) return;
+      if (stepDetail) stepDetail.style.display = 'block';
+      if (stepNum)   stepNum.textContent   = `STEP ${seg + 1} OF 4`;
+      if (stepTitle) stepTitle.textContent  = info.title;
+      if (stepDesc)  stepDesc.textContent   = info.desc;
+      if (stepMeta)  stepMeta.innerHTML     = info.meta.split(' | ').map(m => {
+        const [k, ...v] = m.split(':');
+        return `<div style="background:rgba(0,229,255,0.07);border:1px solid rgba(0,229,255,0.15);border-radius:3px;padding:3px 6px;"><span style="color:var(--text-dim);font-size:0.65rem;">${k}:</span><span style="color:var(--text-bright);margin-left:4px;">${v.join(':').trim()}</span></div>`;
+      }).join('');
+      if (stepInd) stepInd.textContent = `STEP ${seg + 1} / 4`;
+    };
+
+    const startSim = () => {
+      if (simSubId !== null) return; // already subscribed
+      isPlaying = true;
+      if (btnPlay) { btnPlay.textContent = '⏸ PAUSE'; btnPlay.style.borderColor = '#ffb703'; btnPlay.style.color = '#ffb703'; }
+      if (hudStatus) hudStatus.textContent = `● SIMULATION RUNNING: ${ch10State.accessMode.toUpperCase()} packet flow active`;
+      if (stepDetail) stepDetail.style.display = 'block';
+
+      simSubId = simEngine.subscribe((time) => {
+        const isoBubble = container.querySelector('#iso-pkt-bubble');
+        const isoText   = container.querySelector('#iso-pkt-text');
+        const clientPulse = container.querySelector('#iso-client-rf-pulse');
+        const bsPulse     = container.querySelector('#iso-bs-rf-pulse');
+
+        if (clientPulse && bsPulse) {
+          const pR  = 10 + ((time * 30 * simSpeedMultiplier) % 35);
+          const pOp = Math.max(0, 1 - (pR / 45));
+          clientPulse.setAttribute('r', pR);
+          clientPulse.setAttribute('opacity', pOp * 0.8);
+          const bsR  = 12 + ((time * 25 * simSpeedMultiplier + 15) % 40);
+          const bsOp = Math.max(0, 1 - (bsR / 50));
+          bsPulse.setAttribute('r', bsR);
+          bsPulse.setAttribute('opacity', bsOp * 0.7);
+        }
+
+        if (isoBubble && isoText) {
+          const mode = ch10State.accessMode;
+          const flowSpeed = simSpeedMultiplier * (mode === 'tdma' ? 0.65 : mode === 'cdma' ? 0.8 : 0.45);
+          const flowCycle = manualStep >= 0 ? (manualStep + 0.5) : (time * flowSpeed) % 4;
+          const seg       = Math.min(3, Math.floor(flowCycle));
+          const subT      = manualStep >= 0 ? 0.5 : (flowCycle - seg);
+
+          let px = 150, py = 130, label = 'RF AIR BURST', color = '#00e5ff', bubbleWidth = 95;
+
+          if (seg === 0) {
+            px = 120 + subT * (300 - 120); py = 145 + subT * (85 - 145);
+            if (mode === 'fdma')       { label = 'FDMA: f₁ (30kHz)';    color = '#0070f3'; bubbleWidth = 110; }
+            else if (mode === 'tdma') { const slot = Math.floor((time * 8) % 8) + 1; label = `TDMA: SLOT ${slot}/8`; color = '#00e5ff'; bubbleWidth = 105; }
+            else                      { const chip = (Math.floor(time * 12) % 2 === 0) ? '+1 -1 +1 -1' : '-1 +1 -1 +1'; label = `CDMA: W₆₄ [${chip}]`; color = '#ff0055'; bubbleWidth = 125; }
+          } else if (seg === 1) {
+            px = 300 + subT * (490 - 300); py = 165;
+            label = mode === 'cdma' ? 'A-bis/Iub (ATM)' : 'E1 / GTP-U FRAME'; color = '#38bdf8'; bubbleWidth = 115;
+          } else if (seg === 2) {
+            px = 490 + subT * (660 - 490); py = 165 + subT * (135 - 165);
+            label = 'IP PACKET (PDU)'; color = '#ffb703'; bubbleWidth = 105;
+          } else {
+            px = 660 + subT * (800 - 660); py = 135 + subT * (160 - 135);
+            label = 'HTTP 200 OK (ACK)'; color = '#00ff9d'; bubbleWidth = 115;
+          }
+
+          isoBubble.setAttribute('x', px - bubbleWidth / 2);
+          isoBubble.setAttribute('y', py - 12);
+          isoBubble.setAttribute('width', bubbleWidth);
+          isoBubble.setAttribute('stroke', color);
+          isoText.setAttribute('x', px - bubbleWidth / 2 + 6);
+          isoText.setAttribute('y', py + 3);
+          isoText.setAttribute('fill', color);
+          isoText.textContent = label;
+
+          // Auto-update step detail when segment changes
+          if (manualStep < 0) updateStepDetail(seg);
+        }
+      });
+    };
+
+    const stopSim = () => {
+      isPlaying = false;
+      if (simSubId !== null) { simSubId(); simSubId = null; } // simSubId is the unsubscribe fn returned by simEngine.subscribe
+      if (btnPlay) { btnPlay.textContent = '▶ PLAY'; btnPlay.style.borderColor = '#00e5ff'; btnPlay.style.color = '#00e5ff'; }
+      if (hudStatus) hudStatus.textContent = `⏸ PAUSED — ${ch10State.accessMode.toUpperCase()} mode selected`;
+      if (stepInd) stepInd.textContent = 'STEP — / 4';
+    };
+
+    const resetSim = () => {
+      stopSim();
+      manualStep = -1;
+      if (stepDetail) stepDetail.style.display = 'none';
+      if (hudStatus) hudStatus.textContent = `⏸ PAUSED — Click ▶ PLAY to start packet flow animation`;
+      // Reset bubble to start
+      const isoBubble = container.querySelector('#iso-pkt-bubble');
+      const isoText   = container.querySelector('#iso-pkt-text');
+      if (isoBubble) { isoBubble.setAttribute('x', 100); isoBubble.setAttribute('y', 130); isoBubble.setAttribute('stroke', '#00e5ff'); }
+      if (isoText)   { isoText.setAttribute('x', 106); isoText.setAttribute('y', 146); isoText.setAttribute('fill', '#00e5ff'); isoText.textContent = 'RF CARRIER f₁'; }
+      const cp = container.querySelector('#iso-client-rf-pulse');
+      const bp = container.querySelector('#iso-bs-rf-pulse');
+      if (cp) { cp.setAttribute('r', 10); cp.setAttribute('opacity', 0); }
+      if (bp) { bp.setAttribute('r', 15); bp.setAttribute('opacity', 0); }
+    };
+
+    if (btnPlay)  btnPlay.addEventListener('click',  () => { isPlaying ? stopSim() : startSim(); });
+    if (btnReset) btnReset.addEventListener('click', resetSim);
+    if (btnStep)  btnStep.addEventListener('click',  () => {
+      if (isPlaying) stopSim();
+      manualStep = (manualStep + 1) % 4;
+      updateStepDetail(manualStep);
+      if (hudStatus) hudStatus.textContent = `⏭ STEP ${manualStep + 1}/4 — ${getStepInfo(manualStep).title}`;
+      if (stepInd) stepInd.textContent = `STEP ${manualStep + 1} / 4`;
+      // Render one frame at the manual step position
+      const isoBubble = container.querySelector('#iso-pkt-bubble');
+      const isoText   = container.querySelector('#iso-pkt-text');
+      const mode = ch10State.accessMode;
+      const stepInfo = stepDefs[mode] ? stepDefs[mode][manualStep] : stepDefs.fdma[manualStep];
+      const segPositions = [[120,145],[300,165],[490,165],[660,135]];
+      const colors = ['#0070f3','#38bdf8','#ffb703','#00ff9d'];
+      const labels = mode === 'fdma'
+        ? ['FDMA: f₁ (30kHz)', 'E1 / GTP-U FRAME', 'IP PACKET (PDU)', 'HTTP 200 OK (ACK)']
+        : mode === 'tdma'
+        ? ['TDMA: SLOT 3/8', 'E1 / GTP-U FRAME', 'IP PACKET (PDU)', 'HTTP 200 OK (ACK)']
+        : ['CDMA: W₆₄ [+1 -1 +1 -1]', 'A-bis/Iub (ATM)', 'IP PACKET (PDU)', 'HTTP 200 OK (ACK)'];
+      if (isoBubble && isoText && segPositions[manualStep]) {
+        const [spx, spy] = segPositions[manualStep];
+        const bw = manualStep === 0 ? 110 : 115;
+        isoBubble.setAttribute('x', spx - bw/2); isoBubble.setAttribute('y', spy - 12);
+        isoBubble.setAttribute('width', bw); isoBubble.setAttribute('stroke', colors[manualStep]);
+        isoText.setAttribute('x', spx - bw/2 + 6); isoText.setAttribute('y', spy + 3);
+        isoText.setAttribute('fill', colors[manualStep]);
+        isoText.textContent = labels[manualStep];
+      }
+    });
+    if (speedSel) speedSel.addEventListener('change', (e) => { simSpeedMultiplier = Number(e.target.value); });
+
+    // Update setAccessPreset to also update HUD when paused
+    const origSet = setAccessPreset;
+    // (setAccessPreset already updates hudStatus, so mode changes will reflect correctly)
 
     const valN = container.querySelector('#ch10-val-n');
     const valH = container.querySelector('#ch10-val-h');
@@ -747,49 +1071,6 @@ function attachSubEvents(container, secId, progressManager) {
         const gx = 40 + normPos * 320;
         graphPos.setAttribute('x1', gx);
         graphPos.setAttribute('x2', gx);
-      }
-
-      // Animate Protocol Explorer Isometric Packet Flow: Mobile Laptop (120, 145) -> BS (300, 160) -> Router (490, 165) -> Cloud (660, 135) -> Server (800, 160)
-      const isoBubble = container.querySelector('#iso-pkt-bubble');
-      const isoText = container.querySelector('#iso-pkt-text');
-      if (isoBubble && isoText) {
-        const flowCycle = (time * 0.4) % 4; // 4 second loop across 4 segments
-        const seg = Math.floor(flowCycle);
-        const subT = flowCycle - seg;
-
-        let px = 150, py = 130, label = 'RF AIR BURST', color = '#00e5ff';
-        if (seg === 0) {
-          // Mobile -> BS
-          px = 120 + subT * (300 - 120);
-          py = 145 + subT * (85 - 145);
-          label = 'RF AIR BURST';
-          color = '#00e5ff';
-        } else if (seg === 1) {
-          // BS -> BSC Router
-          px = 300 + subT * (490 - 300);
-          py = 165;
-          label = 'E1 / GTP-U';
-          color = '#38bdf8';
-        } else if (seg === 2) {
-          // Router -> Cloud
-          px = 490 + subT * (660 - 490);
-          py = 165 + subT * (135 - 165);
-          label = 'IP PACKET';
-          color = '#ffb703';
-        } else {
-          // Cloud -> Server
-          px = 660 + subT * (800 - 660);
-          py = 135 + subT * (160 - 135);
-          label = 'HTTP 200 OK';
-          color = '#00ff9d';
-        }
-        isoBubble.setAttribute('x', px - 40);
-        isoBubble.setAttribute('y', py - 12);
-        isoBubble.setAttribute('stroke', color);
-        isoText.setAttribute('x', px - 35);
-        isoText.setAttribute('y', py + 2);
-        isoText.setAttribute('fill', color);
-        isoText.textContent = label;
       }
     });
   }

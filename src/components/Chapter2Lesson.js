@@ -16,6 +16,7 @@ import { simEngine } from '../simulations/engine.js';
 import { generateWaveformPoints, pointsToSvgPath } from '../utils/svgUtils.js';
 import { calculateNyquistCapacity, calculateShannonCapacity, calculateFreeSpaceLoss } from '../utils/mathUtils.js';
 import { formatFrequency, formatBitrate, formatDb } from '../utils/formatters.js';
+import { drawIsometricLaptop, drawIsometricRouter, drawIsometricBaseStation, drawIsometricServer, drawIsometricCloud, drawIsometricPhone } from '../utils/isoGraphics.js';
 
 export function renderChapter2(container, state, progressManager) {
   const currentSec = state.activeSectionId && state.activeSectionId.startsWith('sec-2')
@@ -539,6 +540,65 @@ function getSectionContent(secId, state) {
                 • <strong>Impairments:</strong> Rain attenuation becomes severe above 10 GHz; multipath fading over ground reflections.<br/>
                 • <strong>Applications:</strong> Long-haul telephone voice/video trunks, cellular base station backhaul, bypass links.
               </div>
+            </div>
+
+            <!-- Protocol Explorer 3D Hardware Simulation for Wireless Media -->
+            <div style="margin-top: 16px; background: #020408; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; position: relative;">
+              <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-cyan); margin-bottom: 8px;">
+                ISOMETRIC HARDWARE REAL-WORLD LINK: CLIENT LAPTOP & ROUTER ⇄ ATMOSPHERIC PROPAGATION
+              </div>
+              <svg viewBox="0 0 820 220" style="width: 100%; height: 220px;" id="media-iso-svg">
+                <!-- Subtle Ground Grid -->
+                <g opacity="0.08" stroke="#00e5ff" stroke-width="1">
+                  <line x1="0" y1="110" x2="820" y2="110"/>
+                  <line x1="0" y1="160" x2="820" y2="160"/>
+                  <line x1="100" y1="50" x2="100" y2="220"/>
+                  <line x1="300" y1="50" x2="300" y2="220"/>
+                  <line x1="520" y1="50" x2="520" y2="220"/>
+                  <line x1="720" y1="50" x2="720" y2="220"/>
+                </g>
+
+                <!-- 1. Client Laptop Terminal -->
+                <g id="iso-media-client">
+                  ${drawIsometricLaptop(100, 140, 0.9, '#38bdf8')}
+                  <text x="60" y="195" fill="#fff" font-size="10" font-family="monospace" font-weight="700">Client Terminal</text>
+                  <text x="65" y="208" fill="#38bdf8" font-size="8" font-family="monospace">192.168.1.15</text>
+                </g>
+
+                <!-- 2. Wireless Access Router / Gateway -->
+                <g id="iso-media-router">
+                  ${drawIsometricRouter(300, 145, 0.9, '#38bdf8')}
+                  <text x="260" y="195" fill="#fff" font-size="10" font-family="monospace" font-weight="700">Wi-Fi Gateway</text>
+                  <text x="270" y="208" fill="#ffb703" font-size="8" font-family="monospace">2.4 / 5.8 GHz</text>
+                </g>
+
+                <!-- Link between Laptop and Router -->
+                <path d="M 140 125 Q 220 95, 270 125" fill="none" stroke="#00e5ff" stroke-width="2" stroke-dasharray="4 4" id="media-link-local"/>
+
+                <!-- 3. Long-Haul Point-to-Point Antenna Tower -->
+                <g id="iso-media-tower">
+                  ${drawIsometricBaseStation(520, 145, 0.95, '#00ff9d')}
+                  <text x="470" y="195" fill="#fff" font-size="10" font-family="monospace" font-weight="700">Microwave Relay</text>
+                  <text x="480" y="208" fill="#00ff9d" font-size="8" font-family="monospace">18 GHz LOS Link</text>
+                </g>
+
+                <!-- 4. Destination Cloud / Satellite Relay -->
+                <g id="iso-media-cloud">
+                  ${drawIsometricCloud(720, 120, 1.0, '#38bdf8')}
+                  <text x="680" y="165" fill="#fff" font-size="10" font-family="monospace" font-weight="700">Global WAN / Core</text>
+                  <text x="690" y="178" fill="#38bdf8" font-size="8" font-family="monospace">GEO Satellite Relay</text>
+                </g>
+
+                <!-- Long-haul wireless path -->
+                <line x1="335" y1="145" x2="490" y2="135" stroke="#334155" stroke-width="2"/>
+                <line x1="335" y1="145" x2="490" y2="135" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="6 3"/>
+                <line x1="550" y1="110" x2="680" y2="105" stroke="#334155" stroke-width="2"/>
+                <line x1="550" y1="110" x2="680" y2="105" stroke="#00ff9d" stroke-width="1.5" stroke-dasharray="6 3"/>
+
+                <!-- Live Animated Burst Bubble -->
+                <rect id="media-pkt-bubble" x="140" y="115" width="85" height="20" fill="#0b1329" stroke="#00e5ff" stroke-width="1.5" rx="3"/>
+                <text id="media-pkt-text" x="146" y="129" fill="#00e5ff" font-size="8" font-family="monospace" font-weight="700">2.4 GHz BURST</text>
+              </svg>
             </div>
           </div>
         </div>

@@ -234,8 +234,8 @@ export const CURRICULUM = [
         title: "Cellular Wireless Networks",
         bookPage: 264,
         pdfPage: 274,
-        status: "planned",
-        badge: "PLANNED",
+        status: "staged",
+        badge: "STAGED",
         description: "Cellular geometry, cluster sizing, frequency reuse factor, handoff mechanisms, cell splitting, 1G AMPS, 2G GSM & IS-95, and 3G CDMA2000/WCDMA evolution.",
         sections: [
           { id: "sec-10.1", num: "10.1", title: "Principles of Cellular Networks", bookPage: 265, pdfPage: 275, subsections: ["Cellular Network Organization", "Operation of Cellular Systems", "Mobile Radio Propagation Effects", "Power Control", "Traffic Engineering"] },

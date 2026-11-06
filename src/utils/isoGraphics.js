@@ -185,3 +185,29 @@ export function drawIsometricCloud(x, y, scale = 1, color = '#38bdf8') {
     </g>
   `;
 }
+
+/**
+ * 3D Isometric Smartphone / Mobile Handset
+ */
+export function drawIsometricPhone(x, y, scale = 1, color = '#38bdf8') {
+  return `
+    <g transform="translate(${x}, ${y}) scale(${scale})" class="iso-device iso-phone">
+      <!-- Shadow -->
+      <polygon points="-16,22 0,14 16,22 0,30" fill="rgba(0, 112, 243, 0.15)"/>
+      <!-- Body Back/Side -->
+      <polygon points="-14,15 0,7 14,15 0,23" fill="#0b1329" stroke="${color}" stroke-width="1.8"/>
+      <!-- Thickness Edge -->
+      <polygon points="-14,15 0,23 0,27 -14,19" fill="#070c1b" stroke="${color}" stroke-width="1.8"/>
+      <polygon points="14,15 0,23 0,27 14,19" fill="#040813" stroke="${color}" stroke-width="1.8"/>
+      <!-- Upright Display Screen Frame -->
+      <polygon points="-14,15 0,7 0,-35 -14,-27" fill="#091024" stroke="${color}" stroke-width="1.8"/>
+      <polygon points="-12,12 -1,5 -1,-31 -12,-24" fill="#020614" stroke="${color}" stroke-width="1"/>
+      <!-- Screen UI: Signal bars & call icon -->
+      <line x1="-10" y1="-20" x2="-3" y2="-16" stroke="#00e5ff" stroke-width="1.5"/>
+      <line x1="-10" y1="-14" x2="-5" y2="-11" stroke="#00ff9d" stroke-width="1.5"/>
+      <circle cx="-6" cy="2" r="1.5" fill="#38bdf8"/>
+    </g>
+  `;
+}
+
+
