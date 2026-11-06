@@ -16,6 +16,7 @@
 import { simEngine } from '../simulations/engine.js';
 import { pointsToSvgPath } from '../utils/svgUtils.js';
 import { formatFrequency, formatBitrate, formatDb } from '../utils/formatters.js';
+import { drawIsometricLaptop, drawIsometricRouter, drawIsometricBaseStation, drawIsometricServer, drawIsometricCloud } from '../utils/isoGraphics.js';
 
 export function renderChapter10(container, state, progressManager) {
   const currentSec = state.activeSectionId && state.activeSectionId.startsWith('sec-10')
@@ -89,120 +90,84 @@ function getSectionContent(secId, state) {
           </p>
 
           <!-- Interactive Hexagonal Cluster & Handoff Simulator -->
-          <div class="interactive-panel">
+          <!-- Real-World End-to-End Cellular Topology (Protocol Explorer Isometric Style) -->
+          <div class="interactive-panel" style="margin-top: 16px;">
             <div class="panel-header">
-              <span>LIVE ANIMATED LAB: FREQUENCY REUSE CLUSTER & REAL-TIME HANDOFF HYSTERESIS ENGINE</span>
-              <span class="panel-tag" id="ch10-handoff-status">MOBILE SPEED: 60 km/h</span>
+              <span>END-TO-END CELLULAR SYSTEM TOPOLOGY & PACKET FLOW (PROTOCOL EXPLORER ISOMETRIC STYLE)</span>
+              <span class="panel-tag">ISOMETRIC HARDWARE & IP/PSTN PACKET BURST</span>
             </div>
 
-            <!-- Two-Column Interactive View: Hex Map + Signal Handoff Graph -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
-              <!-- Left: Hexagonal Grid with moving vehicle -->
-              <div style="background: #03060c; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; height: 260px; position: relative;">
-                <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-cyan); margin-bottom: 6px;">
-                  HEXAGONAL CELL CLUSTER (N=7 REUSE PATTERN)
-                </div>
-                <svg viewBox="0 0 380 220" style="width: 100%; height: 210px;" id="hex-cluster-svg">
-                  <!-- Hexagons (A through G) -->
-                  <g id="hex-cells-group"></g>
-                  <!-- Moving Mobile Vehicle with Signal Radiation Vector -->
-                  <circle id="mobile-vehicle-dot" cx="120" cy="110" r="6" fill="#ff0055" stroke="#ffffff" stroke-width="2"/>
-                  <line id="mobile-serving-link" x1="120" y1="110" x2="110" y2="110" stroke="#00e5ff" stroke-width="2" stroke-dasharray="3 3"/>
-                  <text id="mobile-vehicle-label" x="128" y="114" fill="#ffffff" font-size="9" font-family="monospace">MS-1</text>
-                </svg>
-              </div>
+            <div style="background: #020408; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; position: relative;">
+              <svg viewBox="0 0 880 260" style="width: 100%; height: 260px;" id="iso-cellular-svg">
+                <!-- Subtle Isometric Ground Grid -->
+                <g opacity="0.08" stroke="#00e5ff" stroke-width="1">
+                  <line x1="0" y1="120" x2="880" y2="120"/>
+                  <line x1="0" y1="170" x2="880" y2="170"/>
+                  <line x1="0" y1="220" x2="880" y2="220"/>
+                  <line x1="120" y1="60" x2="120" y2="260"/>
+                  <line x1="280" y1="60" x2="280" y2="260"/>
+                  <line x1="460" y1="60" x2="460" y2="260"/>
+                  <line x1="640" y1="60" x2="640" y2="260"/>
+                  <line x1="800" y1="60" x2="800" y2="260"/>
+                </g>
 
-              <!-- Right: Real-Time Handoff Signal Strengths (Figure 10.7) -->
-              <div style="background: #03060c; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 12px; height: 260px;">
-                <div style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent-sky); margin-bottom: 6px;">
-                  DYNAMIC RSSI & HANDOFF DECISION GRAPH (FIG. 10.7)
-                </div>
-                <svg viewBox="0 0 380 200" style="width: 100%; height: 200px;" id="handoff-graph-svg">
-                  <!-- Grid -->
-                  <line x1="40" y1="20" x2="360" y2="20" stroke="rgba(255,255,255,0.06)"/>
-                  <line x1="40" y1="80" x2="360" y2="80" stroke="rgba(255,255,255,0.06)"/>
-                  <line x1="40" y1="140" x2="360" y2="140" stroke="rgba(255,255,255,0.06)"/>
-                  <line x1="40" y1="170" x2="360" y2="170" stroke="rgba(255,255,255,0.2)"/>
-                  <!-- Base Station A Power Curve (Blue) -->
-                  <path d="M 40 40 Q 200 90, 360 160" fill="none" stroke="#0070f3" stroke-width="2.5"/>
-                  <text x="45" y="35" fill="#38bdf8" font-size="9" font-family="monospace">BS-A Power</text>
-                  <!-- Base Station B Power Curve (Green) -->
-                  <path d="M 40 160 Q 200 90, 360 40" fill="none" stroke="#00ff9d" stroke-width="2.5"/>
-                  <text x="300" y="35" fill="#00ff9d" font-size="9" font-family="monospace">BS-B Power</text>
-                  <!-- Hysteresis Margin H -->
-                  <line x1="40" y1="125" x2="360" y2="125" stroke="#ffb703" stroke-width="1.5" stroke-dasharray="4 4"/>
-                  <text x="45" y="120" fill="#ffb703" font-size="8" font-family="monospace">Threshold Th (-95 dBm)</text>
-                  <!-- Current Car Position Line on Graph -->
-                  <line id="graph-car-pos" x1="120" y1="20" x2="120" y2="170" stroke="#ff0055" stroke-width="2"/>
-                </svg>
-              </div>
-            </div>
+                <!-- 1. Client Mobile Laptop with Wi-Fi / Cellular Modem -->
+                <g id="iso-node-client">
+                  ${drawIsometricLaptop(120, 160, 0.9, '#38bdf8')}
+                  <text x="75" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Mobile Subscriber</text>
+                  <text x="85" y="228" fill="#38bdf8" font-size="9" font-family="monospace">MS: 192.168.1.10</text>
+                </g>
 
-            <!-- Interactive Parameters: Cluster Size N, Hysteresis Margin H, Mobile Speed -->
-            <div class="ch2-controls-grid">
-              <div class="ch2-ctrl">
-                <div class="ch2-lbl">
-                  <span>CLUSTER REUSE FACTOR (N)</span>
-                  <span id="ch10-val-n">N = 7</span>
-                </div>
-                <select id="ch10-select-n" class="control-select" style="width: 100%; background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-subtle); padding: 5px; font-family: var(--font-mono); font-size: 0.75rem; border-radius: 4px; margin-top: 4px;">
-                  <option value="3">N = 3 (Aggressive Reuse, D = 3.00 R)</option>
-                  <option value="4">N = 4 (D = 3.46 R)</option>
-                  <option value="7" selected>N = 7 (AMPS / GSM Standard, D = 4.58 R)</option>
-                  <option value="12">N = 12 (Conservative, D = 6.00 R)</option>
-                  <option value="19">N = 19 (High Isolation, D = 7.55 R)</option>
-                </select>
-              </div>
+                <!-- RF Link Line from Laptop to Base Station -->
+                <path d="M 160 145 Q 220 100, 280 85" fill="none" stroke="#00e5ff" stroke-width="2" stroke-dasharray="4 4" id="rf-link-line"/>
+                <text x="180" y="95" fill="#00e5ff" font-size="9" font-family="monospace">AIR LINK (Uplink/Downlink)</text>
 
-              <div class="ch2-ctrl">
-                <div class="ch2-lbl">
-                  <span>HYSTERESIS MARGIN (ΔH)</span>
-                  <span id="ch10-val-h">4.0 dB</span>
-                </div>
-                <input type="range" id="ch10-slider-h" min="0" max="10" step="0.5" value="4" class="control-slider"/>
-              </div>
+                <!-- 2. Cellular Base Station Tower (BS) -->
+                <g id="iso-node-bs">
+                  ${drawIsometricBaseStation(300, 160, 0.95, '#38bdf8')}
+                  <text x="250" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Cell Base Station</text>
+                  <text x="260" y="228" fill="#00e5ff" font-size="9" font-family="monospace">BS-A Transceiver</text>
+                </g>
 
-              <div class="ch2-ctrl">
-                <div class="ch2-lbl">
-                  <span>HANDOFF STRATEGY</span>
-                  <span id="ch10-val-strat">Hysteresis + Th</span>
-                </div>
-                <select id="ch10-select-strat" class="control-select" style="width: 100%; background: var(--bg-tertiary); color: var(--text-bright); border: 1px solid var(--border-subtle); padding: 5px; font-family: var(--font-mono); font-size: 0.75rem; border-radius: 4px; margin-top: 4px;">
-                  <option value="rel">Relative Signal Strength (Ping-Pong Risk!)</option>
-                  <option value="th">Relative Signal with Threshold Th</option>
-                  <option value="h" selected>Relative Signal with Hysteresis (H)</option>
-                  <option value="h_th">Hysteresis (H) + Threshold (Th) (Standard)</option>
-                </select>
-              </div>
+                <!-- Cable from BS to Base Station Controller / Wireless Router -->
+                <line x1="330" y1="165" x2="460" y2="165" stroke="#334155" stroke-width="3"/>
+                <line x1="330" y1="165" x2="460" y2="165" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6 3" id="wire-link-1"/>
 
-              <div class="ch2-ctrl">
-                <div class="ch2-lbl">
-                  <span>MOBILE TRAJECTORY SPEED</span>
-                  <span id="ch10-val-speed">60 km/h</span>
-                </div>
-                <input type="range" id="ch10-slider-speed" min="10" max="140" step="5" value="60" class="control-slider"/>
-              </div>
-            </div>
+                <!-- 3. Base Station Controller / Core Router -->
+                <g id="iso-node-router">
+                  ${drawIsometricRouter(490, 165, 0.9, '#38bdf8')}
+                  <text x="440" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">BSC / Core Router</text>
+                  <text x="455" y="228" fill="#ffb703" font-size="9" font-family="monospace">IP: 10.0.0.1</text>
+                </g>
 
-            <!-- Live Telemetry Results -->
-            <div class="calc-results-grid" style="margin-top: 14px;">
-              <div class="res-card">
-                <div class="res-title">CO-CHANNEL REUSE DISTANCE (D)</div>
-                <div class="res-val" id="ch10-out-d">4.58 · R</div>
-                <div class="res-sub">D = R · √(3 · 7) = 4.58 R</div>
-              </div>
+                <!-- Cable from Router to Internet Cloud -->
+                <line x1="535" y1="165" x2="640" y2="140" stroke="#334155" stroke-width="3"/>
+                <line x1="535" y1="165" x2="640" y2="140" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="6 3" id="wire-link-2"/>
 
-              <div class="res-card highlight">
-                <div class="res-title">SERVING BASE STATION</div>
-                <div class="res-val" id="ch10-out-serving">CELL A (BS-A)</div>
-                <div class="res-sub" id="ch10-out-rssi">RSSI: -68.4 dBm | Target BS-B: -82.1 dBm</div>
-              </div>
+                <!-- 4. Internet Cloud / Cellular IP Backbone -->
+                <g id="iso-node-cloud">
+                  ${drawIsometricCloud(660, 135, 1.0, '#38bdf8')}
+                  <text x="615" y="175" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Cellular Core / IP</text>
+                  <text x="630" y="188" fill="#38bdf8" font-size="9" font-family="monospace">MTSO Backbone</text>
+                </g>
 
-              <div class="res-card">
-                <div class="res-title">HANDOFF DECISION STATE</div>
-                <div class="res-val" id="ch10-out-handstate" style="color: var(--status-ready);">LOCKED TO BS-A</div>
-                <div class="res-sub" id="ch10-out-pingpong">Ping-Pong Flaps: 0</div>
-              </div>
+                <!-- Link from Cloud to DNS / Application Server -->
+                <line x1="710" y1="125" x2="780" y2="125" stroke="#334155" stroke-width="3"/>
+                <line x1="710" y1="125" x2="780" y2="125" stroke="#00ff9d" stroke-width="1.5" stroke-dasharray="6 3" id="wire-link-3"/>
+
+                <!-- 5. Destination Application / DNS Server -->
+                <g id="iso-node-server">
+                  ${drawIsometricServer(800, 160, 0.9, '#00ff9d')}
+                  <text x="760" y="215" fill="#fff" font-size="11" font-family="monospace" font-weight="700">Web / DNS Server</text>
+                  <text x="770" y="228" fill="#00ff9d" font-size="9" font-family="monospace">IP: 8.8.8.8</text>
+                </g>
+
+                <!-- Live Animated Moving Packet Bubble -->
+                <g id="iso-animated-packet">
+                  <rect id="iso-pkt-bubble" x="150" y="130" width="85" height="22" fill="#0b1329" stroke="#00e5ff" stroke-width="1.5" rx="3"/>
+                  <text id="iso-pkt-text" x="158" y="145" fill="#00e5ff" font-size="8" font-family="monospace" font-weight="700">RF FRAME #1</text>
+                </g>
+              </svg>
             </div>
           </div>
         </div>
@@ -783,6 +748,49 @@ function attachSubEvents(container, secId, progressManager) {
         graphPos.setAttribute('x1', gx);
         graphPos.setAttribute('x2', gx);
       }
+
+      // Animate Protocol Explorer Isometric Packet Flow: Mobile Laptop (120, 145) -> BS (300, 160) -> Router (490, 165) -> Cloud (660, 135) -> Server (800, 160)
+      const isoBubble = container.querySelector('#iso-pkt-bubble');
+      const isoText = container.querySelector('#iso-pkt-text');
+      if (isoBubble && isoText) {
+        const flowCycle = (time * 0.4) % 4; // 4 second loop across 4 segments
+        const seg = Math.floor(flowCycle);
+        const subT = flowCycle - seg;
+
+        let px = 150, py = 130, label = 'RF AIR BURST', color = '#00e5ff';
+        if (seg === 0) {
+          // Mobile -> BS
+          px = 120 + subT * (300 - 120);
+          py = 145 + subT * (85 - 145);
+          label = 'RF AIR BURST';
+          color = '#00e5ff';
+        } else if (seg === 1) {
+          // BS -> BSC Router
+          px = 300 + subT * (490 - 300);
+          py = 165;
+          label = 'E1 / GTP-U';
+          color = '#38bdf8';
+        } else if (seg === 2) {
+          // Router -> Cloud
+          px = 490 + subT * (660 - 490);
+          py = 165 + subT * (135 - 165);
+          label = 'IP PACKET';
+          color = '#ffb703';
+        } else {
+          // Cloud -> Server
+          px = 660 + subT * (800 - 660);
+          py = 135 + subT * (160 - 135);
+          label = 'HTTP 200 OK';
+          color = '#00ff9d';
+        }
+        isoBubble.setAttribute('x', px - 40);
+        isoBubble.setAttribute('y', py - 12);
+        isoBubble.setAttribute('stroke', color);
+        isoText.setAttribute('x', px - 35);
+        isoText.setAttribute('y', py + 2);
+        isoText.setAttribute('fill', color);
+        isoText.textContent = label;
+      }
     });
   }
 
@@ -1066,3 +1074,4 @@ function attachSubEvents(container, secId, progressManager) {
     });
   }
 }
+
