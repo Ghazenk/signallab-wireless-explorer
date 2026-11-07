@@ -64,7 +64,7 @@ export class Workspace {
           </div>
           <!-- Quick Instrument Drawer Toggles -->
           <div style="display: flex; gap: 6px; margin-top: 4px;">
-            <button class="btn-ctrl active" id="btn-toggle-d3-top" title="Toggle D3 Signal Oscilloscope & Control Systems Suite">
+            <button class="btn-ctrl ${state.activeChapterId === 'ch-10' ? '' : 'active'}" id="btn-toggle-d3-top" title="Toggle D3 Signal Oscilloscope & Control Systems Suite">
               📡 D3 WAVE & CONTROL LAB
             </button>
             <button class="btn-ctrl" id="btn-toggle-metrics-top" title="Toggle Shannon & Nyquist RF Capacity Cards">
@@ -80,15 +80,17 @@ export class Workspace {
       <!-- Toggleable D3 Oscilloscope, Modulation & Control Systems Laboratory Drawer -->
       <div class="workspace-drawer-toggle-bar" id="drawer-bar-d3" title="Click to collapse or expand D3 Oscilloscope & Control Systems Suite">
         <div class="workspace-drawer-toggle-title">
-          <span class="workspace-drawer-chevron" id="chevron-d3">▼</span>
+          <span class="workspace-drawer-chevron" id="chevron-d3">${state.activeChapterId === 'ch-10' ? '▶' : '▼'}</span>
           <span>📡 D3.JS OSCILLOSCOPE, MODULATION & CONTROL SYSTEMS LABORATORY</span>
         </div>
         <div style="display: flex; gap: 8px; align-items: center;">
-          <span class="workspace-drawer-status-pill" id="status-pill-d3">EXPANDED</span>
+          <span class="workspace-drawer-status-pill" id="status-pill-d3" style="${state.activeChapterId === 'ch-10' ? 'color: var(--text-dim);' : ''}">
+            ${state.activeChapterId === 'ch-10' ? 'COLLAPSED' : 'EXPANDED'}
+          </span>
           <span style="font-size: 0.7rem; color: var(--text-dim); font-family: var(--font-mono);">CLICK TO TOGGLE</span>
         </div>
       </div>
-      <div id="d3-drawer-wrapper" class="workspace-drawer-content">
+      <div id="d3-drawer-wrapper" class="workspace-drawer-content" style="${state.activeChapterId === 'ch-10' ? 'display: none;' : ''}">
         <div id="d3-signal-visualizer-mount"></div>
       </div>
 
